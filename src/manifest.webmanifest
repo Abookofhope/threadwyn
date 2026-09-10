@@ -1,0 +1,17 @@
+{
+  "name": "Threadwyn",
+  "short_name": "Threadwyn",
+  "description": "A pixel picture creator for crochet charts. Work a chart square by square, trace a photo, mirror it, then follow it row by row with the hook in your hand.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E6E2EC",
+  "theme_color": "#B62A63",
+  "categories": ["games", "lifestyle", "productivity"],
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

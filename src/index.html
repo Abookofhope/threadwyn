@@ -1,0 +1,3812 @@
+<title>Threadwyn</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#B62A63">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Karla:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ink:#1E1826; --ink-2:#4A4059; --ink-3:#7B7189;
+  --ground:#E6E2EC; --paper:#F7F5FA; --raise:#FFFFFF;
+  --line:#CFC8DA; --line-soft:#E0DAE9;
+  --accent:#B62A63; --accent-soft:#F3DDE7; --on-accent:#FFFFFF;
+  --teal:#1F6F62; --brass:#9C6410; --brass-bright:#D19A35;
+  --cloth-a:#DCD6E6; --cloth-b:#D3CCDF;
+  --edge:#B9B0C9;
+  --shadow-1:0 1px 0 rgba(30,24,38,.06), 0 6px 16px -10px rgba(30,24,38,.45);
+  --shadow-2:0 2px 0 rgba(30,24,38,.08), 0 18px 34px -18px rgba(30,24,38,.55);
+  --tap:46px;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --ui:"Karla",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#EFEAF6; --ink-2:#BAB2CA; --ink-3:#8B8299;
+    --ground:#141120; --paper:#1E1A2C; --raise:#2A2439;
+    --line:#3B3450; --line-soft:#2E2842;
+    --accent:#FF5C93; --accent-soft:#3A1D2C; --on-accent:#25101A;
+    --teal:#4FC4AC; --brass:#F2BC5C; --brass-bright:#F2BC5C;
+    --cloth-a:#241F33; --cloth-b:#2B2540;
+    --edge:#463D5E;
+    --shadow-1:0 1px 0 rgba(0,0,0,.30), 0 6px 16px -10px rgba(0,0,0,.8);
+    --shadow-2:0 2px 0 rgba(0,0,0,.35), 0 18px 34px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#EFEAF6; --ink-2:#BAB2CA; --ink-3:#8B8299;
+  --ground:#141120; --paper:#1E1A2C; --raise:#2A2439;
+  --line:#3B3450; --line-soft:#2E2842;
+  --accent:#FF5C93; --accent-soft:#3A1D2C; --on-accent:#25101A;
+  --teal:#4FC4AC; --brass:#F2BC5C; --brass-bright:#F2BC5C;
+  --cloth-a:#241F33; --cloth-b:#2B2540;
+  --edge:#463D5E;
+  --shadow-1:0 1px 0 rgba(0,0,0,.30), 0 6px 16px -10px rgba(0,0,0,.8);
+  --shadow-2:0 2px 0 rgba(0,0,0,.35), 0 18px 34px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.45;
+  overscroll-behavior:none;-webkit-user-select:none;user-select:none}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.01em}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- screens ---------- */
+.screen{display:none;min-height:100vh;min-height:100dvh}
+.screen.on{display:block}
+.screen.flex.on{display:flex;flex-direction:column}
+.pad{padding-block:22px;padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));max-width:620px;margin:0 auto}
+.stack{display:flex;flex-direction:column;gap:14px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+
+/* ---------- home ---------- */
+.mark{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding-top:calc(14px + env(safe-area-inset-top))}
+.mark h1{font-size:clamp(38px,13vw,54px);font-weight:800;line-height:.95;letter-spacing:-.03em}
+.mark h1 em{font-style:normal;color:var(--accent)}
+.mark p{margin:6px 0 0;color:var(--ink-2);font-size:14px;max-width:34ch}
+.sampler{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;width:100%;max-width:220px;margin:14px 0 4px;aspect-ratio:12/3}
+.sampler i{border-radius:1px;background:var(--line-soft)}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-1)}
+.resume{display:flex;gap:14px;align-items:center;padding:12px;text-align:left;width:100%}
+.resume canvas{width:64px;height:64px;border-radius:8px;border:1px solid var(--line);flex:none;background:var(--cloth-a);image-rendering:pixelated}
+.resume .t{font-family:var(--display);font-size:19px;line-height:1.15}
+.resume .s{color:var(--ink-3);font-size:12.5px;margin-top:2px}
+.resume .go{margin-left:auto;color:var(--accent);flex:none}
+
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mbtn{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:14px;background:var(--paper);
+  border:1px solid var(--line);border-radius:14px;min-height:96px;box-shadow:var(--shadow-1)}
+.mbtn:active{transform:translateY(1px)}
+.mbtn.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0;gap:12px}
+.mbtn .n{font-family:var(--display);font-size:17px}
+.mbtn .d{font-size:12.5px;color:var(--ink-3);line-height:1.35}
+.mbtn svg{color:var(--accent)}
+.mbtn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.mbtn.primary .d{color:var(--on-accent);opacity:.8}
+.mbtn.primary svg{color:var(--on-accent)}
+
+.tally{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper)}
+.tally div{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--line-soft)}
+.tally div:last-child{border-right:0}
+.tally b{display:block;font-family:var(--display);font-size:20px;font-weight:600}
+.tally span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ---------- generic bar ---------- */
+.bar{display:flex;align-items:center;gap:8px;padding:8px max(10px,env(safe-area-inset-left));
+  padding-top:calc(8px + env(safe-area-inset-top));background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.bar h2{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib{width:var(--tap);height:var(--tap);display:grid;place-items:center;border-radius:11px;flex:none;color:var(--ink-2)}
+.ib:active{background:var(--line-soft)}
+.ib[disabled]{opacity:.28}
+.ib.on{background:var(--accent);color:var(--on-accent)}
+
+/* ---------- studio ---------- */
+#scr-loom{background:var(--ground)}
+.stage{flex:1;position:relative;min-height:0;overflow:hidden}
+#cv{display:block;width:100%;height:100%;touch-action:none}
+.gauge{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:var(--paper);border:1px solid var(--line);
+  border-radius:999px;padding:4px 12px;font-size:11.5px;letter-spacing:.07em;color:var(--ink-2);box-shadow:var(--shadow-1);
+  pointer-events:none;white-space:nowrap}
+.gauge b{color:var(--ink);font-weight:700}
+#loupe{position:absolute;width:96px;height:96px;border-radius:50%;border:3px solid var(--paper);box-shadow:var(--shadow-2);
+  overflow:hidden;pointer-events:none;display:none;background:var(--cloth-a)}
+#loupe canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+#loupe.on{display:block}
+
+.tray{background:var(--paper);border-top:1px solid var(--line);
+  padding:9px max(10px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:9px}
+.tools{display:flex;gap:5px}
+.tool{flex:1 1 0;min-width:0;height:44px;display:grid;place-items:center;border-radius:11px;color:var(--ink-2);
+  border:1px solid transparent;position:relative}
+.tool.on{background:var(--accent);color:var(--on-accent)}
+.tool:active{background:var(--line-soft)}
+.tool.on:active{background:var(--accent)}
+.tool .badge{position:absolute;bottom:3px;right:5px;font-size:9px;font-weight:700;letter-spacing:.02em}
+
+.basket{display:flex;gap:8px;align-items:center}
+.skeins{display:flex;gap:7px;overflow-x:auto;flex:1;padding:3px 2px;scrollbar-width:none}
+.skeins::-webkit-scrollbar{display:none}
+.skein{width:34px;height:34px;border-radius:50%;flex:none;border:2px solid var(--line);position:relative}
+.skein.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.skein.erase{background:repeating-linear-gradient(45deg,var(--cloth-a) 0 6px,var(--cloth-b) 6px 12px)}
+.dye{width:46px;height:46px;border-radius:14px;flex:none;border:2px solid var(--line);display:grid;place-items:center;
+  box-shadow:var(--shadow-1);position:relative;overflow:hidden}
+.dye svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));color:#fff;mix-blend-mode:normal}
+
+/* nudge pad */
+.nudge{position:absolute;right:10px;bottom:10px;display:none;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);
+  gap:3px;background:color-mix(in srgb,var(--paper) 88%,transparent);border:1px solid var(--line);border-radius:16px;padding:5px;box-shadow:var(--shadow-2)}
+.nudge.on{display:grid}
+.nudge button{border-radius:10px;display:grid;place-items:center;color:var(--ink-2)}
+.nudge button:active{background:var(--line-soft)}
+.nudge .stamp{background:var(--accent);color:var(--on-accent)}
+.nudge .sp{visibility:hidden}
+
+/* ---------- sheets ---------- */
+.sheet{position:fixed;inset:0;z-index:40;display:none}
+.sheet.on{display:block}
+.sheet .scrim{position:absolute;inset:0;background:rgba(20,15,28,.5)}
+.sheet-in{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0;padding:10px max(16px,env(safe-area-inset-left)) calc(16px + env(safe-area-inset-bottom));
+  max-height:88dvh;overflow:auto;box-shadow:var(--shadow-2)}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:2px auto 12px}
+.sheet h2{font-size:20px;margin-bottom:2px}
+.sheet .sub{color:var(--ink-3);font-size:12.5px;margin:0 0 14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);padding:0 16px;border-radius:12px;
+  background:var(--raise);border:1px solid var(--line);font-weight:600;width:100%}
+.btn:active{transform:translateY(1px)}
+.btn.go{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--ink-3)}
+.btn.danger{color:var(--accent);border-color:var(--line)}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+
+#sv,#hue{width:100%;display:block;border-radius:10px;border:1px solid var(--line);touch-action:none}
+#sv{height:170px}
+#hue{height:26px;margin-top:10px}
+.hexrow{display:flex;gap:10px;align-items:center;margin-top:12px}
+#pchip{width:46px;height:46px;border-radius:12px;border:2px solid var(--line);flex:none}
+#phex{flex:1;min-width:0;background:var(--raise);border:1px solid var(--line);border-radius:12px;height:46px;padding:0 12px;
+  font-variant-numeric:tabular-nums;letter-spacing:.06em;text-transform:uppercase}
+.swatchgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.swatchgrid button{width:36px;height:36px;border-radius:50%;border:2px solid var(--line)}
+.skeingroup{margin-top:14px}
+.skeingroup .nm{font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:6px;display:flex;justify-content:space-between}
+
+/* ---------- cabinet ---------- */
+.shelf{margin-top:18px}
+.shelf-lip{height:8px;border-radius:3px;background:linear-gradient(var(--edge),var(--line));margin-top:-1px;box-shadow:var(--shadow-1)}
+.pieces{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.piece{padding:9px 9px 11px;background:var(--paper);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow-1);text-align:center}
+.piece .frame{border:6px double var(--edge);border-radius:3px;padding:5px;background:var(--cloth-a)}
+.piece.gold .frame{border-color:var(--brass-bright)}
+.piece canvas{width:100%;height:auto;display:block;image-rendering:pixelated;aspect-ratio:1}
+.piece .t{font-family:var(--display);font-size:14.5px;margin-top:8px;line-height:1.2}
+.piece .s{font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+.empty{border:1px dashed var(--line);border-radius:14px;padding:26px 18px;text-align:center;color:var(--ink-3)}
+.empty h3{color:var(--ink);font-size:18px;margin-bottom:6px}
+
+.ribbons{display:flex;flex-wrap:wrap;gap:7px}
+.ribbon{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 8px;font-size:12px;background:var(--paper)}
+.ribbon.locked{opacity:.42}
+.ribbon .dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
+.ribbon.got .dot{background:var(--brass-bright)}
+.ribbon.got{border-color:var(--brass-bright)}
+
+/* piece detail */
+.plate{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:var(--shadow-2)}
+.plate .frame{border:10px double var(--edge);padding:10px;background:var(--cloth-a);border-radius:4px}
+.plate.gold .frame{border-color:var(--brass-bright)}
+.plate img{width:100%;display:block;image-rendering:pixelated}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line-soft);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px}
+.facts div{background:var(--paper);padding:9px 12px}
+.facts b{display:block;font-family:var(--display);font-size:16px}
+.facts span{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+/* pattern book */
+.pat{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px;background:var(--paper);
+  border:1px solid var(--line);border-radius:12px}
+.pat .no{font-family:var(--display);font-size:15px;color:var(--ink-3);width:24px;flex:none;text-align:center}
+.pat .t{font-family:var(--display);font-size:16px;line-height:1.2}
+.pat .h{font-size:12.5px;color:var(--ink-3);line-height:1.35;margin-top:2px}
+.pat .g{margin-left:auto;flex:none;font-size:10.5px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
+.pat.done{border-color:var(--teal)}
+.pat.done .g{color:var(--teal);font-weight:700}
+
+/* codes */
+.codebar{display:flex;gap:8px}
+#codein{flex:1;min-width:0;height:var(--tap);border:1px solid var(--line);border-radius:12px;background:var(--raise);
+  padding:0 14px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.charm{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.charm .key{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--line-soft);color:var(--ink-3)}
+.charm.got .key{background:var(--brass-bright);color:#2A1C05}
+.charm .n{font-family:var(--display);font-size:15px;letter-spacing:.06em}
+.charm .r{font-size:12.5px;color:var(--ink-3);font-style:italic}
+.charm .w{font-size:12.5px;color:var(--ink-2)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:var(--ink);
+  color:var(--ground);padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:60;opacity:0;
+  pointer-events:none;transition:opacity .18s,transform .18s;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+.note{font-size:13px;color:var(--ink-2);line-height:1.5}
+.note code{background:var(--line-soft);padding:1px 5px;border-radius:5px;font-size:12px}
+#qrbox{display:grid;place-items:center;padding:16px;background:#fff;border-radius:12px;border:1px solid var(--line)}
+#qrbox canvas,#qrbox img{display:block;max-width:100%;height:auto}
+#backup{width:100%;height:110px;border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:10px;
+  font-size:11px;font-family:ui-monospace,Menlo,monospace;resize:none;-webkit-user-select:text;user-select:text}
+.mbtn .n,.mbtn .d{display:block}
+.defn{font-size:12.5px;color:var(--ink-3);border-left:2px solid var(--accent);padding-left:10px;margin:10px 0 0!important}
+.defn b{color:var(--ink-2);letter-spacing:.02em}
+.daily{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px 14px;border:1px solid var(--accent);
+  border-radius:14px;background:var(--accent-soft)}
+.daily .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;display:block}
+.daily .t{font-family:var(--display);font-size:17px;display:block;line-height:1.2;margin-top:2px}
+.daily .h{font-size:12.5px;color:var(--ink-2);display:block;line-height:1.3}
+.zoompill{position:absolute;left:10px;bottom:10px;display:flex;flex-direction:column;gap:2px;background:color-mix(in srgb,var(--paper) 90%,transparent);
+  border:1px solid var(--line);border-radius:14px;padding:4px;box-shadow:var(--shadow-1)}
+.zoompill button{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;color:var(--ink-2)}
+.zoompill button:active{background:var(--line-soft)}
+.zoompill button.on{background:var(--accent);color:var(--on-accent)}
+.seg{display:flex;gap:4px;background:var(--line-soft);border-radius:13px;padding:4px}
+.seg button{flex:1;min-width:0;height:42px;display:grid;place-items:center;border-radius:10px;color:var(--ink-2);gap:1px}
+.seg button.on{background:var(--accent);color:var(--on-accent)}
+.seg button span{font-size:9px;letter-spacing:.04em}
+.axis{border:1px solid var(--line);border-radius:13px;padding:10px 12px;background:var(--raise);margin-top:10px}
+.axis .lab{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.axis .val{font-family:var(--display);font-size:16px;text-align:center;flex:1;min-width:0}
+.axis .stepper{display:flex;align-items:center;gap:8px;margin:6px 0 8px}
+.axis .stepper button{width:44px;height:40px;border:1px solid var(--line);border-radius:11px;display:grid;place-items:center;background:var(--paper)}
+.axis .mini{display:flex;gap:6px}
+.axis .mini button{flex:1;min-height:38px;border:1px solid var(--line);border-radius:11px;font-size:12.5px;background:var(--paper);padding:0 6px}
+.yarnrow{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
+.yarnrow .sw{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);flex:none}
+.yarnrow .m{flex:1;min-width:0}
+.yarnrow .hx{font-size:12.5px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.yarnrow .ct{font-size:11px;color:var(--ink-3)}
+.yarnrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 10px;font-size:12px;background:var(--paper);flex:none}
+.tipcard{position:absolute;left:12px;right:12px;bottom:12px;background:var(--paper);border:1px solid var(--accent);border-radius:16px;
+  padding:14px;box-shadow:var(--shadow-2);z-index:6}
+.tipcard h3{font-size:16px;margin-bottom:6px}
+.tipcard ul{margin:0 0 12px;padding-left:18px;font-size:13px;color:var(--ink-2);line-height:1.6}
+.tipcard li::marker{color:var(--accent)}
+.note-line{font-size:13px;color:var(--ink-2);font-style:italic;text-align:center;padding:0 10px}
+.railsep{height:1px;background:var(--line);margin:3px 5px}
+.zoompill .badge{position:absolute;bottom:2px;right:4px;font-size:9px;font-weight:700}
+.zoompill button{position:relative}
+.selbar{display:flex;gap:6px;overflow-x:auto;padding:2px;scrollbar-width:none;align-items:center}
+.selbar::-webkit-scrollbar{display:none}
+.selbar button{flex:none;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--raise);font-size:12.5px;font-weight:600}
+.selbar button[data-sel="done"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.selinfo{flex:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-right:2px}
+#photo-prev{width:100%;height:auto;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:12px;background:var(--cloth-a);margin-top:12px}
+.bslots{display:grid;gap:5px;margin-top:8px}
+.bslot{aspect-ratio:1;border:1px dashed var(--line);border-radius:6px;background:var(--paper);display:grid;place-items:center;padding:2px;overflow:hidden}
+.bslot canvas{width:100%;height:100%;image-rendering:pixelated;border-radius:3px}
+.bslot.set{border-style:solid}
+.bslot span{font-size:18px;color:var(--ink-3)}
+.blanketcard{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+.blanketcard canvas{width:56px;height:56px;flex:none;border-radius:6px;border:1px solid var(--line);image-rendering:pixelated}
+.blanketcard .t{font-family:var(--display);font-size:16px;display:block}
+.blanketcard .h{font-size:12.5px;color:var(--ink-3);display:block}
+.workwrap{flex:1;min-height:0;overflow:auto;padding:14px max(16px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:12px}
+.workhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.workhead .rowno{font-family:var(--display);font-size:30px;line-height:1}
+.workhead .side{font-size:11px;font-weight:700;letter-spacing:.12em;background:var(--accent);color:var(--on-accent);border-radius:999px;padding:3px 9px}
+.workhead .dir{font-size:12.5px;color:var(--ink-3)}
+.workbar{height:6px;border-radius:3px;background:var(--line-soft);overflow:hidden}
+.workbar i{display:block;height:100%;background:var(--accent);width:0}
+#work-chart{width:100%;height:auto;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:10px;background:var(--cloth-a)}
+.runs{display:flex;flex-wrap:wrap;gap:6px}
+.runs span{border:1px solid var(--line);border-radius:9px;padding:5px 9px;font-size:13px;font-variant-numeric:tabular-nums;display:flex;gap:6px;align-items:center;background:var(--paper)}
+.runs span i{width:12px;height:12px;border-radius:50%;display:block;border:1px solid var(--line)}
+.runs span.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.runs span.past{opacity:.42}
+.nowrun{font-family:var(--display);font-size:22px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.workfoot{display:flex;gap:10px;padding:10px max(16px,env(safe-area-inset-left)) calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--paper)}
+.workfoot .btn{flex:1}
+.workfoot #work-next{flex:2}
+#textin{width:100%;height:var(--tap);border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:0 14px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-top:8px;-webkit-user-select:text;user-select:text}
+#text-prev{width:100%;height:auto;display:block;image-rendering:pixelated;margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--cloth-a);min-height:52px}
+.written{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:12px;max-height:46dvh;overflow:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.55;white-space:pre;-webkit-user-select:text;user-select:text;margin:0 0 12px}
+.tmpl{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:10px 12px;background:var(--raise);border:1px solid var(--line);border-radius:12px}
+.tmpl canvas{width:46px;height:46px;flex:none;border-radius:7px;border:1px solid var(--line);image-rendering:pixelated}
+.tmpl .t{font-family:var(--display);font-size:15px}
+.tmpl .h{font-size:12px;color:var(--ink-3);line-height:1.3}
+.resume .t,.resume .s{display:block}
+.toast{bottom:calc(108px + env(safe-area-inset-bottom))}
+#ask-input{width:100%;height:var(--tap);border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:0 14px;margin-bottom:14px;-webkit-user-select:text;user-select:text}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="i-pen"><path d="M4 20.5l1-4.2L15.6 5.7a2 2 0 0 1 2.8 0l1.9 1.9a2 2 0 0 1 0 2.8L9.7 21 5.5 22z"/><path d="M14.2 7.1l4.7 4.7"/></g>
+<g id="i-erase"><path d="M9.5 20H20"/><path d="M6.6 17.1l7.6-7.6a2 2 0 0 1 2.8 0l3 3a2 2 0 0 1 0 2.8L15.6 20H9.4l-2.8-2.9z"/></g>
+<g id="i-fill"><path d="M11 3.5l7.4 7.4a1.5 1.5 0 0 1 0 2.1l-5.3 5.3a1.5 1.5 0 0 1-2.1 0L5.3 13a1.5 1.5 0 0 1 0-2.1L11 5.2"/><path d="M8.6 6.1l2.4-2.6"/><path d="M19.5 15.5s1.8 2.1 1.8 3.3a1.8 1.8 0 1 1-3.6 0c0-1.2 1.8-3.3 1.8-3.3z"/></g>
+<g id="i-pick"><path d="M4.5 19.5l.6-2.4 7.3-7.3"/><path d="M11 8.4l1.9-1.9 4.6 4.6-1.9 1.9z"/><path d="M16.2 4.3a2.4 2.4 0 0 1 3.4 0 2.4 2.4 0 0 1 0 3.4l-1.3 1.3-3.4-3.4z"/><path d="M12.4 9.8l-6.7 6.7"/></g>
+<g id="i-line"><path d="M5.5 18.5L18.5 5.5"/><circle cx="4.6" cy="19.4" r="1.6"/><circle cx="19.4" cy="4.6" r="1.6"/></g>
+<g id="i-box"><rect x="4.5" y="6.5" width="15" height="11" rx="1"/><path d="M4.5 10.5h15M9.5 6.5v11M14.5 6.5v11"/></g>
+<g id="i-stamp"><path d="M9 4.5h6l-.7 4.2 2.2 3.3H7.5l2.2-3.3z"/><rect x="4.5" y="15.5" width="15" height="4" rx="1.2"/></g>
+<g id="i-aim"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/></g>
+<g id="i-mirror"><path d="M12 2.5v19"/><path d="M8.5 7L4 12l4.5 5z"/><path d="M15.5 7L20 12l-4.5 5z"/></g>
+<g id="i-undo"><path d="M9 7.5L4.5 12 9 16.5"/><path d="M4.5 12h9.8a4.8 4.8 0 0 1 0 9.6H11"/></g>
+<g id="i-redo"><path d="M15 7.5l4.5 4.5-4.5 4.5"/><path d="M19.5 12H9.7a4.8 4.8 0 0 0 0 9.6H13"/></g>
+<g id="i-back"><path d="M14.5 5.5L8 12l6.5 6.5"/></g>
+<g id="i-go"><path d="M9.5 5.5L16 12l-6.5 6.5"/></g>
+<g id="i-more"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></g>
+<g id="i-cup"><path d="M7 3.5h10v4.7a5 5 0 0 1-10 0z"/><path d="M7 5H4.6v1.6A3.4 3.4 0 0 0 8 10M17 5h2.4v1.6A3.4 3.4 0 0 1 16 10"/><path d="M12 13.2v3.3M8.5 20.5h7l-.8-4h-5.4z"/></g>
+<g id="i-book"><path d="M4.5 4.5h5.2A2.3 2.3 0 0 1 12 6.8v13a2 2 0 0 0-2-1.8H4.5z"/><path d="M19.5 4.5h-5.2A2.3 2.3 0 0 0 12 6.8v13a2 2 0 0 1 2-1.8h5.5z"/></g>
+<g id="i-key"><circle cx="8" cy="12" r="3.5"/><path d="M11.5 12h9M18 12v3.4M15 12v2.4"/></g>
+<g id="i-plus"><path d="M12 5.5v13M5.5 12h13"/></g>
+<g id="i-check"><path d="M5 12.5l4.6 4.5L19 7"/></g>
+<g id="i-share"><path d="M4.5 10.5v9h15v-9"/><path d="M12 14.5V3.5M8 7l4-3.5L16 7"/></g>
+<g id="i-new"><rect x="4.5" y="4.5" width="15" height="15" rx="2"/><path d="M9.5 4.5v15M14.5 4.5v15M4.5 9.5h15M4.5 14.5h15"/></g>
+<g id="i-trash"><path d="M5.5 6.5h13M9.5 6.5V4.2h5v2.3M7 6.5l.9 13h8.2l.9-13"/></g>
+<g id="i-up"><path d="M12 18V6M6.5 11.5L12 6l5.5 5.5"/></g>
+<g id="i-down"><path d="M12 6v12M6.5 12.5L12 18l5.5-5.5"/></g>
+<g id="i-left"><path d="M18 12H6M11.5 6.5L6 12l5.5 5.5"/></g>
+<g id="i-right"><path d="M6 12h12M12.5 6.5L18 12l-5.5 5.5"/></g>
+<g id="i-select"><rect x="4.5" y="4.5" width="15" height="15" rx="1.5" stroke-dasharray="3.2 2.6"/></g>
+<g id="i-photo"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M4 16.5l4.5-4 3 2.5 3.5-3.5 5 5"/></g>
+<g id="i-grid4"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1"/><rect x="13" y="13" width="7.5" height="7.5" rx="1"/></g>
+<g id="i-play"><path d="M7 4.5l12 7.5-12 7.5z"/></g>
+<g id="i-copy"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5h-11v11"/></g>
+<g id="i-fit"><path d="M4.5 9V4.5H9M15 4.5h4.5V9M19.5 15v4.5H15M9 19.5H4.5V15"/></g>
+<g id="i-hand"><path d="M8.5 11V5.6a1.6 1.6 0 0 1 3.2 0V11m0-.6V4.4a1.6 1.6 0 0 1 3.2 0V11m0-.4V6.6a1.6 1.6 0 0 1 3.1 0v6.9a6.5 6.5 0 0 1-6.5 6.5h-.8a6 6 0 0 1-5.3-3.2L4 13.4a1.6 1.6 0 0 1 2.7-1.7l1.8 2.1"/></g>
+<g id="i-swap"><path d="M4.5 8.5h13M14 5l3.5 3.5L14 12M19.5 15.5h-13M10 12l-3.5 3.5L10 19"/></g>
+<g id="i-fold"><path d="M12 3v18" stroke-dasharray="3 3"/><path d="M8.5 7.5L4.5 12l4 4.5z"/><path d="M15.5 7.5l4 4.5-4 4.5z"/></g>
+<g id="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19"/></g>
+</defs></svg>
+
+<!-- ============ HEARTH ============ -->
+<section class="screen on" id="scr-hearth">
+ <div class="pad stack">
+  <div class="mark">
+   <span class="eyebrow">A pixel picture creator</span>
+   <h1>Thread<em>wyn</em></h1>
+   <div class="sampler" id="sampler"></div>
+   <p class="defn"><b>thread·wyn</b> <i>(n.)</i> — thread, and <i>wyn</i>, the old word for joy: the quiet pleasure of a pattern coming out even.</p>
+   <p>Work a chart square by square. Fasten off when it's done, and it goes in the cabinet for good.</p>
+  </div>
+
+  <button class="daily" id="daily" hidden>
+    <span>
+      <span class="k">Today's pattern</span>
+      <span class="t" id="daily-t">—</span>
+      <span class="h" id="daily-h">—</span>
+    </span>
+    <svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;flex:none;color:var(--accent)"><use href="#i-go"/></svg>
+  </button>
+
+  <button class="card resume" id="resume" hidden>
+    <canvas id="resume-thumb" width="64" height="64"></canvas>
+    <span>
+      <span class="t" id="resume-name">—</span>
+      <span class="s" id="resume-sub">—</span>
+    </span>
+    <svg class="go" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-go"/></svg>
+  </button>
+
+  <div class="menu">
+   <button class="mbtn primary" data-go="new">
+     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg>
+     <span class="n">Cast on</span><span class="d">Start a fresh chart</span>
+   </button>
+   <button class="mbtn" data-go="cabinet">
+     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-cup"/></svg>
+     <span class="n">The Cabinet</span><span class="d">Everything you've finished</span>
+   </button>
+   <button class="mbtn" data-go="book">
+     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>
+     <span class="n">Pattern Book</span><span class="d">Things worth making</span>
+   </button>
+   <button class="mbtn" data-go="charms">
+     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-key"/></svg>
+     <span class="n">Charm Codes</span><span class="d">Words that unlock things</span>
+   </button>
+   <button class="mbtn wide" data-go="works">
+     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg>
+     <span><span class="n">Works in progress</span><span class="d" id="wip-count">—</span></span>
+     <svg class="go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;color:var(--ink-3)"><use href="#i-go"/></svg>
+   </button>
+  </div>
+
+  <div class="tally">
+   <div><b class="num" id="t-stitch">0</b><span>Stitches</span></div>
+   <div><b class="num" id="t-done">0</b><span>Finished</span></div>
+   <div><b class="num" id="t-ribbon">0</b><span>Ribbons</span></div>
+  </div>
+
+  <div class="row">
+    <button class="btn quiet" data-go="share">Share &amp; backup</button>
+    <button class="btn quiet" id="settings-btn">Settings</button>
+  </div>
+ </div>
+</section>
+
+<!-- ============ CAST ON ============ -->
+<section class="screen" id="scr-new">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>Cast on</h2>
+ </div>
+ <div class="pad stack">
+   <div>
+     <span class="eyebrow">Gauge</span>
+     <p class="note" style="margin:4px 0 10px">How many stitches across, and how many rows down. Bigger charts hold more detail — pinch to zoom in and every square is still yours.</p>
+     <div class="pieces" id="size-list" style="grid-template-columns:repeat(auto-fill,minmax(104px,1fr))"></div>
+   </div>
+   <div>
+     <span class="eyebrow">Working from</span>
+     <div class="stack" style="gap:8px;margin-top:8px" id="new-mission"></div>
+   </div>
+   <button class="btn go" id="cast-on">Cast on</button>
+ </div>
+</section>
+
+<!-- ============ PATTERN BOOK ============ -->
+<section class="screen" id="scr-book">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>Pattern Book</h2>
+ </div>
+ <div class="pad stack">
+   <p class="note">Prompts, not rules. Pick one and it rides along with the chart; fasten off and the pattern gets a tick.</p>
+   <div class="stack" style="gap:8px" id="book-list"></div>
+ </div>
+</section>
+
+<!-- ============ WORKS IN PROGRESS ============ -->
+<section class="screen" id="scr-works">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>Works in progress</h2>
+ </div>
+ <div class="pad stack"><div class="pieces" id="works-list"></div></div>
+</section>
+
+<!-- ============ THE LOOM ============ -->
+<section class="screen flex" id="scr-loom">
+ <div class="bar">
+  <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+  <h2 id="loom-name">Sampler</h2>
+  <button class="ib" id="btn-undo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
+  <button class="ib" id="btn-redo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-redo"/></svg></button>
+  <button class="ib" id="btn-more"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-more"/></svg></button>
+ </div>
+ <div class="stage" id="stage">
+   <canvas id="cv"></canvas>
+   <div class="gauge" id="gauge">R<b>1</b> · St<b>1</b></div>
+   <div id="loupe"><canvas id="loupe-cv" width="96" height="96"></canvas></div>
+   <div class="zoompill">
+     <button id="z-in" aria-label="Zoom in"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+     <button id="z-out" aria-label="Zoom out"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+     <button id="z-fit" aria-label="Fit the chart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg></button>
+     <button id="z-pan" aria-label="Pan lock"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hand"/></svg></button>
+     <span class="railsep"></span>
+     <button id="btn-mirror" aria-label="Mirror and fold lines"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-mirror"/></svg><span class="badge" id="mirror-badge"></span></button>
+     <button id="btn-aim" aria-label="Aim pad"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-aim"/></svg></button>
+   </div>
+   <div class="tipcard" id="tips" hidden>
+     <h3>Working the chart</h3>
+     <ul>
+       <li>One finger draws. A window pops up above your fingertip so your thumb never hides the square.</li>
+       <li>Two fingers pinch and pan. Double-tap to jump in close.</li>
+       <li>The hand button locks panning; the crosshair opens the aim pad for one square at a time.</li>
+     </ul>
+     <button class="btn go" id="tips-ok">Got it</button>
+   </div>
+   <div class="nudge" id="nudge">
+     <button class="sp"></button>
+     <button data-n="0,-1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-up"/></svg></button>
+     <button class="sp"></button>
+     <button data-n="-1,0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-left"/></svg></button>
+     <button class="stamp" id="nudge-go"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></button>
+     <button data-n="1,0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-right"/></svg></button>
+     <button class="sp"></button>
+     <button data-n="0,1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-down"/></svg></button>
+     <button class="sp"></button>
+   </div>
+ </div>
+ <div class="tray">
+   <div class="tools" id="tools">
+     <button class="tool on" data-tool="stitch" title="Stitch"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
+     <button class="tool" data-tool="unpick" title="Unpick"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-erase"/></svg></button>
+     <button class="tool" data-tool="flood" title="Flood"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fill"/></svg></button>
+     <button class="tool" data-tool="match" title="Match a yarn"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pick"/></svg></button>
+     <button class="tool" data-tool="row" title="Straight run"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-line"/></svg></button>
+     <button class="tool" data-tool="block" title="Block"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg></button>
+     <button class="tool" data-tool="select" title="Select"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-select"/></svg></button>
+     <button class="tool" data-tool="motif" title="Stamp"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stamp"/></svg></button>
+   </div>
+   <div class="selbar" id="selbar" hidden>
+     <span class="selinfo" id="selinfo">—</span>
+     <button data-sel="up" aria-label="Nudge up">↑</button>
+     <button data-sel="down" aria-label="Nudge down">↓</button>
+     <button data-sel="left" aria-label="Nudge left">←</button>
+     <button data-sel="right" aria-label="Nudge right">→</button>
+     <button data-sel="flipx">Flip ↔</button>
+     <button data-sel="flipy">Flip ↕</button>
+     <button data-sel="turn">Turn</button>
+     <button data-sel="copy">Copy</button>
+     <button data-sel="fill">Fill</button>
+     <button data-sel="clear">Clear</button>
+     <button data-sel="done">Done</button>
+   </div>
+   <div class="basket">
+     <button class="dye" id="dye"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+     <div class="skeins" id="skeins"></div>
+   </div>
+ </div>
+</section>
+
+<!-- ============ CABINET ============ -->
+<section class="screen" id="scr-cabinet">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>The Cabinet</h2>
+ </div>
+ <div class="pad stack">
+   <div><span class="eyebrow">Ribbons</span><div class="ribbons" id="ribbons" style="margin-top:8px"></div></div>
+   <button class="btn" data-go="blankets">Lay out a blanket</button>
+   <div id="cabinet-body"></div>
+ </div>
+</section>
+
+<!-- ============ ONE PIECE ============ -->
+<section class="screen" id="scr-piece">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2 id="piece-title">Piece</h2>
+ </div>
+ <div class="pad stack">
+   <div class="plate" id="piece-plate"><div class="frame"><img id="piece-img" alt=""></div></div>
+   <p class="note" style="text-align:center;margin:0">Press and hold the picture to save it to your phone.</p>
+   <button class="btn" id="piece-png" hidden>Save the picture to this phone</button>
+   <p class="note-line" id="piece-note" hidden>—</p>
+   <div class="facts" id="piece-facts"></div>
+   <button class="btn" id="piece-note-btn">Add a note to this piece</button>
+   <button class="btn" id="piece-code">Copy this chart as a code</button>
+   <button class="btn go" id="piece-work">Work it with me, row by row</button>
+   <button class="btn" id="piece-write">Write it out as a crochet pattern</button>
+   <button class="btn" id="piece-copy">Work it again on a fresh chart</button>
+   <button class="btn danger" id="piece-del">Take it out of the cabinet</button>
+ </div>
+</section>
+
+<!-- ============ BLANKETS ============ -->
+<section class="screen" id="scr-blankets">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>Blankets</h2>
+ </div>
+ <div class="pad stack">
+   <p class="note">Lay finished squares out in rows and see the whole thing before you sew a single one together.</p>
+   <button class="btn go" id="blanket-new">Start a new blanket</button>
+   <div class="stack" style="gap:10px" id="blanket-list"></div>
+ </div>
+</section>
+
+<section class="screen" id="scr-blanket">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2 id="blanket-name">Blanket</h2>
+   <button class="ib" id="blanket-rename"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
+ </div>
+ <div class="pad stack">
+   <div class="plate"><div class="frame" style="border-width:8px"><canvas id="blanket-prev" style="width:100%;height:auto;display:block;image-rendering:pixelated"></canvas></div></div>
+   <div class="facts" id="blanket-facts"></div>
+   <div class="row">
+     <button class="btn" data-blanket="cols-">Fewer across</button>
+     <button class="btn" data-blanket="cols+">More across</button>
+   </div>
+   <div class="row">
+     <button class="btn" data-blanket="rows-">Fewer down</button>
+     <button class="btn" data-blanket="rows+">More down</button>
+   </div>
+   <span class="eyebrow">Tap a space to fill it</span>
+   <div id="blanket-slots"></div>
+   <button class="btn" id="blanket-fill">Fill every empty space with one square</button>
+   <button class="btn danger" id="blanket-del">Take this blanket apart</button>
+ </div>
+</section>
+
+<!-- ============ WORKING MODE ============ -->
+<section class="screen flex" id="scr-work">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2 id="work-name">Working</h2>
+   <button class="ib" id="work-restart" aria-label="Start again"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
+ </div>
+ <div class="workwrap">
+   <div class="workhead">
+     <span class="rowno" id="work-row">Row 1</span>
+     <span class="side" id="work-side">RS</span>
+     <span class="dir" id="work-dir">right to left</span>
+   </div>
+   <div class="workbar"><i id="work-fill"></i></div>
+   <canvas id="work-chart"></canvas>
+   <div class="runs" id="work-runs"></div>
+   <div class="nowrun" id="work-now">—</div>
+ </div>
+ <div class="workfoot">
+   <button class="btn" id="work-prev">Back</button>
+   <button class="btn go" id="work-next">Done — next</button>
+ </div>
+</section>
+
+<!-- ============ CHARMS ============ -->
+<section class="screen" id="scr-charms">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>Charm Codes</h2>
+ </div>
+ <div class="pad stack">
+   <p class="note">Words whispered over a chart. Type one in and something opens up — a dyed skein, a wider loom, a better mirror. The riddle is the clue.</p>
+   <div class="codebar">
+     <input id="codein" placeholder="TYPE A CHARM" autocomplete="off" autocapitalize="characters" spellcheck="false">
+     <button class="btn go" id="codego" style="width:auto;flex:none;padding:0 20px">Say it</button>
+   </div>
+   <div class="stack" style="gap:8px" id="charm-list"></div>
+ </div>
+</section>
+
+<!-- ============ SHARE / BACKUP ============ -->
+<section class="screen" id="scr-share">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2>Share &amp; backup</h2>
+ </div>
+ <div class="pad stack">
+   <span class="eyebrow">On this phone</span>
+   <button class="btn go" id="install-btn" hidden>Install Threadwyn on this phone</button>
+   <button class="btn go" id="update-btn" hidden>A new version is ready — update now</button>
+   <p class="note" id="install-note">—</p>
+   <hr style="border:0;border-top:1px solid var(--line);width:100%">
+   <span class="eyebrow">Point a camera at this</span>
+   <div id="qrbox"><span style="color:#555;font-size:12px">Loading…</span></div>
+   <p class="note" id="urlline" style="word-break:break-all"></p>
+   <button class="btn" id="copylink">Copy the link</button>
+   <p class="note">Same link, forever. When the game gets updated, whoever scanned it just reopens it and the new version is there — nothing to reinstall. Add it to the home screen (browser menu → <code>Add to Home screen</code>) and it opens like an app.</p>
+   <hr style="border:0;border-top:1px solid var(--line);width:100%">
+   <span class="eyebrow">Your work lives on this phone only</span>
+   <p class="note">Charts and finished pieces are saved in this browser, on this device. Nothing is uploaded. To move them, copy the backup text below and paste it into the same box on the other phone.</p>
+   <button class="btn go" id="backup-file" hidden>Save a backup file</button>
+   <input type="file" id="restorein" accept="application/json,.json,.txt" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+   <label class="btn" for="restorein" id="restore-file" hidden style="cursor:pointer">Open a backup file</label>
+   <p class="note" id="file-note" hidden>The file lands in Downloads. Keep it somewhere safe — it's the only copy of her work that isn't on this one phone.</p>
+   <button class="btn" id="backup-make">Copy a backup of everything</button>
+   <textarea id="backup" placeholder="Paste a backup here, then press Restore." spellcheck="false"></textarea>
+   <button class="btn danger" id="backup-load">Restore from the box</button>
+   <hr style="border:0;border-top:1px solid var(--line);width:100%">
+   <span class="eyebrow">One chart at a time</span>
+   <p class="note">A chart code is a short blob of text holding a single chart. Send one to a friend and they can paste it in below to get their own copy to work on — it won't touch anything else they've made.</p>
+   <button class="btn" id="code-load">Open a chart from the box above</button>
+ </div>
+</section>
+
+<!-- ============ SHEETS ============ -->
+<div class="sheet" id="sheet-dye">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Dye a yarn</h2>
+   <p class="sub">Any colour there is. Drag the square, then the strip.</p>
+   <canvas id="sv" width="320" height="180"></canvas>
+   <canvas id="hue" width="320" height="26"></canvas>
+   <div class="hexrow">
+     <span id="pchip"></span>
+     <input id="phex" maxlength="7" autocomplete="off" spellcheck="false">
+     <button class="btn go" id="pkeep" style="width:auto;flex:none;padding:0 16px">Keep</button>
+   </div>
+   <div class="skeingroup"><div class="nm"><span>In the basket</span><span style="color:var(--ink-3);font-weight:400">hold to remove</span></div><div class="swatchgrid" id="basket-grid"></div></div>
+   <div id="preset-groups"></div>
+   <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-more">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>This chart</h2>
+   <p class="sub" id="more-sub">—</p>
+   <div class="stack" style="gap:8px">
+     <button class="btn go" id="m-fasten">Fasten off — put it in the cabinet</button>
+     <button class="btn" id="m-rename">Rename it</button>
+     <button class="btn" id="m-write">Write it out as a crochet pattern</button>
+     <button class="btn" id="m-mirror">Mirror &amp; fold lines</button>
+     <button class="btn" id="m-shape">Shape &amp; gauge</button>
+     <button class="btn" id="m-yarns">Yarns in this chart</button>
+     <button class="btn" id="m-photo">Trace a photo</button>
+     <button class="btn" id="m-repeat">See it repeated</button>
+     <button class="btn" id="m-guide">Guide layer &amp; templates</button>
+     <button class="btn" id="m-code">Copy this chart as a code</button>
+     <button class="btn" id="m-fit">Fit the chart to the screen</button>
+     <button class="btn" id="m-grid">Chart lines: <b id="m-grid-state">on</b></button>
+     <button class="btn danger" id="m-clear">Unravel — clear every stitch</button>
+     <button class="btn danger" id="m-delete">Throw this chart away</button>
+     <button class="btn quiet" data-close>Back to work</button>
+   </div>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-motif">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Stamps</h2>
+   <p class="sub">Load one, then tap the chart to press it in — in whatever yarn is loaded.</p>
+   <span class="eyebrow">Motifs</span>
+   <div class="swatchgrid" id="motif-grid" style="gap:10px;margin-top:8px"></div>
+   <span class="eyebrow" style="display:block;margin-top:20px">Letters</span>
+   <input id="textin" placeholder="TYPE SOMETHING" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="28">
+   <div class="row" style="margin-top:8px">
+     <button class="btn" id="text-dir">Across</button>
+     <button class="btn go" id="text-load" style="width:auto;flex:0 0 108px">Load</button>
+   </div>
+   <canvas id="text-prev" width="10" height="10"></canvas>
+   <button class="btn quiet" data-close style="margin-top:16px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-photo">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Trace a photo</h2>
+   <p class="sub">The picture gets boiled down to whole stitches at this chart's gauge. Put it on the guide and work over it, or stitch it straight in.</p>
+   <input type="file" id="photoin" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+   <label class="btn go" for="photoin" id="photo-pick" style="cursor:pointer">Choose a photo</label>
+   <div id="photo-stage" hidden>
+     <canvas id="photo-prev"></canvas>
+     <div class="row" style="margin-top:10px">
+       <button class="btn" id="ph-fitmode">Fit the whole photo</button>
+     </div>
+     <div class="row" style="margin-top:8px">
+       <button class="btn" id="ph-source">Colours from the photo</button>
+     </div>
+     <div class="axis" style="margin-top:10px">
+       <div class="lab">How many yarns</div>
+       <div class="stepper">
+         <button id="ph-less"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+         <div class="val" id="ph-count">8</div>
+         <button id="ph-more"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       </div>
+     </div>
+     <div class="stack" style="gap:8px;margin-top:12px">
+       <button class="btn go" id="ph-guide">Put it on the guide to trace</button>
+       <button class="btn" id="ph-stitch">Stitch it straight onto the chart</button>
+     </div>
+   </div>
+   <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-repeat">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Repeated</h2>
+   <p class="sub">Three by three, edge to edge — the quickest way to see whether a border actually joins up.</p>
+   <canvas id="repeat-prev" style="width:100%;height:auto;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:12px"></canvas>
+   <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-pickpiece">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Which square?</h2>
+   <p class="sub">Anything you've fastened off can go in this space.</p>
+   <div class="pieces" id="pickpiece-list"></div>
+   <button class="btn quiet" id="pickpiece-clear" style="margin-top:12px">Leave the space empty</button>
+   <button class="btn quiet" data-close>Cancel</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-mirror">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Mirror &amp; fold lines</h2>
+   <p class="sub">Work one half; the other half works itself. Move the crease to wherever the symmetry actually sits.</p>
+   <div class="seg" id="mirror-seg"></div>
+   <div id="mirror-body"></div>
+   <button class="btn quiet" data-close style="margin-top:14px">Back to work</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-shape">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Shape &amp; gauge</h2>
+   <p class="sub">Move the whole chart at once, or change how many stitches it holds.</p>
+   <span class="eyebrow">Turn it</span>
+   <div class="row" style="margin-top:8px">
+     <button class="btn" id="sh-flipx">Flip across</button>
+     <button class="btn" id="sh-flipy">Flip down</button>
+   </div>
+   <div class="row" style="margin-top:8px">
+     <button class="btn" id="sh-rot180">Turn half round</button>
+     <button class="btn" id="sh-rot90">Turn a quarter</button>
+   </div>
+   <span class="eyebrow" style="display:block;margin-top:18px">Shift every stitch</span>
+   <div class="row" style="margin-top:8px">
+     <button class="btn" data-shift="-1,0">←</button>
+     <button class="btn" data-shift="0,-1">↑</button>
+     <button class="btn" data-shift="0,1">↓</button>
+     <button class="btn" data-shift="1,0">→</button>
+   </div>
+   <span class="eyebrow" style="display:block;margin-top:18px">Change the gauge</span>
+   <p class="note" style="margin:6px 0 8px">The work stays in the middle. Going smaller crops what falls outside, and that can't be undone.</p>
+   <div class="pieces" id="regauge-list" style="grid-template-columns:repeat(auto-fill,minmax(96px,1fr))"></div>
+   <button class="btn quiet" data-close style="margin-top:14px">Back to work</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-yarns">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Yarns in this chart</h2>
+   <p class="sub" id="yarns-sub">—</p>
+   <div class="stack" style="gap:8px" id="yarns-list"></div>
+   <button class="btn" id="yarns-basket" style="margin-top:14px">Load these into the basket</button>
+   <button class="btn quiet" data-close style="margin-top:8px">Back to work</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-settings">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Settings</h2>
+   <p class="sub">All of this stays on this phone.</p>
+   <div class="stack" style="gap:8px">
+     <button class="btn" id="set-theme">Look: <b id="set-theme-state">follows your phone</b></button>
+     <button class="btn" id="set-buzz">Buzz when a stitch lands: <b id="set-buzz-state">on</b></button>
+     <button class="btn" id="set-awake">Keep the screen awake: <b id="set-awake-state">on</b></button>
+     <button class="btn" id="set-rule">Heavy chart line every: <b id="set-rule-state">10</b></button>
+     <button class="btn" id="set-yarn">Yarn per stitch: <b id="set-yarn-state">5.5 cm</b></button>
+     <button class="btn" id="set-store">Protect my work from cleanup: <b id="set-store-state">checking…</b></button>
+     <p class="note" id="set-store-note" style="margin:0 2px">Phones delete site data when they run short of room. Protecting it tells the browser this one is worth keeping.</p>
+     <button class="btn" id="set-tips">Show the working tips again</button>
+     <button class="btn quiet" data-close>Done</button>
+   </div>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-written">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Written pattern</h2>
+   <p class="sub" id="written-sub">—</p>
+   <pre class="written" id="written-body">—</pre>
+   <button class="btn go" id="written-copy">Copy the pattern</button>
+   <button class="btn" id="written-work" style="margin-top:8px">Work it with me, row by row</button>
+   <button class="btn quiet" data-close style="margin-top:8px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-guide">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Guide layer</h2>
+   <p class="sub">A ghost under the chart to work over. It never becomes stitches and never shows in the cabinet.</p>
+   <div class="stack" style="gap:8px" id="tmpl-list"></div>
+   <div class="stack" style="gap:8px;margin-top:14px">
+     <button class="btn" id="g-show">Guide: <b id="g-show-state">showing</b></button>
+     <button class="btn" id="g-copy">Copy this chart down onto the guide</button>
+     <button class="btn danger" id="g-clear">Clear the guide</button>
+     <button class="btn quiet" data-close>Done</button>
+   </div>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-ask">
+ <div class="scrim" id="ask-scrim"></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2 id="ask-title">—</h2>
+   <p class="sub" id="ask-msg">—</p>
+   <input id="ask-input" autocomplete="off" spellcheck="false" maxlength="48" hidden>
+   <div class="row">
+     <button class="btn quiet" id="ask-no">Cancel</button>
+     <button class="btn go" id="ask-yes">OK</button>
+   </div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script>
+/* ==========================================================================
+   STITCHWELD — a pixel picture creator, phone first.
+   Everything is stored locally, in this browser, under the sw1: key prefix.
+   ========================================================================== */
+(function(){
+"use strict";
+
+/* ---------------- storage ---------------- */
+var PREFIX = "sw1:";
+function lsGet(k, d){ try{ var v = localStorage.getItem(PREFIX+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } }
+function lsSet(k, v){ try{ localStorage.setItem(PREFIX+k, JSON.stringify(v)); return true; }catch(e){ toast("This phone's storage is full — remove a piece from the cabinet."); return false; } }
+function lsDel(k){ try{ localStorage.removeItem(PREFIX+k); }catch(e){} }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ---------------- catalogue ---------------- */
+var GAUGES = [
+  {w:16,h:16,name:"Coaster"},
+  {w:24,h:24,name:"Patch"},
+  {w:32,h:32,name:"Square"},
+  {w:16,h:48,name:"Bookmark"},
+  {w:32,h:48,name:"Panel"},
+  {w:48,h:48,name:"Cushion"},
+  {w:50,h:50,name:"Granny"},
+  {w:64,h:64,name:"Throw"},
+  {w:80,h:80,name:"Blanket",charm:"BIGLOOM"},
+  {w:100,h:100,name:"Bedspread",charm:"BIGLOOM"}
+];
+
+var BASE_YARNS = ["#1B1523","#3B3350","#6B6A85","#A6A3B8","#E9E6EF","#FFFFFF",
+                  "#B62A63","#F2789A","#E8A33D","#F5D77E","#7BB661","#2E7D6E",
+                  "#3E7CB1","#7A5EA8","#8C5A3C","#D9B08C"];
+
+var SKEIN_SETS = [
+  {id:"cotton", name:"Cotton basics", charm:null,
+   colors:BASE_YARNS},
+  {id:"moon", name:"Moonwool", charm:"MOONWOOL",
+   colors:["#0B1026","#1B2450","#2E3D77","#4C5FA6","#7C8BC4","#B4BEE0","#E6E9F7","#F2E7C9","#C9A227","#6E5AA8","#3A2E5C","#141024"]},
+  {id:"ember", name:"Emberspun", charm:"EMBERSPUN",
+   colors:["#2B0E07","#5C1A0B","#8C2F10","#C24A16","#E8761F","#F5A93C","#FBD37A","#FFF0C4","#7A2E2E","#3D1520","#A63A4B","#1A0A08"]},
+  {id:"sea", name:"Seaglass", charm:"SEAGLASS",
+   colors:["#04262B","#0B4149","#12626B","#2A8C8C","#5FB3A9","#9AD4C4","#D6EEE3","#F0F6E8","#2E5E7A","#1B3A52","#7FA9C4","#062F3A"]},
+  {id:"heirloom", name:"Heirloom", charm:"GRANNYSQUARE",
+   colors:["#3A2A22","#6B4B33","#9C7247","#C6A16B","#E5D3AE","#F5EEDC","#8E3B46","#B9636B","#D89AA0","#57694A","#8AA06B","#C3CFA0"]}
+];
+
+var MOTIFS = [
+ {id:"heart", name:"Heart", charm:null, art:[
+   ".XX.....XX.","XXXXX.XXXXX","XXXXXXXXXXX","XXXXXXXXXXX",".XXXXXXXXX.",
+   "..XXXXXXX..","...XXXXX...","....XXX....",".....X....."]},
+ {id:"star", name:"Star", charm:null, art:[
+   ".....X.....","....XXX....","....XXX....","XXXXXXXXXXX",".XXXXXXXXX.",
+   "..XXXXXXX..","..XXX.XXX..",".XX.....XX.","XX.......XX"]},
+ {id:"flower", name:"Flower", charm:null, art:[
+   "..XX.XX..",".XXXXXXX.","XXXXXXXXX","XXXXXXXXX",".XXXXXXX.",
+   "..XXXXX..","....X....","...XXX...","....X...."]},
+ {id:"leaf", name:"Leaf", charm:null, art:[
+   ".......XX","......XXX",".....XXXX","....XXXX.","...XXXX..",
+   "..XXXX...",".XXXX....","XXXX.....","X........"]},
+ {id:"cat", name:"Cat", charm:null, art:[
+   "X.......X","XX.....XX","XXXXXXXXX","XXXXXXXXX","X.XXXXX.X",
+   "XXXXXXXXX","XX.XXX.XX","XXXXXXXXX",".XXXXXXX."]},
+ {id:"ghost", name:"Ghost", charm:null, art:[
+   "..XXXXX..",".XXXXXXX.","XX.XXX.XX","XXXXXXXXX","XXXXXXXXX",
+   "XXXXXXXXX","XXXXXXXXX","X.XXXXX.X","X..XXX..X"]},
+ {id:"ring", name:"Ring", charm:"FORYOU", art:[
+   "...XXX...","..XX.XX..",".XX...XX.","XX.....XX","XX.....XX",
+   "XX.....XX",".XX...XX.","..XX.XX..","...XXX..."]},
+ {id:"bow", name:"Bow", charm:"FORYOU", art:[
+   "XXX.....XXX","XXXXX.XXXXX","XXXXXXXXXXX","..XXXXXXX..",
+   "XXXXXXXXXXX","XXXX...XXXX","XX.......XX"]}
+];
+
+var CHARMS = [
+ {code:"MOONWOOL",     riddle:"What the sheep wear at midnight.",          gives:"The Moonwool skein set — twelve night colours."},
+ {code:"EMBERSPUN",    riddle:"Spun from the last of the fire.",           gives:"The Emberspun skein set — coals to ash."},
+ {code:"SEAGLASS",     riddle:"Broken, tumbled, better for it.",           gives:"The Seaglass skein set — shallows to deep."},
+ {code:"GRANNYSQUARE", riddle:"The oldest motif there is. Two words, run together.", gives:"The Heirloom skein set, warm and worn."},
+ {code:"BIGLOOM",      riddle:"For when the chart runs out of room.",      gives:"80×80 and 100×100 charts."},
+ {code:"MIRRORWORK",   riddle:"Do it once, get it four times.",            gives:"Quarter mirror — every stitch lands in all four corners."},
+ {code:"GOLDENHOOK",   riddle:"The tool you don't buy, you earn.",         gives:"Brass frames on everything in the cabinet."},
+ {code:"NIGHTSHIFT",   riddle:"Lights out, still working.",                gives:"Lamplight cloth — a warmer chart to work on."},
+ {code:"FORYOU",       riddle:"Two words for who you're making it for.",   gives:"The ring and the two hearts."}
+];
+
+var PATTERNS = [
+ {id:"granny",  t:"Granny Square",              hint:"Four rounds of colour, corner to corner.", w:24,h:24},
+ {id:"ghost",   t:"A Small Ghost",              hint:"Friendly. Slightly embarrassed.", w:16,h:16},
+ {id:"mug",     t:"Mug Of Something Hot",       hint:"Steam counts as three stitches, no more.", w:24,h:24},
+ {id:"cat",     t:"The Cat Who Sits On It",     hint:"Whatever you make, it is already sitting on it.", w:32,h:32},
+ {id:"house",   t:"A House With The Light On",  hint:"One window lit. Only one.", w:32,h:32},
+ {id:"plant",   t:"Your Favourite Plant",       hint:"The one that's still alive.", w:32,h:32},
+ {id:"name",    t:"A Name In Stitches",         hint:"Block letters, three stitches wide. Someone's name.", w:32,h:48},
+ {id:"mark",    t:"Bookmark",                   hint:"Long and narrow. It has to survive a paperback.", w:16,h:48},
+ {id:"moth",   t:"Moth Wing",                   hint:"Symmetry down the middle. Dust colours.", w:32,h:32},
+ {id:"sea",     t:"The Sea At Six In The Morning", hint:"Three greys and one that isn't grey.", w:48,h:48},
+ {id:"storm",   t:"Storm Over The Hill",        hint:"Weather on top, land underneath.", w:48,h:48},
+ {id:"window",  t:"Kitchen Window",             hint:"Whatever you can see from where you're sitting.", w:32,h:48},
+ {id:"sunday",  t:"Sunday Morning",             hint:"Make it look like it feels.", w:24,h:24},
+ {id:"twoofus", t:"Two Of Us",                  hint:"Two shapes. They don't have to be people.", w:32,h:32},
+ {id:"corner",  t:"Blanket Corner",             hint:"A motif that would repeat forever if you let it.", w:50,h:50},
+ {id:"only",    t:"Something Only You'd Make",  hint:"No hint for this one.", w:32,h:32},
+ {id:"rain",    t:"Rain On The Window",         hint:"Weather you can hear.", w:32,h:48},
+ {id:"bird",    t:"A Bird Nobody Has Named",    hint:"You get to name it afterwards.", w:32,h:32},
+ {id:"door",    t:"The Front Door",             hint:"The one you'd find in the dark.", w:32,h:48},
+ {id:"toast",   t:"Toast",                      hint:"Golden. One corner slightly too dark.", w:16,h:16},
+ {id:"moon",    t:"Tonight's Moon",             hint:"Go and look first.", w:24,h:24},
+ {id:"floor",   t:"Something From The Sea Floor", hint:"It has never seen the sun.", w:32,h:32},
+ {id:"fair",    t:"A Fair Isle Band",           hint:"One repeat, four rows deep. Then again, and again.", w:48,h:48},
+ {id:"dog",     t:"The Dog, Asleep",            hint:"Mostly circle. Entirely contented.", w:32,h:32},
+ {id:"map",     t:"A Map Of Nowhere",           hint:"Coast, roads, a lake. No labels.", w:50,h:50},
+ {id:"hands",   t:"Your Hands",                 hint:"Harder than it sounds.", w:32,h:48},
+ {id:"onecol",  t:"One Colour Only",            hint:"A single yarn. The shape does all the work.", w:32,h:32},
+ {id:"twocol",  t:"Two Colours, No More",       hint:"Choose them badly on purpose.", w:32,h:32},
+ {id:"ate",     t:"The Last Thing You Ate",     hint:"Be honest.", w:24,h:24},
+ {id:"winter",  t:"A Window Into Winter",       hint:"Cold on one side of the glass.", w:32,h:48},
+ {id:"static",  t:"Static",                     hint:"Truly random. Make it look right anyway.", w:24,h:24},
+ {id:"initials",t:"Two Initials, Interlocked",  hint:"Yours and someone's.", w:24,h:24}
+];
+
+var RIBBONS = [
+ {id:"first",  name:"First fasten-off",  test:function(s){ return s.finished>=1; }},
+ {id:"five",   name:"A shelf of five",   test:function(s){ return s.finished>=5; }},
+ {id:"twelve", name:"Full basket",       test:function(s){ return s.maxYarns>=12; }},
+ {id:"long",   name:"The long row",      test:function(s){ return s.biggest>=48; }},
+ {id:"tenk",   name:"Ten thousand stitches", test:function(s){ return s.stitches>=10000; }},
+ {id:"charm",  name:"Charmed",           test:function(s){ return s.charms>=1; }},
+ {id:"allcharm",name:"Every charm said", test:function(s){ return s.charms>=CHARMS.length; }},
+ {id:"undo",   name:"Undo is a craft",   test:function(s){ return s.undos>=100; }},
+ {id:"night",  name:"Night shift",       test:function(s){ return s.nightFinish; }},
+ {id:"thousand", name:"A thousand in one", test:function(s){ return s.bigPiece>=1000; }},
+ {id:"onecol",  name:"One yarn only",      test:function(s){ return s.minYarns===1; }},
+ {id:"halfbook",name:"Half the book",      test:function(s){ return s.patternsMade>=16; }},
+ {id:"wholebook",name:"The whole book",    test:function(s){ return s.patternsMade>=PATTERNS.length; }},
+ {id:"tall",    name:"Sixty-four rows",    test:function(s){ return s.tallest>=64; }},
+ {id:"dyer",    name:"Dyer",               test:function(s){ return s.basket>=24; }},
+ {id:"writer",  name:"Pattern writer",     test:function(s){ return s.exported; }},
+ {id:"lettered",name:"Lettered",           test:function(s){ return s.lettered; }},
+ {id:"folded",  name:"Folded",             test:function(s){ return s.folded; }},
+ {id:"gifted",  name:"Posted a chart",     test:function(s){ return s.gifted; }}
+];
+
+/* ---------------- a 5x7 block alphabet, for stitching names ---------------- */
+var FONT = {
+"A":".###.|#...#|#...#|#####|#...#|#...#|#...#",
+"B":"####.|#...#|#...#|####.|#...#|#...#|####.",
+"C":".####|#....|#....|#....|#....|#....|.####",
+"D":"####.|#...#|#...#|#...#|#...#|#...#|####.",
+"E":"#####|#....|#....|####.|#....|#....|#####",
+"F":"#####|#....|#....|####.|#....|#....|#....",
+"G":".####|#....|#....|#..##|#...#|#...#|.####",
+"H":"#...#|#...#|#...#|#####|#...#|#...#|#...#",
+"I":"#####|..#..|..#..|..#..|..#..|..#..|#####",
+"J":"....#|....#|....#|....#|#...#|#...#|.###.",
+"K":"#...#|#..#.|#.#..|##...|#.#..|#..#.|#...#",
+"L":"#....|#....|#....|#....|#....|#....|#####",
+"M":"#...#|##.##|#.#.#|#...#|#...#|#...#|#...#",
+"N":"#...#|##..#|#.#.#|#..##|#...#|#...#|#...#",
+"O":".###.|#...#|#...#|#...#|#...#|#...#|.###.",
+"P":"####.|#...#|#...#|####.|#....|#....|#....",
+"Q":".###.|#...#|#...#|#...#|#.#.#|#..#.|.##.#",
+"R":"####.|#...#|#...#|####.|#.#..|#..#.|#...#",
+"S":".####|#....|#....|.###.|....#|....#|####.",
+"T":"#####|..#..|..#..|..#..|..#..|..#..|..#..",
+"U":"#...#|#...#|#...#|#...#|#...#|#...#|.###.",
+"V":"#...#|#...#|#...#|#...#|#...#|.#.#.|..#..",
+"W":"#...#|#...#|#...#|#...#|#.#.#|##.##|#...#",
+"X":"#...#|#...#|.#.#.|..#..|.#.#.|#...#|#...#",
+"Y":"#...#|#...#|.#.#.|..#..|..#..|..#..|..#..",
+"Z":"#####|....#|...#.|..#..|.#...|#....|#####",
+"0":".###.|#...#|#..##|#.#.#|##..#|#...#|.###.",
+"1":"..#..|.##..|..#..|..#..|..#..|..#..|.###.",
+"2":".###.|#...#|....#|...#.|..#..|.#...|#####",
+"3":"####.|....#|...#.|..##.|....#|#...#|.###.",
+"4":"...#.|..##.|.#.#.|#..#.|#####|...#.|...#.",
+"5":"#####|#....|####.|....#|....#|#...#|.###.",
+"6":"..##.|.#...|#....|####.|#...#|#...#|.###.",
+"7":"#####|....#|...#.|..#..|.#...|.#...|.#...",
+"8":".###.|#...#|#...#|.###.|#...#|#...#|.###.",
+"9":".###.|#...#|#...#|.####|....#|...#.|.##..",
+"!":"..#..|..#..|..#..|..#..|..#..|.....|..#..",
+"?":".###.|#...#|....#|...#.|..#..|.....|..#..",
+".":".....|.....|.....|.....|.....|.##..|.##..",
+",":".....|.....|.....|.....|.....|..##.|.##..",
+"'":"..#..|..#..|.....|.....|.....|.....|.....",
+"-":".....|.....|.....|#####|.....|.....|.....",
+"+":".....|..#..|..#..|#####|..#..|..#..|.....",
+"&":".##..|#..#.|#.#..|.#...|#.#.#|#..#.|.##.#",
+" ":"...|...|...|...|...|...|..."
+};
+
+/* ---------------- guide-layer templates, generated to fit the chart ---------------- */
+var TEMPLATES = [
+ {id:"granny", name:"Granny rings", note:"Concentric rounds, corner to corner.", make:function(w,h){
+    var c = ["#B62A63","#E8A33D","#7BB661","#2E7D6E","#3E7CB1"], a = new Array(w*h).fill(null), x, y, d;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){ d = Math.min(x, y, w-1-x, h-1-y); a[y*w+x] = c[d % c.length]; }
+    return a; }},
+ {id:"border", name:"Border", note:"Two stitches all round, then an inner rule.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y, d;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){ d = Math.min(x, y, w-1-x, h-1-y);
+      if(d < 2) a[y*w+x] = "#B62A63"; else if(d === 4) a[y*w+x] = "#3E7CB1"; }
+    return a; }},
+ {id:"cross", name:"Centre & diagonals", note:"For anything that has to be symmetrical.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y, cx = (w-1)/2, cy = (h-1)/2, ax, ay;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){
+      ax = (x-cx)/Math.max(cx,1); ay = (y-cy)/Math.max(cy,1);
+      if(Math.abs(x-cx) < 1 || Math.abs(y-cy) < 1) a[y*w+x] = "#3E7CB1";
+      else if(Math.abs(ax-ay) < 0.06 || Math.abs(ax+ay) < 0.06) a[y*w+x] = "#7A5EA8"; }
+    return a; }},
+ {id:"thirds", name:"Thirds", note:"Where to put the thing you care about.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){
+      if(x === Math.round(w/3) || x === Math.round(2*w/3) || y === Math.round(h/3) || y === Math.round(2*h/3))
+        a[y*w+x] = "#7A5EA8"; }
+    return a; }},
+ {id:"band", name:"Repeat band", note:"Four-row bands, for fair isle and edgings.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y;
+    for(y=0;y<h;y++) for(x=0;x<w;x++) if(Math.floor(y/4) % 2 === 0) a[y*w+x] = "#2E7D6E";
+    return a; }},
+ {id:"circle", name:"Circle", note:"The biggest one that fits.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y, cx = (w-1)/2, cy = (h-1)/2, r = Math.min(cx, cy), d;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){ d = Math.sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy)); if(Math.abs(d-r) < 0.7) a[y*w+x] = "#B62A63"; }
+    return a; }},
+ {id:"diamond", name:"Diamond", note:"An argyle or a lattice starts here.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y, cx = (w-1)/2, cy = (h-1)/2, d;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){
+      d = Math.abs(x-cx)/Math.max(cx,1) + Math.abs(y-cy)/Math.max(cy,1);
+      if(Math.abs(d-1) < 0.07) a[y*w+x] = "#E8A33D"; }
+    return a; }},
+ {id:"heart", name:"Big heart", note:"Scaled to fill the whole chart.", make:function(w,h){
+    var art = MOTIFS[0].art, aw = art[0].length, ah = art.length;
+    var a = new Array(w*h).fill(null), x, y, sx, sy;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){
+      sx = Math.floor(x*aw/w); sy = Math.floor(y*ah/h);
+      if(art[sy][sx] === "X") a[y*w+x] = "#F2789A"; }
+    return a; }},
+ {id:"letters", name:"Letter band", note:"A seven-row band down the middle, where names sit.", make:function(w,h){
+    var a = new Array(w*h).fill(null), x, y, top = Math.max(0, Math.floor((h-7)/2));
+    for(y=0;y<h;y++) for(x=0;x<w;x++) if(y === top || y === top+6) a[y*w+x] = "#6B6A85";
+    return a; }}
+];
+
+/* ---------------- app state ---------------- */
+var S = {
+  screen: "hearth",
+  stack: [],
+  proj: null,            // {id,name,w,h,pattern,created,updated,cells:[]}
+  yarn: "#B62A63",
+  tool: "stitch",
+  mirror: 0,             // 0 none, 1 across, 2 down, 3 quarter, 4 turn
+  panLock: false,
+  aim: false,
+  motif: "heart",
+  showGrid: true,
+  showGuide: true,
+  stampKind: "motif",
+  textArt: null,
+  textDir: "across",
+  cursor: {x:0, y:0},
+  undoStack: [], redoStack: [],
+  view: {scale:10, ox:0, oy:0},
+  pieceId: null,
+  sel: null, selPreview: null, pasteBuf: null,
+  work: null, blanketId: null, writtenCtx: null,
+  newGauge: 2,
+  newPattern: null
+};
+var SET = lsGet("settings", null) || {
+  theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
+  buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5,
+  stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
+         bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
+  seeded:false
+};
+if(!SET.stats) SET.stats = {};
+(function(d){ for(var k in d) if(SET.stats[k] === undefined) SET.stats[k] = d[k]; })(
+  {stitches:0,undos:0,finished:0,maxYarns:0,biggest:0,nightFinish:false,
+   bigPiece:0,minYarns:99,tallest:0,exported:false,lettered:false,folded:false,gifted:false});
+if(!SET.basket || !SET.basket.length) SET.basket = BASE_YARNS.slice(0,12);
+if(!SET.charms) SET.charms = [];
+if(SET.buzz === undefined) SET.buzz = true;
+if(SET.awake === undefined) SET.awake = true;
+if(!SET.rule) SET.rule = 10;
+if(!SET.cmPerStitch) SET.cmPerStitch = 5.5;
+function saveSettings(){ lsSet("settings", SET); }
+function hasCharm(c){ return !c || SET.charms.indexOf(c) >= 0; }
+
+/* ---------------- tiny helpers ---------------- */
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, txt){ var n=document.createElement(tag); if(cls) n.className=cls; if(txt!=null) n.textContent=txt; return n; }
+function icon(name, size){ return '<svg width="'+(size||22)+'" height="'+(size||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-'+name+'"/></svg>'; }
+var toastTimer;
+function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("on"); }, 2200); }
+function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+/* ---------------- run-length storage ---------------- */
+function encodeRLE(cells){
+  var out=[], cur=cells[0], n=1;
+  for(var i=1;i<cells.length;i++){ if(cells[i]===cur){ n++; } else { out.push([cur,n]); cur=cells[i]; n=1; } }
+  out.push([cur,n]); return out;
+}
+function decodeRLE(rle, len){
+  var a=new Array(len), i=0, k, j;
+  for(k=0;k<rle.length;k++){ for(j=0;j<rle[k][1] && i<len;j++) a[i++]=rle[k][0]; }
+  while(i<len) a[i++]=null;
+  return a;
+}
+
+/* ---------------- projects ---------------- */
+function projIndex(){ return lsGet("index", []); }
+function setProjIndex(a){ lsSet("index", a); }
+function saveProject(p){
+  if(!p) return;
+  p.updated = Date.now();
+  lsSet("p:"+p.id, {rle:encodeRLE(p.cells), g:(p.guide ? encodeRLE(p.guide) : null)});
+  var idx = projIndex(), found=false, i;
+  for(i=0;i<idx.length;i++) if(idx[i].id===p.id){ idx[i]={id:p.id,name:p.name,w:p.w,h:p.h,pattern:p.pattern,created:p.created,updated:p.updated,fx:p.fx,fy:p.fy}; found=true; }
+  if(!found) idx.unshift({id:p.id,name:p.name,w:p.w,h:p.h,pattern:p.pattern,created:p.created,updated:p.updated,fx:p.fx,fy:p.fy});
+  idx.sort(function(a,b){ return b.updated-a.updated; });
+  setProjIndex(idx);
+  SET.lastProject = p.id; saveSettings();
+}
+function loadProject(id){
+  var idx=projIndex(), meta=null, i;
+  for(i=0;i<idx.length;i++) if(idx[i].id===id) meta=idx[i];
+  if(!meta) return null;
+  var body = lsGet("p:"+id, null);
+  var p = {id:meta.id,name:meta.name,w:meta.w,h:meta.h,pattern:meta.pattern,created:meta.created,updated:meta.updated,
+           cells: body && body.rle ? decodeRLE(body.rle, meta.w*meta.h) : new Array(meta.w*meta.h).fill(null),
+           guide: body && body.g ? decodeRLE(body.g, meta.w*meta.h) : null,
+           fx: (meta.fx == null ? meta.w : meta.fx), fy: (meta.fy == null ? meta.h : meta.fy)};
+  return p;
+}
+function deleteProject(id){
+  lsDel("p:"+id);
+  setProjIndex(projIndex().filter(function(m){ return m.id!==id; }));
+  if(SET.lastProject===id){ SET.lastProject=null; saveSettings(); }
+}
+function newProject(w,h,name,pattern){
+  return {id:uid(), name:name||"Chart", w:w, h:h, pattern:pattern||null,
+          created:Date.now(), updated:Date.now(), cells:new Array(w*h).fill(null), guide:null, fx:w, fy:h};
+}
+var saveTimer;
+function autosave(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ saveProject(S.proj); }, 260); }
+
+/* ---------------- cabinet ---------------- */
+function cabinet(){ return lsGet("cabinet", []); }
+function setCabinet(a){ return lsSet("cabinet", a); }
+
+/* ---------------- colour maths ---------------- */
+var rgbCache = {};
+function hexToRGB(hex){
+  var hit = rgbCache[hex]; if(hit) return hit;
+  var h = hex.replace("#","");
+  if(h.length===3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  var n = parseInt(h,16);
+  var out = [(n>>16)&255, (n>>8)&255, n&255];
+  rgbCache[hex] = out;
+  return out;
+}
+function mixRGB(a, b, t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+function rgbToHex(r,g,b){
+  return "#" + [r,g,b].map(function(v){ v=Math.max(0,Math.min(255,Math.round(v))); return (v<16?"0":"")+v.toString(16); }).join("").toUpperCase();
+}
+function hsvToRGB(h,s,v){
+  h=(h%360+360)%360; var c=v*s, x=c*(1-Math.abs((h/60)%2-1)), m=v-c, r,g,b;
+  if(h<60){r=c;g=x;b=0;} else if(h<120){r=x;g=c;b=0;} else if(h<180){r=0;g=c;b=x;}
+  else if(h<240){r=0;g=x;b=c;} else if(h<300){r=x;g=0;b=c;} else {r=c;g=0;b=x;}
+  return [(r+m)*255,(g+m)*255,(b+m)*255];
+}
+function rgbToHSV(r,g,b){
+  r/=255;g/=255;b/=255;
+  var mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn, h=0;
+  if(d){ if(mx===r) h=60*(((g-b)/d)%6); else if(mx===g) h=60*((b-r)/d+2); else h=60*((r-g)/d+4); }
+  return [(h+360)%360, mx?d/mx:0, mx];
+}
+function isValidHex(s){ return /^#?[0-9a-fA-F]{6}$/.test(s.trim()); }
+function normHex(s){ s=s.trim(); if(s[0]!=="#") s="#"+s; return s.toUpperCase(); }
+
+/* ==========================================================================
+   THE CHART — rendering
+   ========================================================================== */
+var cv, ctx, buf, bctx, bimg, bufDirty = true;
+var stage, loupeEl, loupeCv, loupeCtx;
+var PAD = 22;              /* the chart never touches the edge of the phone */
+var clothA = [220,214,230], clothB = [211,204,223];
+
+function readCloth(){
+  var a = css("--cloth-a"), b = css("--cloth-b");
+  if(SET.cloth === "lamplight"){ a = "#2A2018"; b = "#312619"; }
+  clothA = hexToRGB(a || "#DCD6E6");
+  clothB = hexToRGB(b || "#D3CCDF");
+}
+
+function makeBuffer(){
+  var p = S.proj; if(!p) return;
+  buf = document.createElement("canvas");
+  buf.width = p.w; buf.height = p.h;
+  bctx = buf.getContext("2d");
+  bimg = bctx.createImageData(p.w, p.h);
+  rebuildBuffer();
+}
+function cellRGB(x, y, i){
+  var p = S.proj, c = p.cells[i];
+  if(c) return hexToRGB(c);
+  var ground = ((x+y)&1) ? clothB : clothA;
+  if(S.showGuide && p.guide && p.guide[i]) return mixRGB(ground, hexToRGB(p.guide[i]), 0.40);
+  return ground;
+}
+function rebuildBuffer(){
+  var p = S.proj, d = bimg.data, i, x, y, rgb;
+  for(y=0;y<p.h;y++) for(x=0;x<p.w;x++){
+    i = y*p.w + x; rgb = cellRGB(x, y, i);
+    d[i*4]=rgb[0]; d[i*4+1]=rgb[1]; d[i*4+2]=rgb[2]; d[i*4+3]=255;
+  }
+  bufDirty = true;
+}
+function markCell(i){
+  var p = S.proj, x = i % p.w, y = (i - x) / p.w;
+  var rgb = cellRGB(x, y, i), d = bimg.data;
+  d[i*4]=rgb[0]; d[i*4+1]=rgb[1]; d[i*4+2]=rgb[2]; d[i*4+3]=255;
+  bufDirty = true;
+}
+
+function fitView(){
+  var p = S.proj; if(!p || !stage) return;
+  var r = stage.getBoundingClientRect();
+  var s = Math.min((r.width - PAD*2) / p.w, (r.height - PAD*2) / p.h);
+  S.view.scale = Math.max(0.5, s);
+  centreView();
+}
+function centreView(){
+  var p = S.proj, r = stage.getBoundingClientRect(), v = S.view;
+  v.ox = (r.width  - p.w*v.scale) / 2;
+  v.oy = (r.height - p.h*v.scale) / 2;
+}
+function clampView(){
+  var p = S.proj, r = stage.getBoundingClientRect(), v = S.view;
+  var gw = p.w*v.scale, gh = p.h*v.scale;
+  var minVisible = 60;
+  v.ox = Math.min(r.width - minVisible, Math.max(minVisible - gw, v.ox));
+  v.oy = Math.min(r.height - minVisible, Math.max(minVisible - gh, v.oy));
+  if(gw + PAD*2 <= r.width)  v.ox = (r.width - gw)/2;
+  if(gh + PAD*2 <= r.height) v.oy = (r.height - gh)/2;
+}
+
+function sizeCanvas(){
+  if(!cv || !stage) return;
+  var r = stage.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  cv.width  = Math.max(1, Math.round(r.width  * dpr));
+  cv.height = Math.max(1, Math.round(r.height * dpr));
+  ctx = cv.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+var previewCells = null;   /* {list:[[x,y]...], color:"#.."} while dragging a run or block */
+function draw(){
+  if(!S.proj || !ctx) return;
+  var p = S.proj, v = S.view, r = stage.getBoundingClientRect();
+  if(bufDirty){ bctx.putImageData(bimg, 0, 0); bufDirty = false; }
+
+  ctx.clearRect(0,0,r.width,r.height);
+  var gw = p.w*v.scale, gh = p.h*v.scale;
+  var ox = Math.round(v.ox), oy = Math.round(v.oy);
+
+  /* the chart sits on a table, with a shadow under it */
+  ctx.save();
+  ctx.shadowColor = "rgba(20,15,28,.30)";
+  ctx.shadowBlur = 22; ctx.shadowOffsetY = 8;
+  ctx.fillStyle = css("--paper") || "#fff";
+  ctx.fillRect(ox-3, oy-3, gw+6, gh+6);
+  ctx.restore();
+
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(buf, ox, oy, gw, gh);
+
+  /* preview of a run or a block, before you let go */
+  if(previewCells){
+    ctx.globalAlpha = .78;
+    ctx.fillStyle = previewCells.color || css("--ink");
+    for(var k=0;k<previewCells.list.length;k++){
+      var c = previewCells.list[k];
+      ctx.fillRect(ox + c[0]*v.scale, oy + c[1]*v.scale, Math.ceil(v.scale), Math.ceil(v.scale));
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* chart lines: thin every stitch, heavier every ten, like a printed chart */
+  if(S.showGrid && v.scale >= 4.5){
+    var ink = css("--ink") || "#000", i;
+    ctx.strokeStyle = ink;
+    var RULE = SET.rule || 10;
+    for(i=0;i<=p.w;i++){
+      ctx.globalAlpha = (i % RULE === 0) ? .30 : .10;
+      ctx.lineWidth = (i % RULE === 0) ? 1.1 : 0.6;
+      ctx.beginPath(); ctx.moveTo(ox + i*v.scale, oy); ctx.lineTo(ox + i*v.scale, oy + gh); ctx.stroke();
+    }
+    for(i=0;i<=p.h;i++){
+      ctx.globalAlpha = (i % RULE === 0) ? .30 : .10;
+      ctx.lineWidth = (i % RULE === 0) ? 1.1 : 0.6;
+      ctx.beginPath(); ctx.moveTo(ox, oy + i*v.scale); ctx.lineTo(ox + gw, oy + i*v.scale); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* stitch and row numbers in the margin, once there's room */
+  if(v.scale >= 9){
+    ctx.fillStyle = css("--ink-3") || "#888";
+    ctx.font = "500 10px " + (css("--ui") || "sans-serif");
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    var R2 = SET.rule || 10;
+    for(var n=R2;n<=p.w;n+=R2) ctx.fillText(String(n), ox + (n-0.5)*v.scale, oy - 4);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    for(var m=R2;m<=p.h;m+=R2) ctx.fillText(String(m), ox - 5, oy + (m-0.5)*v.scale);
+  }
+
+  /* the fold lines, where the mirror is working */
+  if(S.mirror){
+    ctx.save();
+    ctx.strokeStyle = css("--accent") || "#f06";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([7,5]);
+    if(S.mirror === 1 || S.mirror === 3 || S.mirror === 4){
+      var lx = ox + (p.fx/2)*v.scale;
+      ctx.beginPath(); ctx.moveTo(lx, oy-10); ctx.lineTo(lx, oy+gh+10); ctx.stroke();
+    }
+    if(S.mirror === 2 || S.mirror === 3 || S.mirror === 4){
+      var ly = oy + (p.fy/2)*v.scale;
+      ctx.beginPath(); ctx.moveTo(ox-10, ly); ctx.lineTo(ox+gw+10, ly); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* what's selected */
+  var sr = S.selPreview
+    ? { x:Math.min(S.selPreview.x0, S.selPreview.x1), y:Math.min(S.selPreview.y0, S.selPreview.y1),
+        w:Math.abs(S.selPreview.x1 - S.selPreview.x0)+1, h:Math.abs(S.selPreview.y1 - S.selPreview.y0)+1 }
+    : (S.tool === "select" ? S.sel : null);
+  if(sr){
+    ctx.save();
+    ctx.setLineDash([5,4]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#ffffff";
+    ctx.strokeRect(ox + sr.x*v.scale, oy + sr.y*v.scale, sr.w*v.scale, sr.h*v.scale);
+    ctx.lineDashOffset = 4.5;
+    ctx.strokeStyle = css("--ink") || "#000";
+    ctx.strokeRect(ox + sr.x*v.scale, oy + sr.y*v.scale, sr.w*v.scale, sr.h*v.scale);
+    ctx.restore();
+  }
+
+  /* the outline of the whole chart */
+  ctx.strokeStyle = css("--edge") || "#999";
+  ctx.lineWidth = 1.4;
+  ctx.strokeRect(ox-0.7, oy-0.7, gw+1.4, gh+1.4);
+
+  /* the aiming crosshair */
+  if(S.aim){
+    var cx = ox + S.cursor.x*v.scale, cy = oy + S.cursor.y*v.scale, s = v.scale;
+    ctx.strokeStyle = css("--accent") || "#f06";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx-1, cy-1, s+2, s+2);
+    ctx.globalAlpha = .35;
+    ctx.beginPath();
+    ctx.moveTo(ox, cy + s/2); ctx.lineTo(ox+gw, cy + s/2);
+    ctx.moveTo(cx + s/2, oy); ctx.lineTo(cx + s/2, oy+gh);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+}
+
+var rafPending = false;
+function invalidate(){
+  if(rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(function(){ rafPending = false; draw(); });
+}
+
+/* ---------------- the loupe: what's under your fingertip, shown above it ------- */
+function showLoupe(px, py){
+  var p = S.proj, r = stage.getBoundingClientRect();
+  if(bufDirty){ bctx.putImageData(bimg, 0, 0); bufDirty = false; }
+  var span = 7, half = (span-1)/2;
+  var sx = S.cursor.x - half, sy = S.cursor.y - half;
+  loupeCtx.imageSmoothingEnabled = false;
+  loupeCtx.fillStyle = css("--ground") || "#eee";
+  loupeCtx.fillRect(0,0,96,96);
+  loupeCtx.drawImage(buf, sx, sy, span, span, 0, 0, 96, 96);
+  var cell = 96/span;
+  loupeCtx.strokeStyle = css("--ink") || "#000"; loupeCtx.globalAlpha = .18; loupeCtx.lineWidth = 1;
+  for(var i=1;i<span;i++){
+    loupeCtx.beginPath(); loupeCtx.moveTo(i*cell,0); loupeCtx.lineTo(i*cell,96); loupeCtx.stroke();
+    loupeCtx.beginPath(); loupeCtx.moveTo(0,i*cell); loupeCtx.lineTo(96,i*cell); loupeCtx.stroke();
+  }
+  loupeCtx.globalAlpha = 1;
+  loupeCtx.strokeStyle = css("--accent") || "#f06"; loupeCtx.lineWidth = 2.5;
+  loupeCtx.strokeRect(half*cell, half*cell, cell, cell);
+
+  var lx = Math.max(4, Math.min(r.width - 104, px - 48));
+  var ly = py - 122;
+  if(ly < 4) ly = Math.min(r.height - 104, py + 40);
+  loupeEl.style.left = lx + "px";
+  loupeEl.style.top  = ly + "px";
+  loupeEl.classList.add("on");
+}
+function hideLoupe(){ loupeEl.classList.remove("on"); }
+
+function updateGauge(){
+  var g = $("gauge"); if(!g || !S.proj) return;
+  g.innerHTML = "R<b>" + (S.cursor.y+1) + "</b> · St<b>" + (S.cursor.x+1) + "</b> &nbsp;·&nbsp; " + S.proj.w + "×" + S.proj.h;
+}
+
+/* ==========================================================================
+   WORKING THE CHART — stitches, tools, undo
+   ========================================================================== */
+var stroke = null;
+
+function beginStroke(){ if(!stroke) stroke = new Map(); }
+function put(i, colour){
+  var p = S.proj;
+  if(i < 0 || i >= p.cells.length) return;
+  if(p.cells[i] === colour) return;
+  if(stroke && !stroke.has(i)) stroke.set(i, p.cells[i]);
+  p.cells[i] = colour;
+  markCell(i);
+}
+/* The fold is stored in HALF-stitch units, so it can sit either on a gridline
+   (even: a clean crease between two stitches) or down the middle of a column
+   (odd: that stitch is its own reflection). x' = fx - x - 1 covers both. */
+function mirrorsOf(x, y){
+  var p = S.proj, m = S.mirror;
+  if(!m) return [[x,y]];
+  var rx = p.fx - x - 1, ry = p.fy - y - 1, out = [[x,y]];
+  if(m === 1) out.push([rx, y]);
+  else if(m === 2) out.push([x, ry]);
+  else if(m === 3) out.push([rx, y], [x, ry], [rx, ry]);
+  else if(m === 4) out.push([rx, ry]);
+  return out;
+}
+function paintAt(x, y, colour){
+  var p = S.proj;
+  if(x<0||y<0||x>=p.w||y>=p.h) return;
+  var pts = mirrorsOf(x,y);
+  for(var k=0;k<pts.length;k++) put(pts[k][1]*p.w + pts[k][0], colour);
+}
+function endStroke(){
+  if(!stroke || stroke.size === 0){ stroke = null; return; }
+  var p = S.proj, entry = [], placed = 0;
+  stroke.forEach(function(prev, i){
+    entry.push([i, prev, p.cells[i]]);
+    if(p.cells[i]) placed++;
+  });
+  stroke = null;
+  S.undoStack.push(entry);
+  if(S.undoStack.length > 160) S.undoStack.shift();
+  S.redoStack.length = 0;
+  SET.stats.stitches += placed;
+  saveSettings();
+  refreshUndoButtons();
+  autosave();
+}
+function revertStroke(){          /* a second finger landed — take the stray dots back */
+  if(!stroke) return;
+  var p = S.proj;
+  stroke.forEach(function(prev, i){ p.cells[i] = prev; markCell(i); });
+  stroke = null;
+  invalidate();
+}
+function applyEntry(entry, useIndex){
+  var p = S.proj;
+  for(var k=0;k<entry.length;k++){ p.cells[entry[k][0]] = entry[k][useIndex]; markCell(entry[k][0]); }
+  invalidate(); autosave();
+}
+function undo(){
+  var e = S.undoStack.pop(); if(!e) return;
+  S.redoStack.push(e); applyEntry(e, 1);
+  SET.stats.undos++; saveSettings(); refreshUndoButtons();
+}
+function redo(){
+  var e = S.redoStack.pop(); if(!e) return;
+  S.undoStack.push(e); applyEntry(e, 2); refreshUndoButtons();
+}
+function refreshUndoButtons(){
+  var u = $("btn-undo"), r = $("btn-redo");
+  if(u) u.disabled = !S.undoStack.length;
+  if(r) r.disabled = !S.redoStack.length;
+}
+
+function lineCells(x0,y0,x1,y1){
+  var out = [], dx = Math.abs(x1-x0), dy = Math.abs(y1-y0);
+  var sx = x0<x1?1:-1, sy = y0<y1?1:-1, err = dx-dy, e2;
+  for(;;){
+    out.push([x0,y0]);
+    if(x0===x1 && y0===y1) break;
+    e2 = 2*err;
+    if(e2 > -dy){ err -= dy; x0 += sx; }
+    if(e2 <  dx){ err += dx; y0 += sy; }
+  }
+  return out;
+}
+function boxCells(x0,y0,x1,y1){
+  var out = [], x, y;
+  for(y=Math.min(y0,y1); y<=Math.max(y0,y1); y++)
+    for(x=Math.min(x0,x1); x<=Math.max(x0,x1); x++) out.push([x,y]);
+  return out;
+}
+function flood(x, y, colour){
+  var p = S.proj, target = p.cells[y*p.w + x];
+  if(target === colour) return;
+  var stack = [[x,y]], seen = new Uint8Array(p.w*p.h), n, i;
+  while(stack.length){
+    n = stack.pop(); x = n[0]; y = n[1];
+    if(x<0||y<0||x>=p.w||y>=p.h) continue;
+    i = y*p.w + x;
+    if(seen[i]) continue;
+    if(p.cells[i] !== target) continue;
+    seen[i] = 1;
+    put(i, colour);
+    stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+  }
+}
+function currentArt(){
+  if(S.stampKind === "text") return S.textArt;
+  for(var k=0;k<MOTIFS.length;k++) if(MOTIFS[k].id === S.motif) return MOTIFS[k].art;
+  return null;
+}
+function stampMotif(cx, cy){
+  if(S.stampKind === "cells" && S.pasteBuf){
+    var b = S.pasteBuf, bx = cx - (b.w>>1), by = cy - (b.h>>1), r2, c2, v2;
+    for(r2=0;r2<b.h;r2++) for(c2=0;c2<b.w;c2++){
+      v2 = b.cells[r2*b.w + c2];
+      if(v2) paintAt(bx + c2, by + r2, v2);
+    }
+    return;
+  }
+  var art = currentArt();
+  if(!art || !art.length) return;
+  var h = art.length, w = art[0].length;
+  var x0 = cx - (w>>1), y0 = cy - (h>>1), r, c;
+  for(r=0;r<h;r++) for(c=0;c<art[r].length;c++)
+    if(art[r][c] === "X") paintAt(x0+c, y0+r, S.yarn);
+}
+
+/* ---------------- letters ---------------- */
+function glyph(ch){
+  var g = FONT[ch] || FONT[ch.toUpperCase()];
+  return g ? g.split("|") : null;
+}
+function buildTextArt(text, down){
+  var chars = String(text || "").toUpperCase().split("").filter(function(c){ return glyph(c); });
+  if(!chars.length) return null;
+  var rows = [], r, i, g;
+  if(!down){
+    for(r=0;r<7;r++){
+      var line = "";
+      for(i=0;i<chars.length;i++){
+        g = glyph(chars[i]);
+        line += (i ? "." : "") + g[r].replace(/#/g, "X");
+      }
+      rows.push(line);
+    }
+  } else {
+    var wide = 0;
+    for(i=0;i<chars.length;i++) wide = Math.max(wide, glyph(chars[i])[0].length);
+    for(i=0;i<chars.length;i++){
+      g = glyph(chars[i]);
+      if(i) rows.push(new Array(wide+1).join("."));
+      for(r=0;r<7;r++){
+        var row = g[r].replace(/#/g, "X");
+        while(row.length < wide) row += ".";
+        rows.push(row);
+      }
+    }
+  }
+  return rows;
+}
+function drawArtPreview(canvas, art){
+  var x2 = canvas.getContext("2d");
+  if(!art || !art.length){ canvas.width = 10; canvas.height = 10; x2.clearRect(0,0,10,10); return; }
+  var w = art[0].length, h = art.length;
+  canvas.width = w; canvas.height = h;
+  x2.clearRect(0,0,w,h);
+  x2.fillStyle = S.yarn;
+  for(var r=0;r<h;r++) for(var c=0;c<art[r].length;c++) if(art[r][c] === "X") x2.fillRect(c,r,1,1);
+  canvas.style.height = Math.min(120, Math.max(52, 260*h/w)) + "px";
+}
+function refreshTextPreview(){
+  S.textArt = buildTextArt($("textin").value, S.textDir === "down");
+  drawArtPreview($("text-prev"), S.textArt);
+}
+
+/* ---------------- pointers ---------------- */
+var pointers = new Map(), gesture = null, lastCell = null, anchor = null, pinch = null, panLast = null;
+
+function pointToCell(px, py){
+  var v = S.view;
+  return { x: Math.floor((px - v.ox) / v.scale), y: Math.floor((py - v.oy) / v.scale) };
+}
+function setCursor(c){
+  var p = S.proj;
+  S.cursor.x = Math.max(0, Math.min(p.w-1, c.x));
+  S.cursor.y = Math.max(0, Math.min(p.h-1, c.y));
+  updateGauge();
+}
+function localPoint(ev){
+  var r = stage.getBoundingClientRect();
+  return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+}
+
+function toolDown(cell, pt){
+  var t = S.tool;
+  if(t === "match"){
+    var p = S.proj;
+    if(cell.x>=0 && cell.y>=0 && cell.x<p.w && cell.y<p.h){
+      var c = p.cells[cell.y*p.w + cell.x];
+      if(c){ setYarn(c); toast("Loaded " + c); } else toast("Nothing stitched there.");
+    }
+    setTool("stitch");
+    return false;
+  }
+  if(t === "flood"){ beginStroke(); flood(cell.x, cell.y, S.yarn); endStroke(); invalidate(); buzz(12); return false; }
+  if(t === "motif"){ beginStroke(); stampMotif(cell.x, cell.y); endStroke(); invalidate(); buzz(12); return false; }
+  if(t === "select"){ S.selPreview = {x0:cell.x, y0:cell.y, x1:cell.x, y1:cell.y}; S.sel = null; updateSelBar(); invalidate(); return true; }
+  if(t === "row" || t === "block"){ anchor = {x:cell.x, y:cell.y}; previewCells = {list:[[cell.x,cell.y]], color:S.yarn}; invalidate(); return true; }
+  beginStroke();
+  paintAt(cell.x, cell.y, t === "unpick" ? null : S.yarn);
+  lastCell = {x:cell.x, y:cell.y};
+  invalidate();
+  return true;
+}
+function toolMove(cell){
+  var t = S.tool;
+  if(t === "select"){
+    if(S.selPreview){ S.selPreview.x1 = cell.x; S.selPreview.y1 = cell.y; invalidate(); }
+    return;
+  }
+  if(t === "row"){
+    previewCells = {list:lineCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
+  }
+  if(t === "block"){
+    previewCells = {list:boxCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
+  }
+  if(lastCell && (lastCell.x !== cell.x || lastCell.y !== cell.y)){
+    var pts = lineCells(lastCell.x, lastCell.y, cell.x, cell.y);
+    for(var k=0;k<pts.length;k++) paintAt(pts[k][0], pts[k][1], t === "unpick" ? null : S.yarn);
+    lastCell = {x:cell.x, y:cell.y};
+    invalidate();
+  }
+}
+function toolUp(){
+  if(S.tool === "select"){
+    var q = S.selPreview;
+    if(q){
+      var x0 = Math.max(0, Math.min(q.x0, q.x1)), y0 = Math.max(0, Math.min(q.y0, q.y1));
+      var x1 = Math.min(S.proj.w-1, Math.max(q.x0, q.x1)), y1 = Math.min(S.proj.h-1, Math.max(q.y0, q.y1));
+      if(x1 >= x0 && y1 >= y0) S.sel = { x:x0, y:y0, w:x1-x0+1, h:y1-y0+1 };
+    }
+    S.selPreview = null; anchor = null; lastCell = null;
+    updateSelBar(); invalidate();
+    return;
+  }
+  if((S.tool === "row" || S.tool === "block") && previewCells){
+    beginStroke();
+    var col = S.tool === "unpick" ? null : S.yarn;
+    for(var k=0;k<previewCells.list.length;k++) paintAt(previewCells.list[k][0], previewCells.list[k][1], col);
+    previewCells = null;
+    invalidate();
+  }
+  anchor = null; lastCell = null;
+  endStroke();
+}
+
+function onDown(ev){
+  if(!S.proj) return;
+  cv.setPointerCapture && cv.setPointerCapture(ev.pointerId);
+  var pt = localPoint(ev);
+  pointers.set(ev.pointerId, pt);
+
+  if(pointers.size === 2){
+    if(gesture === "paint"){ revertStroke(); previewCells = null; anchor = null; lastCell = null; }
+    hideLoupe();
+    var it = pointers.values(), a = it.next().value, b = it.next().value;
+    pinch = {
+      d: Math.hypot(a.x-b.x, a.y-b.y),
+      mx: (a.x+b.x)/2, my: (a.y+b.y)/2,
+      scale: S.view.scale, ox: S.view.ox, oy: S.view.oy
+    };
+    gesture = "pinch";
+    return;
+  }
+  if(pointers.size > 2) return;
+
+  if(S.panLock){ gesture = "pan"; panLast = pt; return; }
+  var cell = pointToCell(pt.x, pt.y);
+  setCursor(cell);
+  gesture = "paint";
+  buzz(6);
+  if(toolDown(S.cursor, pt)) showLoupe(pt.x, pt.y);
+}
+function onMove(ev){
+  if(!pointers.has(ev.pointerId)) return;
+  var pt = localPoint(ev);
+  pointers.set(ev.pointerId, pt);
+
+  if(gesture === "pan"){
+    S.view.ox += pt.x - panLast.x;
+    S.view.oy += pt.y - panLast.y;
+    panLast = pt;
+    clampView(); invalidate();
+    return;
+  }
+
+  if(gesture === "pinch" && pointers.size >= 2){
+    var it = pointers.values(), a = it.next().value, b = it.next().value;
+    var d = Math.hypot(a.x-b.x, a.y-b.y);
+    var mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+    var k = d / (pinch.d || 1);
+    var ns = Math.max(1.2, Math.min(80, pinch.scale * k));
+    k = ns / pinch.scale;
+    S.view.scale = ns;
+    S.view.ox = mx - (pinch.mx - pinch.ox) * k;
+    S.view.oy = my - (pinch.my - pinch.oy) * k;
+    clampView();
+    invalidate();
+    return;
+  }
+  if(gesture === "paint"){
+    setCursor(pointToCell(pt.x, pt.y));
+    toolMove(S.cursor);
+    showLoupe(pt.x, pt.y);
+  }
+}
+function onUp(ev){
+  pointers.delete(ev.pointerId);
+  if(gesture === "paint" && pointers.size === 0){ toolUp(); hideLoupe(); }
+  if(gesture === "pan" && pointers.size === 0){ gesture = null; panLast = null; }
+  if(gesture === "pinch" && pointers.size < 2){ gesture = null; pinch = null; }
+  if(pointers.size === 0) gesture = null;
+}
+
+/* double-tap the chart to zoom in on that stitch */
+var lastTap = 0, lastTapPt = null;
+function onTapCheck(ev){
+  var now = Date.now(), pt = localPoint(ev);
+  if(now - lastTap < 320 && lastTapPt && Math.hypot(pt.x-lastTapPt.x, pt.y-lastTapPt.y) < 26){
+    zoomAbout(pt, S.view.scale < 16 ? 20 : Math.max(2, S.view.scale/3));
+    lastTap = 0;
+  } else { lastTap = now; lastTapPt = pt; }
+}
+function zoomAbout(pt, target){
+  var v = S.view, k = target / v.scale;
+  v.scale = target;
+  v.ox = pt.x - (pt.x - v.ox) * k;
+  v.oy = pt.y - (pt.y - v.oy) * k;
+  clampView(); invalidate();
+}
+
+/* ==========================================================================
+   PICTURES OF CHARTS  (thumbnails, framed pieces)
+   ========================================================================== */
+function smallCanvas(w, h, cells, transparentGround){
+  var c = document.createElement("canvas"); c.width = w; c.height = h;
+  var x2 = c.getContext("2d"), img = x2.createImageData(w,h), d = img.data, x, y, i, rgb, col;
+  for(y=0;y<h;y++) for(x=0;x<w;x++){
+    i = y*w+x; col = cells[i];
+    if(col){ rgb = hexToRGB(col); d[i*4+3] = 255; }
+    else if(transparentGround){ rgb = [0,0,0]; d[i*4+3] = 0; }
+    else { rgb = ((x+y)&1) ? clothB : clothA; d[i*4+3] = 255; }
+    d[i*4] = rgb[0]; d[i*4+1] = rgb[1]; d[i*4+2] = rgb[2];
+  }
+  x2.putImageData(img, 0, 0);
+  return c;
+}
+function paintInto(canvas, w, h, cells){
+  var side = canvas.width, x2 = canvas.getContext("2d");
+  x2.imageSmoothingEnabled = false;
+  x2.clearRect(0,0,side,canvas.height);
+  var s = Math.min(side/w, canvas.height/h);
+  var dw = w*s, dh = h*s;
+  x2.drawImage(smallCanvas(w,h,cells,false), (side-dw)/2, (canvas.height-dh)/2, dw, dh);
+}
+function pieceDataURL(piece, cells){
+  var cell = Math.max(4, Math.min(14, Math.floor(760 / Math.max(piece.w, piece.h))));
+  var big = document.createElement("canvas");
+  big.width = piece.w*cell; big.height = piece.h*cell;
+  var x2 = big.getContext("2d");
+  x2.imageSmoothingEnabled = false;
+  x2.drawImage(smallCanvas(piece.w, piece.h, cells, false), 0, 0, big.width, big.height);
+  return big.toDataURL("image/png");
+}
+
+/* ==========================================================================
+   SCREENS
+   ========================================================================== */
+var SCREENS = ["hearth","new","book","works","loom","cabinet","piece","charms","share","blankets","blanket","work"];
+function show(name, replace){
+  if(S.screen === "loom" && name !== "loom"){ saveProject(S.proj); keepAwake(false); }
+  if(!replace && S.screen !== name) S.stack.push(S.screen);
+  SCREENS.forEach(function(n){ var e = $("scr-"+n); if(e) e.classList.toggle("on", n === name); });
+  S.screen = name;
+  window.scrollTo(0,0);
+  if(name === "hearth")  renderHearth();
+  if(name === "new")     renderNew();
+  if(name === "book")    renderBook();
+  if(name === "works")   renderWorks();
+  if(name === "cabinet") renderCabinet();
+  if(name === "piece")   renderPiece();
+  if(name === "charms")  renderCharms();
+  if(name === "share")   renderShare();
+  if(name === "blankets") renderBlankets();
+  if(name === "blanket")  renderBlanket();
+  if(name === "work")     renderWork();
+  if(name !== "work" && name !== "loom") keepAwake(false);
+  if(name === "loom")    enterLoom();
+}
+function goBack(){
+  var prev = S.stack.pop() || "hearth";
+  show(prev, true);
+}
+
+/* ---------------- hearth ---------------- */
+function renderHearth(){
+  var idx = projIndex();
+  var last = SET.lastProject ? loadProject(SET.lastProject) : (idx[0] ? loadProject(idx[0].id) : null);
+  var r = $("resume");
+  if(last){
+    r.hidden = false;
+    $("resume-name").textContent = last.name;
+    var stitched = last.cells.filter(Boolean).length;
+    $("resume-sub").textContent = last.w + "×" + last.h + " · " + stitched.toLocaleString() + " stitches worked";
+    paintInto($("resume-thumb"), last.w, last.h, last.cells);
+    r.onclick = function(){ openProject(last.id); };
+  } else r.hidden = true;
+
+  var dp = dailyPattern(), db = $("daily");
+  if(dp){
+    db.hidden = false;
+    $("daily-t").textContent = dp.t;
+    $("daily-h").textContent = dp.hint;
+    db.onclick = function(){
+      S.newPattern = dp.id;
+      for(var k=0;k<GAUGES.length;k++) if(GAUGES[k].w === dp.w && GAUGES[k].h === dp.h) S.newGauge = k;
+      show("new");
+    };
+  }
+
+  $("wip-count").textContent = idx.length ? (idx.length + (idx.length===1?" chart on the go":" charts on the go")) : "Nothing on the hooks yet";
+  $("t-stitch").textContent = SET.stats.stitches.toLocaleString();
+  $("t-done").textContent   = cabinet().filter(function(x){ return !x.example; }).length;
+  $("t-ribbon").textContent = earnedRibbons().length;
+
+  /* the little woven sampler under the wordmark */
+  var s = $("sampler");
+  if(!s.childElementCount){
+    var cols = ["#B62A63","#E8A33D","#2E7D6E","#3E7CB1","#7A5EA8","#7BB661"];
+    for(var i=0;i<36;i++){
+      var b = el("i");
+      var on = (i%12+Math.floor(i/12)) % 3 !== 0;
+      b.style.background = on ? cols[(i*5)%cols.length] : "";
+      b.style.opacity = on ? (0.55 + ((i*7)%5)/11) : "";
+      s.appendChild(b);
+    }
+  }
+}
+
+/* ---------------- cast on ---------------- */
+function renderNew(){
+  var list = $("size-list"); list.innerHTML = "";
+  GAUGES.forEach(function(g, i){
+    var locked = !hasCharm(g.charm);
+    var b = el("button", "piece");
+    b.style.textAlign = "center";
+    b.style.opacity = locked ? ".45" : "1";
+    b.innerHTML = '<div class="t" style="margin-top:0">'+g.w+'×'+g.h+'</div><div class="s">'+(locked ? "charm needed" : g.name)+'</div>';
+    if(i === S.newGauge) b.style.borderColor = css("--accent"), b.style.boxShadow = "0 0 0 2px "+css("--accent");
+    b.onclick = function(){
+      if(locked){ toast("A charm opens this loom. Try the Charm Codes."); return; }
+      S.newGauge = i; renderNew();
+    };
+    list.appendChild(b);
+  });
+
+  var m = $("new-mission"); m.innerHTML = "";
+  var opts = [{id:null, t:"Free loom", hint:"No brief. Make whatever turns up."}];
+  if(S.newPattern){ var p = patternById(S.newPattern); if(p) opts.push(p); }
+  opts.forEach(function(o){
+    var b = el("button", "pat" + (S.newPattern === o.id ? " done" : ""));
+    b.innerHTML = '<span class="no">'+(o.id?"§":"○")+'</span><span><span class="t">'+o.t+'</span><span class="h">'+o.hint+'</span></span>';
+    b.onclick = function(){ S.newPattern = o.id; renderNew(); };
+    m.appendChild(b);
+  });
+  var pick = el("button", "pat");
+  pick.innerHTML = '<span class="no">→</span><span><span class="t">Choose from the Pattern Book</span><span class="h">Sixteen things worth making</span></span>';
+  pick.onclick = function(){ show("book"); };
+  m.appendChild(pick);
+}
+function patternById(id){ for(var i=0;i<PATTERNS.length;i++) if(PATTERNS[i].id===id) return PATTERNS[i]; return null; }
+
+function castOn(){
+  var g = GAUGES[S.newGauge];
+  if(!hasCharm(g.charm)){ toast("That loom is still locked."); return; }
+  var pat = S.newPattern ? patternById(S.newPattern) : null;
+  var p = newProject(g.w, g.h, pat ? pat.t : niceName(), S.newPattern);
+  saveProject(p);
+  S.proj = p; S.undoStack = []; S.redoStack = [];
+  S.stack = ["hearth"];
+  show("loom", true);
+}
+var NAMES = ["Sampler","Small work","Odd square","Evening piece","Scrap of an idea","Untitled chart","Rough draft","Something new"];
+function niceName(){ return NAMES[Math.floor(Math.random()*NAMES.length)]; }
+
+/* ---------------- pattern book ---------------- */
+function renderBook(){
+  var done = {}; cabinet().forEach(function(p){ if(p.pattern) done[p.pattern] = true; });
+  var list = $("book-list"); list.innerHTML = "";
+  PATTERNS.forEach(function(p, i){
+    var b = el("button", "pat" + (done[p.id] ? " done" : ""));
+    b.innerHTML = '<span class="no">'+(i+1)+'</span>' +
+      '<span><span class="t">'+p.t+'</span><span class="h">'+p.hint+'</span></span>' +
+      '<span class="g">'+(done[p.id] ? "made" : p.w+"×"+p.h)+'</span>';
+    b.onclick = function(){
+      S.newPattern = p.id;
+      for(var k=0;k<GAUGES.length;k++) if(GAUGES[k].w===p.w && GAUGES[k].h===p.h) S.newGauge = k;
+      show("new");
+    };
+    list.appendChild(b);
+  });
+}
+
+/* ---------------- works in progress ---------------- */
+function renderWorks(){
+  var list = $("works-list"); list.innerHTML = "";
+  var idx = projIndex();
+  if(!idx.length){
+    list.innerHTML = '<div class="empty" style="grid-column:1/-1"><h3>Nothing on the hooks</h3><p>Cast on and it will wait here for you.</p></div>';
+    return;
+  }
+  idx.forEach(function(meta){
+    var p = loadProject(meta.id); if(!p) return;
+    var b = el("button","piece");
+    var f = el("div","frame"), c = el("canvas");
+    c.width = 180; c.height = 180;
+    f.appendChild(c); b.appendChild(f);
+    var t = el("div","t", p.name), s = el("div","s", p.w+"×"+p.h+" · "+when(p.updated));
+    b.appendChild(t); b.appendChild(s);
+    paintInto(c, p.w, p.h, p.cells);
+    b.onclick = function(){ openProject(p.id); };
+    list.appendChild(b);
+  });
+}
+function when(ts){
+  var d = Math.floor((Date.now()-ts)/86400000);
+  if(d <= 0) return "today";
+  if(d === 1) return "yesterday";
+  if(d < 30) return d + " days ago";
+  return new Date(ts).toLocaleDateString();
+}
+function openProject(id){
+  var p = loadProject(id); if(!p){ toast("That chart has gone."); return; }
+  S.proj = p; S.undoStack = []; S.redoStack = [];
+  SET.lastProject = id; saveSettings();
+  show("loom");
+}
+
+/* ---------------- the loom ---------------- */
+function enterLoom(){
+  $("loom-name").textContent = S.proj.name;
+  readCloth();
+  makeBuffer();
+  requestAnimationFrame(function(){
+    sizeCanvas(); fitView(); invalidate();
+  });
+  renderSkeins(); refreshUndoButtons(); updateGauge(); updateMirrorBadge();
+  showTips(false); keepAwake(true); updateSelBar();
+}
+function setTool(t, quiet){
+  S.tool = t;
+  var all = document.querySelectorAll("#tools .tool[data-tool]");
+  for(var i=0;i<all.length;i++) all[i].classList.toggle("on", all[i].getAttribute("data-tool") === t);
+  if(t === "motif" && !quiet) openSheet("sheet-motif");
+  updateSelBar();
+}
+function setYarn(hex){
+  S.yarn = normHex(hex);
+  if(S.textArt && $("text-prev")) drawArtPreview($("text-prev"), S.textArt);
+  $("dye").style.background = S.yarn;
+  var s = document.querySelectorAll("#skeins .skein");
+  for(var i=0;i<s.length;i++) s[i].classList.toggle("on", s[i].getAttribute("data-c") === S.yarn);
+  if(S.tool === "unpick" || S.tool === "match") setTool("stitch");
+}
+function renderSkeins(){
+  var box = $("skeins"); box.innerHTML = "";
+  SET.basket.forEach(function(c){
+    var b = el("button","skein" + (c === S.yarn ? " on" : ""));
+    b.style.background = c; b.setAttribute("data-c", c);
+    b.setAttribute("aria-label", "Yarn " + c);
+    b.onclick = function(){ setYarn(c); };
+    box.appendChild(b);
+  });
+  $("dye").style.background = S.yarn;
+}
+function updateMirrorBadge(){
+  var b = $("mirror-badge"), t = $("btn-mirror");
+  b.textContent = ["","↔","↕","✦","⟳"][S.mirror];
+  t.classList.toggle("on", S.mirror > 0);
+}
+
+
+/* ---------------- dyeing yarn ---------------- */
+var pk = {h:335, s:.77, v:.71};
+function openSheet(id){ $(id).classList.add("on"); }
+var askResolve = null;
+function ask(o){
+  return new Promise(function(res){
+    if(askResolve) askResolve(null);
+    askResolve = res;
+    $("ask-title").textContent = o.title || "";
+    $("ask-msg").textContent = o.msg || "";
+    var inp = $("ask-input");
+    inp.hidden = !o.input;
+    if(o.input) inp.value = o.value || "";
+    var yes = $("ask-yes");
+    yes.textContent = o.ok || "OK";
+    yes.className = "btn " + (o.danger ? "danger" : "go");
+    openSheet("sheet-ask");
+    if(o.input) setTimeout(function(){ inp.focus(); inp.select(); }, 140);
+  });
+}
+function askDone(v){
+  closeSheet("sheet-ask");
+  var r = askResolve; askResolve = null;
+  if(r) r(v);
+}
+function closeSheet(id){ $(id).classList.remove("on"); }
+function drawHueStrip(){
+  var c = $("hue"), x2 = c.getContext("2d");
+  var g = x2.createLinearGradient(0,0,c.width,0), i;
+  for(i=0;i<=6;i++){ var rgb = hsvToRGB(i*60,1,1); g.addColorStop(i/6, rgbToHex(rgb[0],rgb[1],rgb[2])); }
+  x2.fillStyle = g; x2.fillRect(0,0,c.width,c.height);
+  var x = pk.h/360 * c.width;
+  x2.strokeStyle = "#fff"; x2.lineWidth = 3; x2.beginPath(); x2.moveTo(x,0); x2.lineTo(x,c.height); x2.stroke();
+  x2.strokeStyle = "rgba(0,0,0,.55)"; x2.lineWidth = 1; x2.beginPath(); x2.moveTo(x,0); x2.lineTo(x,c.height); x2.stroke();
+}
+function drawSV(){
+  var c = $("sv"), x2 = c.getContext("2d");
+  var base = hsvToRGB(pk.h,1,1);
+  x2.fillStyle = rgbToHex(base[0],base[1],base[2]); x2.fillRect(0,0,c.width,c.height);
+  var g1 = x2.createLinearGradient(0,0,c.width,0);
+  g1.addColorStop(0,"rgba(255,255,255,1)"); g1.addColorStop(1,"rgba(255,255,255,0)");
+  x2.fillStyle = g1; x2.fillRect(0,0,c.width,c.height);
+  var g2 = x2.createLinearGradient(0,0,0,c.height);
+  g2.addColorStop(0,"rgba(0,0,0,0)"); g2.addColorStop(1,"rgba(0,0,0,1)");
+  x2.fillStyle = g2; x2.fillRect(0,0,c.width,c.height);
+  var x = pk.s*c.width, y = (1-pk.v)*c.height;
+  x2.strokeStyle = "#fff"; x2.lineWidth = 3; x2.beginPath(); x2.arc(x,y,9,0,6.3); x2.stroke();
+  x2.strokeStyle = "rgba(0,0,0,.6)"; x2.lineWidth = 1.5; x2.beginPath(); x2.arc(x,y,10.5,0,6.3); x2.stroke();
+}
+function pkHex(){ var rgb = hsvToRGB(pk.h,pk.s,pk.v); return rgbToHex(rgb[0],rgb[1],rgb[2]); }
+function syncPicker(fromInput){
+  var hex = pkHex();
+  $("pchip").style.background = hex;
+  if(!fromInput) $("phex").value = hex;
+  drawSV(); drawHueStrip();
+  setYarn(hex);
+}
+function openDye(){
+  var rgb = hexToRGB(S.yarn), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
+  pk.h = hsv[0]; pk.s = hsv[1]; pk.v = hsv[2];
+  renderBasketGrid(); renderPresets();
+  openSheet("sheet-dye");
+  requestAnimationFrame(function(){ syncPicker(); });
+}
+function renderBasketGrid(){
+  var g = $("basket-grid"); g.innerHTML = "";
+  SET.basket.forEach(function(c, i){
+    var b = el("button"); b.style.background = c; b.setAttribute("aria-label","Yarn "+c);
+    var timer;
+    b.onclick = function(){
+      var rgb = hexToRGB(c), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
+      pk.h=hsv[0]; pk.s=hsv[1]; pk.v=hsv[2]; syncPicker();
+    };
+    b.addEventListener("pointerdown", function(){ timer = setTimeout(function(){
+      SET.basket.splice(i,1); saveSettings(); renderBasketGrid(); renderSkeins(); toast("Taken out of the basket.");
+    }, 620); });
+    ["pointerup","pointerleave","pointercancel"].forEach(function(e){ b.addEventListener(e, function(){ clearTimeout(timer); }); });
+    g.appendChild(b);
+  });
+}
+function renderPresets(){
+  var box = $("preset-groups"); box.innerHTML = "";
+  SKEIN_SETS.forEach(function(set){
+    var unlocked = hasCharm(set.charm);
+    var wrap = el("div","skeingroup");
+    var head = el("div","nm");
+    head.innerHTML = "<span>"+set.name+"</span><span style='color:var(--ink-3);font-weight:400'>"+(unlocked ? "tap to load" : "locked")+"</span>";
+    wrap.appendChild(head);
+    var grid = el("div","swatchgrid");
+    set.colors.forEach(function(c){
+      var b = el("button"); b.style.background = unlocked ? c : "var(--line-soft)";
+      if(!unlocked) b.style.opacity = ".6";
+      b.onclick = function(){
+        if(!unlocked){ toast("A charm opens this set."); return; }
+        var rgb = hexToRGB(c), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
+        pk.h=hsv[0]; pk.s=hsv[1]; pk.v=hsv[2]; syncPicker();
+      };
+      grid.appendChild(b);
+    });
+    wrap.appendChild(grid);
+    if(unlocked){
+      var all = el("button","btn quiet","Load the whole set into the basket");
+      all.style.marginTop = "8px"; all.style.minHeight = "38px";
+      all.onclick = function(){ SET.basket = set.colors.slice(); saveSettings(); renderBasketGrid(); renderSkeins(); toast(set.name+" is in the basket."); };
+      wrap.appendChild(all);
+    }
+    box.appendChild(wrap);
+  });
+}
+function canvasDrag(canvas, handler){
+  function pos(ev){
+    var r = canvas.getBoundingClientRect();
+    return { x: Math.max(0, Math.min(1, (ev.clientX-r.left)/r.width)),
+             y: Math.max(0, Math.min(1, (ev.clientY-r.top)/r.height)) };
+  }
+  var down = false;
+  canvas.addEventListener("pointerdown", function(ev){ down = true; canvas.setPointerCapture(ev.pointerId); handler(pos(ev)); ev.preventDefault(); });
+  canvas.addEventListener("pointermove", function(ev){ if(down){ handler(pos(ev)); ev.preventDefault(); } });
+  canvas.addEventListener("pointerup",   function(){ down = false; });
+  canvas.addEventListener("pointercancel", function(){ down = false; });
+}
+
+/* ---------------- motifs ---------------- */
+function renderMotifs(){
+  var g = $("motif-grid"); g.innerHTML = "";
+  MOTIFS.forEach(function(m){
+    var unlocked = hasCharm(m.charm);
+    var b = el("button");
+    b.style.width = "62px"; b.style.height = "62px"; b.style.borderRadius = "12px";
+    b.style.display = "grid"; b.style.placeItems = "center";
+    b.style.background = "var(--raise)";
+    if(m.id === S.motif && S.stampKind === "motif") b.style.borderColor = css("--accent");
+    var c = document.createElement("canvas"), w = m.art[0].length, h = m.art.length;
+    c.width = w; c.height = h; c.style.width = "42px"; c.style.height = (42*h/w)+"px"; c.style.imageRendering = "pixelated";
+    var x2 = c.getContext("2d");
+    x2.fillStyle = unlocked ? css("--ink") : css("--line");
+    for(var r=0;r<h;r++) for(var k=0;k<m.art[r].length;k++) if(m.art[r][k]==="X") x2.fillRect(k,r,1,1);
+    b.appendChild(c);
+    b.onclick = function(){
+      if(!unlocked){ toast("A charm opens this motif."); return; }
+      S.motif = m.id; S.stampKind = "motif";
+      renderMotifs(); closeSheet("sheet-motif"); toast(m.name+" loaded — tap the chart.");
+    };
+    g.appendChild(b);
+  });
+}
+
+/* ---------------- fastening off ---------------- */
+function fastenOff(){
+  var p = S.proj;
+  var stitched = p.cells.filter(Boolean).length;
+  if(stitched < 4){ toast("There's barely anything on the chart yet."); return; }
+  var yarns = {}; p.cells.forEach(function(c){ if(c) yarns[c] = 1; });
+  var count = Object.keys(yarns).length;
+  closeSheet("sheet-more");
+  ask({ title:"Fasten off", msg:"Name this piece — it goes into the cabinet under this name.",
+        input:true, value:p.name, ok:"Fasten off" }).then(function(name){
+    if(name === null) return;
+    name = (name || p.name).slice(0, 48);
+    var piece = { id:uid(), name:name, w:p.w, h:p.h, pattern:p.pattern, at:Date.now(),
+                  stitches:stitched, yarns:count, rle:encodeRLE(p.cells) };
+    var cab = cabinet(); cab.unshift(piece);
+    if(!setCabinet(cab)) return;
+    var st = SET.stats;
+    st.finished++;
+    st.maxYarns = Math.max(st.maxYarns, count);
+    st.biggest  = Math.max(st.biggest, Math.max(p.w, p.h));
+    st.bigPiece = Math.max(st.bigPiece, stitched);
+    st.tallest  = Math.max(st.tallest, p.h);
+    st.minYarns = Math.min(st.minYarns, count);
+    var hr = new Date().getHours();
+    if(hr >= 22 || hr < 4) st.nightFinish = true;
+    p.name = name; saveProject(p); saveSettings();
+    $("loom-name").textContent = name;
+    toast("Fastened off. It's in the cabinet.");
+    setTimeout(function(){ S.pieceId = piece.id; show("piece"); }, 420);
+  });
+}
+
+/* ---------------- the cabinet ---------------- */
+function statsSnapshot(){
+  var s = SET.stats, made = {};
+  cabinet().forEach(function(x){ if(x.pattern && !x.example) made[x.pattern] = 1; });
+  return { finished:s.finished, maxYarns:s.maxYarns, biggest:s.biggest, stitches:s.stitches,
+           undos:s.undos, charms:SET.charms.length, nightFinish:s.nightFinish,
+           bigPiece:s.bigPiece, minYarns:s.minYarns, tallest:s.tallest,
+           exported:s.exported, lettered:s.lettered, folded:s.folded, gifted:s.gifted,
+           basket:SET.basket.length, patternsMade:Object.keys(made).length };
+}
+function earnedRibbons(){
+  var snap = statsSnapshot();
+  return RIBBONS.filter(function(r){ try{ return !!r.test(snap); }catch(e){ return false; } });
+}
+function renderCabinet(){
+  var got = {}; earnedRibbons().forEach(function(r){ got[r.id] = true; });
+  var rb = $("ribbons"); rb.innerHTML = "";
+  RIBBONS.forEach(function(r){
+    var n = el("div","ribbon " + (got[r.id] ? "got" : "locked"));
+    n.innerHTML = '<span class="dot"></span>' + r.name;
+    rb.appendChild(n);
+  });
+
+  var body = $("cabinet-body"); body.innerHTML = "";
+  var cab = cabinet();
+  if(!cab.length){
+    body.innerHTML = '<div class="empty"><h3>The shelves are bare</h3><p>Finish a chart — the menu on the loom, then <b>Fasten off</b> — and it will be standing here.</p></div>';
+    return;
+  }
+  var mine = cab.filter(function(x){ return !x.example; }).length;
+  var head = el("span","eyebrow", mine + (mine===1 ? " piece" : " pieces") + (mine < cab.length ? " · 1 example" : ""));
+  body.appendChild(head);
+  var shelf = el("div","shelf");
+  var grid = el("div","pieces");
+  var gold = hasCharm("GOLDENHOOK");
+  cab.forEach(function(piece){
+    var b = el("button","piece" + (gold ? " gold" : ""));
+    var f = el("div","frame"), c = el("canvas");
+    c.width = 200; c.height = 200;
+    f.appendChild(c); b.appendChild(f);
+    b.appendChild(el("div","t", piece.name));
+    b.appendChild(el("div","s", piece.w+"×"+piece.h+" · "+new Date(piece.at).toLocaleDateString()));
+    paintInto(c, piece.w, piece.h, decodeRLE(piece.rle, piece.w*piece.h));
+    b.onclick = function(){ S.pieceId = piece.id; show("piece"); };
+    grid.appendChild(b);
+  });
+  shelf.appendChild(grid);
+  shelf.appendChild(el("div","shelf-lip"));
+  body.appendChild(shelf);
+}
+function renderPiece(){
+  var cab = cabinet(), piece = null;
+  cab.forEach(function(p){ if(p.id === S.pieceId) piece = p; });
+  if(!piece){ goBack(); return; }
+  var cells = decodeRLE(piece.rle, piece.w*piece.h);
+  $("piece-title").textContent = piece.name;
+  $("piece-plate").classList.toggle("gold", hasCharm("GOLDENHOOK"));
+  var img = $("piece-img");
+  img.src = pieceDataURL(piece, cells);
+  img.alt = piece.name + " — a " + piece.w + " by " + piece.h + " stitch chart";
+  var pat = piece.pattern ? patternById(piece.pattern) : null;
+  $("piece-facts").innerHTML =
+    '<div><b class="num">'+piece.stitches.toLocaleString()+'</b><span>Stitches worked</span></div>' +
+    '<div><b class="num">'+piece.yarns+'</b><span>Yarns used</span></div>' +
+    '<div><b class="num">'+piece.w+'×'+piece.h+'</b><span>Gauge</span></div>' +
+    '<div><b>'+new Date(piece.at).toLocaleDateString()+'</b><span>Fastened off</span></div>' +
+    (pat ? '<div style="grid-column:1/-1"><b>'+pat.t+'</b><span>From the pattern book</span></div>' : "");
+  $("piece-write").onclick = function(){ showWritten(piece.name, piece.w, piece.h, cells, "piece:" + piece.id); };
+  $("piece-work").onclick  = function(){ startWork("piece:" + piece.id, piece.name, piece.w, piece.h, cells); };
+  var nl = $("piece-note");
+  if(piece.note){ nl.hidden = false; nl.textContent = "\u201C" + piece.note + "\u201D"; }
+  else nl.hidden = true;
+  $("piece-note-btn").textContent = piece.note ? "Change the note" : "Add a note to this piece";
+  $("piece-note-btn").onclick = function(){
+    ask({ title:"A note", msg:"Who it was for, where it went, what it was like to make.", input:true, value:piece.note || "", ok:"Save" })
+      .then(function(v){
+        if(v === null) return;
+        var cab = cabinet();
+        cab.forEach(function(x){ if(x.id === piece.id) x.note = String(v).slice(0,90); });
+        setCabinet(cab);
+        renderPiece();
+      });
+  };
+  var pngBtn = $("piece-png");
+  pngBtn.hidden = !canSaveFiles();
+  pngBtn.onclick = function(){
+    if(saveFile(safeName(piece.name) + ".png", dataURLtoBlob(img.src))) toast("Saved to Downloads.");
+    else toast("Press and hold the picture instead.");
+  };
+  $("piece-code").onclick = function(){
+    copyText(chartCode(piece.name, piece.w, piece.h, cells), "Chart code copied — paste it to whoever you like.");
+    SET.stats.gifted = true; saveSettings();
+  };
+  $("piece-copy").onclick = function(){
+    var p = newProject(piece.w, piece.h, piece.name + " again", piece.pattern);
+    p.cells = decodeRLE(piece.rle, piece.w*piece.h);
+    saveProject(p);
+    S.proj = p; S.undoStack = []; S.redoStack = [];
+    show("loom");
+  };
+  $("piece-del").onclick = function(){
+    ask({ title:"Take it out?", msg:"“"+piece.name+"” leaves the cabinet for good.",
+          ok:"Take it out", danger:true }).then(function(ok){
+      if(!ok) return;
+      setCabinet(cabinet().filter(function(x){ return x.id !== piece.id; }));
+      toast("Taken off the shelf.");
+      goBack();
+    });
+  };
+}
+
+/* ==========================================================================
+   WRITING IT OUT — chart to a pattern you could work with a hook
+   ========================================================================== */
+function writePattern(name, w, h, cells){
+  var counts = {}, i, k;
+  for(i=0;i<cells.length;i++) if(cells[i]) counts[cells[i]] = (counts[cells[i]] || 0) + 1;
+  var order = Object.keys(counts).sort(function(a,b){ return counts[b] - counts[a]; });
+  var label = {}, total = 0;
+  order.forEach(function(c, j){ label[c] = String.fromCharCode(65 + (j % 26)) + (j >= 26 ? String(Math.floor(j/26)+1) : ""); total += counts[c]; });
+
+  var L = [];
+  L.push("THREADWYN — " + name);
+  L.push(w + " stitches wide  ·  " + h + " rows tall  ·  " + total.toLocaleString() + " stitches");
+  L.push("");
+  L.push("YARNS");
+  if(!order.length) L.push("  nothing worked yet");
+  order.forEach(function(c){
+    L.push("  " + (label[c] + "     ").slice(0,4) + c + "   " + counts[c] + " sts   ~" + metresFor(counts[c]) + " m");
+  });
+  if(total) L.push("  " + "     ".slice(0,4) + "         " + total.toLocaleString() + " sts   ~" + metresFor(total) + " m in all");
+  L.push("  (worked out at " + SET.cmPerStitch + " cm of yarn a stitch, plus a bit for the ends —");
+  L.push("   change that in Settings once you've measured your own.)");
+  L.push("");
+  L.push("HOW TO READ IT");
+  L.push("  One square = one stitch. Single crochet unless you'd rather not.");
+  L.push("  Row 1 is the BOTTOM row of the chart.");
+  L.push("  Odd rows (RS) read right to left. Even rows (WS) read left to right.");
+  L.push("  Change colour on the last yarn-over of the stitch before it.");
+  L.push("  \"12A\" = twelve stitches in yarn A.  \"3 skip\" = three squares left empty.");
+  L.push("");
+  L.push("ROWS");
+  patternRows(w, h, cells).forEach(function(row){
+    var parts = row.runs.map(function(run){ return run.c ? (run.n + label[run.c]) : (run.n + " skip"); });
+    L.push("  Row " + row.r + " (" + (row.rs ? "RS" : "WS") + "): " + parts.join(", "));
+  });
+  L.push("");
+  L.push("Fasten off. Weave in the ends — all of them.");
+  return L.join("\n");
+}
+function showWritten(name, w, h, cells, key){
+  S.writtenCtx = { key: key || ("chart:" + name), name:name, w:w, h:h, cells:cells };
+  var text = writePattern(name, w, h, cells);
+  $("written-sub").textContent = name + " · " + w + "×" + h;
+  $("written-body").textContent = text;
+  $("written-copy").onclick = function(){ copyText(text, "Pattern copied."); };
+  SET.stats.exported = true; saveSettings();
+  openSheet("sheet-written");
+}
+
+/* ==========================================================================
+   THE GUIDE LAYER
+   ========================================================================== */
+function renderTemplates(){
+  var box = $("tmpl-list"); box.innerHTML = "";
+  var p = S.proj;
+  TEMPLATES.forEach(function(t){
+    var b = el("button","tmpl");
+    var c = document.createElement("canvas"); c.width = 40; c.height = 40;
+    var cells = t.make(40, 40), x2 = c.getContext("2d");
+    x2.fillStyle = css("--cloth-a"); x2.fillRect(0,0,40,40);
+    for(var i=0;i<cells.length;i++) if(cells[i]){ x2.fillStyle = cells[i]; x2.fillRect(i%40, Math.floor(i/40), 1, 1); }
+    b.appendChild(c);
+    var w = el("span");
+    w.appendChild(el("span","t", t.name));
+    w.appendChild(el("span","h", t.note));
+    b.appendChild(w);
+    b.onclick = function(){
+      p.guide = t.make(p.w, p.h);
+      S.showGuide = true;
+      rebuildBuffer(); invalidate(); saveProject(p);
+      closeSheet("sheet-guide");
+      toast(t.name + " is under the chart.");
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ---------------- charms ---------------- */
+function renderCharms(){
+  var list = $("charm-list"); list.innerHTML = "";
+  CHARMS.forEach(function(c){
+    var got = hasCharm(c.code);
+    var n = el("div","charm" + (got ? " got" : ""));
+    n.innerHTML = '<span class="key">'+icon("key",18)+'</span>' +
+      '<span><span class="n">'+(got ? c.code : "· · · · · ·")+'</span><br>' +
+      (got ? '<span class="w">'+c.gives+'</span>' : '<span class="r">"'+c.riddle+'"</span>')+'</span>';
+    list.appendChild(n);
+  });
+}
+function sayCharm(){
+  var v = ($("codein").value || "").toUpperCase().replace(/[^A-Z]/g,"");
+  $("codein").value = "";
+  if(!v) return;
+  var found = null;
+  CHARMS.forEach(function(c){ if(c.code === v) found = c; });
+  if(!found){ toast("Nothing stirs."); return; }
+  if(hasCharm(v)){ toast("You've already said that one."); return; }
+  SET.charms.push(v); saveSettings();
+  renderCharms();
+  toast(found.gives);
+  if(v === "NIGHTSHIFT"){ SET.cloth = "lamplight"; saveSettings(); readCloth(); if(S.proj) rebuildBuffer(); }
+}
+
+/* ---------------- share & backup ---------------- */
+function renderShare(){
+  installState();
+  var files = canSaveFiles();
+  $("backup-file").hidden = !files;
+  $("restore-file").hidden = !files;
+  $("file-note").hidden = !files;
+  var url = location.href.split("#")[0];
+  $("urlline").textContent = url;
+  var box = $("qrbox"); box.innerHTML = "";
+  try{
+    if(window.QRious){
+      var c = document.createElement("canvas");
+      new QRious({ element:c, value:url, size:260, level:"M", background:"#ffffff", foreground:"#1E1826" });
+      box.appendChild(c);
+    } else throw new Error("no qr");
+  }catch(e){
+    box.innerHTML = '<span style="color:#333;font-size:12px;text-align:center">Couldn’t draw the code — use <b>Copy the link</b> instead.</span>';
+  }
+}
+function collectBackup(){
+  var out = {};
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k = localStorage.key(i);
+      if(k && k.indexOf(PREFIX) === 0) out[k] = localStorage.getItem(k);
+    }
+  }catch(e){}
+  return JSON.stringify({ app:"threadwyn", v:3, at:Date.now(), data:out });
+}
+function restoreBackup(text){
+  var parsed;
+  try{ parsed = JSON.parse(text); }catch(e){ toast("That isn't a Threadwyn backup."); return; }
+  if(!parsed || ["threadwyn","skeindle","stitchweald"].indexOf(parsed.app) < 0 || !parsed.data){ toast("That isn't a Threadwyn backup."); return; }
+  ask({ title:"Restore this backup?", msg:"Everything currently saved on this phone is replaced by what's in the box.",
+        ok:"Restore", danger:true }).then(function(ok){
+    if(!ok) return;
+    try{
+      Object.keys(parsed.data).forEach(function(k){ localStorage.setItem(k, parsed.data[k]); });
+      toast("Restored. Reopening…");
+      setTimeout(function(){ location.reload(); }, 700);
+    }catch(e){ toast("Restore failed — the backup may be too big for this phone."); }
+  });
+}
+function copyText(text, okMsg){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ toast(okMsg); },
+      function(){ $("backup").value = text; toast("Copy it from the box below."); });
+  } else { $("backup").value = text; toast("Copy it from the box below."); }
+}
+
+/* ---------------- theme ---------------- */
+function applyTheme(){
+  if(SET.theme) document.documentElement.setAttribute("data-theme", SET.theme);
+  else document.documentElement.removeAttribute("data-theme");
+  readCloth();
+  if(S.proj && bimg){ rebuildBuffer(); invalidate(); }
+}
+function cycleTheme(){
+  SET.theme = SET.theme === null ? "light" : (SET.theme === "light" ? "dark" : null);
+  saveSettings(); applyTheme();
+  toast(SET.theme === null ? "Following your phone" : (SET.theme === "light" ? "Daylight" : "Lamplight"));
+}
+
+/* ---------------- first run: something already on the loom ---------------- */
+function stampArt(cells, w, h, art, cx, cy, colour){
+  var ah = art.length, aw = art[0].length, x0 = cx - (aw>>1), y0 = cy - (ah>>1), r, k, x, y;
+  for(r=0;r<ah;r++) for(k=0;k<art[r].length;k++){
+    if(art[r][k] !== "X") continue;
+    x = x0+k; y = y0+r;
+    if(x>=0 && y>=0 && x<w && y<h) cells[y*w+x] = colour;
+  }
+}
+function seedFirstRun(){
+  if(SET.seeded) return;
+  SET.seeded = true;
+
+  var p = newProject(24, 24, "First sampler", "granny");
+  var rings = ["#2E7D6E","#7BB661","#F5D77E","#E8A33D","#B62A63"];
+  for(var y=0;y<24;y++) for(var x=0;x<24;x++){
+    var d = Math.min(x, y, 23-x, 23-y);
+    if(d < 5) p.cells[y*24+x] = rings[d];
+  }
+  stampArt(p.cells, 24, 24, MOTIFS[0].art, 12, 12, "#F2789A");
+  saveProject(p);
+  SET.lastProject = p.id;
+
+  var ex = new Array(256).fill("#3B3350");
+  stampArt(ex, 16, 16, MOTIFS[0].art, 8, 8, "#F2789A");
+  var cab = cabinet();
+  cab.push({ id:uid(), name:"Example — Small Heart", w:16, h:16, pattern:null, at:Date.now(),
+             stitches:256, yarns:2, example:true, rle:encodeRLE(ex) });
+  setCabinet(cab);
+  saveSettings();
+}
+
+/* ---------------- double tap to zoom, without leaving a stitch ---------------- */
+var lastStrokeAt = 0;
+function takeBackLastStroke(){
+  if(Date.now() - lastStrokeAt > 500) return;
+  var e = S.undoStack.pop();
+  if(e && e.length <= 4){ applyEntry(e, 1); refreshUndoButtons(); }
+  else if(e) S.undoStack.push(e);
+}
+function isDoubleTap(ev){
+  var now = Date.now(), pt = localPoint(ev);
+  if(now - lastTap < 330 && lastTapPt && Math.hypot(pt.x-lastTapPt.x, pt.y-lastTapPt.y) < 28) return true;
+  lastTap = now; lastTapPt = pt; return false;
+}
+
+/* ---------------- aiming with the pad ---------------- */
+function ensureCursorVisible(){
+  var r = stage.getBoundingClientRect(), v = S.view;
+  var cx = v.ox + (S.cursor.x+0.5)*v.scale, cy = v.oy + (S.cursor.y+0.5)*v.scale;
+  var m = 70;
+  if(cx < m) v.ox += (m - cx);
+  if(cx > r.width - m) v.ox -= (cx - (r.width - m));
+  if(cy < m) v.oy += (m - cy);
+  if(cy > r.height - m) v.oy -= (cy - (r.height - m));
+}
+function applyToolAtCursor(){
+  var x = S.cursor.x, y = S.cursor.y, p = S.proj;
+  if(S.tool === "match"){ var c = p.cells[y*p.w+x]; if(c){ setYarn(c); toast("Loaded "+c); } setTool("stitch"); return; }
+  beginStroke();
+  if(S.tool === "flood") flood(x, y, S.yarn);
+  else if(S.tool === "motif") stampMotif(x, y);
+  else paintAt(x, y, S.tool === "unpick" ? null : S.yarn);
+  endStroke();
+  invalidate();
+  buzz(8);
+}
+
+/* ==========================================================================
+   MIRROR & FOLD LINES
+   ========================================================================== */
+var MIRROR_MODES = [
+  {m:0, icon:"i-erase",  label:"Off"},
+  {m:1, icon:"i-mirror", label:"Across"},
+  {m:2, icon:"i-mirror", label:"Down"},
+  {m:3, icon:"i-mirror", label:"Quarter", charm:"MIRRORWORK"},
+  {m:4, icon:"i-mirror", label:"Turn",    charm:"MIRRORWORK"}
+];
+function axisLabel(f, w){
+  if(f % 2 === 0){
+    var k = f/2;
+    if(k <= 0) return "before the first stitch";
+    if(k >= w) return "after the last stitch";
+    return "between " + k + " and " + (k+1);
+  }
+  return "down stitch " + ((f+1)/2);
+}
+function setFold(which, val){
+  var p = S.proj, max = (which === "fx" ? p.w : p.h) * 2;
+  p[which] = Math.max(1, Math.min(max - 1, val));
+  saveProject(p); renderMirror(); invalidate();
+}
+function foldNow(axis, fromLow){
+  var p = S.proj, x, y, t, moved = 0;
+  beginStroke();
+  if(axis === "x"){
+    var f = p.fx / 2;
+    for(y=0;y<p.h;y++) for(x=0;x<p.w;x++){
+      if(fromLow ? (x + 0.5) > f : (x + 0.5) < f) continue;
+      t = p.fx - x - 1;
+      if(t < 0 || t >= p.w || t === x) continue;
+      put(y*p.w + t, p.cells[y*p.w + x]); moved++;
+    }
+  } else {
+    var g = p.fy / 2;
+    for(y=0;y<p.h;y++){
+      if(fromLow ? (y + 0.5) > g : (y + 0.5) < g) continue;
+      t = p.fy - y - 1;
+      if(t < 0 || t >= p.h || t === y) continue;
+      for(x=0;x<p.w;x++) put(t*p.w + x, p.cells[y*p.w + x]);
+      moved++;
+    }
+  }
+  endStroke(); invalidate(); buzz(14);
+  SET.stats.folded = true; saveSettings();
+  toast(moved ? "Folded. Undo puts it back." : "Nothing on that side of the line.");
+}
+function renderMirror(){
+  var p = S.proj, seg = $("mirror-seg"), body = $("mirror-body");
+  seg.innerHTML = "";
+  MIRROR_MODES.forEach(function(o){
+    var locked = !hasCharm(o.charm);
+    var b = el("button", S.mirror === o.m ? "on" : "");
+    b.innerHTML = '<span>' + (locked ? "· · ·" : o.label) + '</span>';
+    if(locked) b.style.opacity = ".45";
+    b.onclick = function(){
+      if(locked){ toast("A charm opens this one."); return; }
+      S.mirror = o.m; updateMirrorBadge(); renderMirror(); invalidate();
+    };
+    seg.appendChild(b);
+  });
+
+  body.innerHTML = "";
+  if(!S.mirror){
+    var none = el("p","note","Nothing is being mirrored. Pick a mode above and a dashed crease appears on the chart.");
+    none.style.marginTop = "14px";
+    body.appendChild(none);
+    return;
+  }
+  function axisBlock(which, kind, title){
+    var f = p[which], span = (which === "fx" ? p.w : p.h);
+    var box = el("div","axis");
+    box.appendChild(el("div","lab", title));
+    var st = el("div","stepper");
+    var minus = el("button", null); minus.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg>';
+    var val = el("div","val", axisLabel(f, span));
+    var plus = el("button", null); plus.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg>';
+    minus.onclick = function(){ setFold(which, p[which] - 1); };
+    plus.onclick  = function(){ setFold(which, p[which] + 1); };
+    st.appendChild(minus); st.appendChild(val); st.appendChild(plus);
+    box.appendChild(st);
+    var mini = el("div","mini");
+    var mid = el("button", null, "Centre it");
+    mid.onclick = function(){ setFold(which, span); };
+    var cur = el("button", null, "Put it on the crosshair");
+    cur.onclick = function(){ setFold(which, 2 * (which === "fx" ? S.cursor.x : S.cursor.y) + 1); };
+    mini.appendChild(mid); mini.appendChild(cur);
+    box.appendChild(mini);
+    var fold = el("div","mini"); fold.style.marginTop = "6px";
+    var a = el("button", null, kind === "stitch" ? "Fold left → right" : "Fold top → bottom");
+    var b2 = el("button", null, kind === "stitch" ? "Fold right → left" : "Fold bottom → top");
+    a.onclick = function(){ foldNow(which === "fx" ? "x" : "y", true); };
+    b2.onclick = function(){ foldNow(which === "fx" ? "x" : "y", false); };
+    fold.appendChild(a); fold.appendChild(b2);
+    box.appendChild(fold);
+    return box;
+  }
+  if(S.mirror === 1 || S.mirror === 3 || S.mirror === 4) body.appendChild(axisBlock("fx","stitch","Upright crease"));
+  if(S.mirror === 2 || S.mirror === 3 || S.mirror === 4) body.appendChild(axisBlock("fy","row","Level crease"));
+  var hint = el("p","note", S.mirror === 4
+    ? "Turn: every stitch also lands the same distance the other side of where the two creases cross."
+    : "Work one side and the other follows. Already drawn one half? Use Fold to reflect what's there.");
+  hint.style.marginTop = "12px";
+  body.appendChild(hint);
+}
+function openMirror(){ renderMirror(); openSheet("sheet-mirror"); }
+
+/* ==========================================================================
+   SHAPE — turning, shifting, re-gauging the whole chart
+   ========================================================================== */
+function replaceAll(newCells){
+  beginStroke();
+  for(var i=0;i<newCells.length;i++) put(i, newCells[i]);
+  endStroke(); invalidate(); buzz(14);
+}
+function mapCells(fn){
+  var p = S.proj, out = new Array(p.w*p.h).fill(null), x, y, t;
+  for(y=0;y<p.h;y++) for(x=0;x<p.w;x++){
+    t = fn(x, y, p.w, p.h);
+    if(t[0] >= 0 && t[1] >= 0 && t[0] < p.w && t[1] < p.h) out[t[1]*p.w + t[0]] = p.cells[y*p.w + x];
+  }
+  return out;
+}
+function regauge(nw, nh){
+  var p = S.proj;
+  var dx = Math.floor((nw - p.w)/2), dy = Math.floor((nh - p.h)/2), x, y, tx, ty, lost = 0;
+  function move(src){
+    var out = new Array(nw*nh).fill(null);
+    for(y=0;y<p.h;y++) for(x=0;x<p.w;x++){
+      tx = x + dx; ty = y + dy;
+      if(tx >= 0 && ty >= 0 && tx < nw && ty < nh) out[ty*nw + tx] = src[y*p.w + x];
+      else if(src[y*p.w + x]) lost++;
+    }
+    return out;
+  }
+  var cells = move(p.cells);
+  var guide = p.guide ? move(p.guide) : null;
+  function apply(){
+    p.cells = cells; p.guide = guide; p.w = nw; p.h = nh; p.fx = nw; p.fy = nh;
+    S.undoStack = []; S.redoStack = []; refreshUndoButtons();
+    saveProject(p); makeBuffer(); sizeCanvas(); fitView(); invalidate();
+    closeSheet("sheet-shape");
+    toast("Now " + nw + "×" + nh + ".");
+  }
+  if(lost) ask({ title:"That crops the work", msg: lost.toLocaleString() + " stitches fall outside a " + nw + "×" + nh + " chart and would be lost. Undo can't bring them back.",
+                 ok:"Crop it anyway", danger:true }).then(function(ok){ if(ok) apply(); });
+  else apply();
+}
+function renderRegauge(){
+  var box = $("regauge-list"); box.innerHTML = "";
+  GAUGES.forEach(function(g){
+    var locked = !hasCharm(g.charm), here = (g.w === S.proj.w && g.h === S.proj.h);
+    var b = el("button","piece");
+    b.style.textAlign = "center"; b.style.opacity = locked ? ".45" : "1";
+    b.innerHTML = '<div class="t" style="margin-top:0">'+g.w+'×'+g.h+'</div><div class="s">'+(here ? "you're here" : (locked ? "locked" : g.name))+'</div>';
+    if(here) b.style.borderColor = css("--accent");
+    b.onclick = function(){
+      if(locked){ toast("A charm opens that one."); return; }
+      if(here) return;
+      regauge(g.w, g.h);
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ==========================================================================
+   THE YARNS IN THIS CHART
+   ========================================================================== */
+function chartCensus(cells){
+  var counts = {}, i;
+  for(i=0;i<cells.length;i++) if(cells[i]) counts[cells[i]] = (counts[cells[i]] || 0) + 1;
+  return { counts:counts, order:Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }) };
+}
+function swapYarn(from, to){
+  var p = S.proj;
+  beginStroke();
+  for(var i=0;i<p.cells.length;i++) if(p.cells[i] === from) put(i, to);
+  endStroke(); invalidate(); buzz(14);
+}
+function renderYarnsSheet(){
+  var p = S.proj, c = chartCensus(p.cells), total = 0;
+  c.order.forEach(function(k){ total += c.counts[k]; });
+  $("yarns-sub").textContent = c.order.length
+    ? c.order.length + (c.order.length === 1 ? " yarn · " : " yarns · ") + total.toLocaleString() + " stitches"
+    : "Nothing worked yet.";
+  var list = $("yarns-list"); list.innerHTML = "";
+  c.order.forEach(function(hex){
+    var row = el("div","yarnrow");
+    var sw = el("span","sw"); sw.style.background = hex;
+    var mid = el("span","m");
+    mid.appendChild(el("span","hx", hex));
+    mid.appendChild(el("span","ct", c.counts[hex].toLocaleString() + " sts · " + Math.round(c.counts[hex]/total*100) + "%"));
+    var swap = el("button", null, "Swap");
+    swap.onclick = function(){
+      if(hex === S.yarn){ toast("That's already the loaded yarn."); return; }
+      swapYarn(hex, S.yarn); renderYarnsSheet();
+      toast("Swapped for " + S.yarn + ".");
+    };
+    var take = el("button", null, "Unpick");
+    take.onclick = function(){ swapYarn(hex, null); renderYarnsSheet(); toast("Taken out."); };
+    var load = el("button", null, "Load");
+    load.onclick = function(){ setYarn(hex); toast("Loaded " + hex + "."); };
+    row.appendChild(sw); row.appendChild(mid); row.appendChild(load); row.appendChild(swap); row.appendChild(take);
+    list.appendChild(row);
+  });
+  $("yarns-basket").onclick = function(){
+    if(!c.order.length){ toast("There's nothing to take."); return; }
+    SET.basket = c.order.slice(0, 30); saveSettings(); renderSkeins();
+    toast("The basket now holds this chart's yarns.");
+  };
+}
+
+/* ==========================================================================
+   COMFORTS — buzz, wake lock, tips, a chart you can post to someone
+   ========================================================================== */
+function buzz(ms){
+  if(!SET.buzz || !navigator.vibrate) return;
+  try{ navigator.vibrate(ms || 7); }catch(e){}
+}
+var wakeLock = null;
+function keepAwake(on){
+  if(!on){ try{ if(wakeLock){ wakeLock.release(); wakeLock = null; } }catch(e){} return; }
+  if(!SET.awake || !navigator.wakeLock || wakeLock) return;
+  try{ navigator.wakeLock.request("screen").then(function(l){
+    wakeLock = l;
+    l.addEventListener("release", function(){ wakeLock = null; });
+  }, function(){}); }catch(e){}
+}
+function chartCode(name, w, h, cells){
+  var body = JSON.stringify({ k:"threadwyn-chart", n:String(name || "A chart").slice(0,48), w:w, h:h, r:encodeRLE(cells) });
+  return "THRD1:" + btoa(encodeURIComponent(body));
+}
+function openChartCode(text){
+  var raw = String(text || "").trim(), at = raw.indexOf("THRD1:"), skip = 6;
+  if(at < 0){ at = raw.indexOf("SKEIN1:"); skip = 7; }
+  if(at < 0){ toast("That isn't a chart code — look for one starting THRD1:"); return; }
+  var d;
+  try{
+    d = JSON.parse(decodeURIComponent(atob(raw.slice(at + skip).replace(/\s+/g, ""))));
+    if(["threadwyn-chart","skeindle-chart"].indexOf(d.k) < 0 || !d.w || !d.h || !d.r) throw new Error("shape");
+  }catch(e){ toast("That code didn't read properly."); return; }
+  var p = newProject(d.w, d.h, (d.n || "A chart") + " (copy)", null);
+  p.cells = decodeRLE(d.r, d.w * d.h);
+  saveProject(p);
+  S.proj = p; S.undoStack = []; S.redoStack = [];
+  SET.stats.gifted = true; saveSettings();
+  S.stack = ["hearth"];
+  show("loom", true);
+  toast("Opened — it's yours to work on now.");
+}
+function showTips(force){
+  if(!force && SET.tipsSeen) return;
+  $("tips").hidden = false;
+}
+function dailyPattern(){
+  var d = new Date();
+  var key = d.getFullYear()*372 + d.getMonth()*31 + d.getDate();
+  return PATTERNS[key % PATTERNS.length];
+}
+function renderSettings(){
+  $("set-theme-state").textContent = SET.theme === null ? "follows your phone" : (SET.theme === "light" ? "daylight" : "lamplight");
+  $("set-buzz-state").textContent = SET.buzz ? "on" : "off";
+  $("set-awake-state").textContent = SET.awake ? "on" : "off";
+  $("set-rule-state").textContent = String(SET.rule);
+  $("set-yarn-state").textContent = SET.cmPerStitch + " cm";
+  refreshStorage();
+}
+
+/* ==========================================================================
+   ROW WALK — shared by the written pattern and working mode
+   ========================================================================== */
+function patternRows(w, h, cells){
+  var rows = [], r, k, x, y, rs, seq, runs, cur, run;
+  for(r=1;r<=h;r++){
+    y = h - r; rs = (r % 2 === 1); seq = [];
+    for(k=0;k<w;k++){ x = rs ? (w-1-k) : k; seq.push(cells[y*w + x]); }
+    runs = []; cur = seq[0]; run = 1;
+    for(k=1;k<seq.length;k++){
+      if(seq[k] === cur) run++;
+      else { runs.push({c:cur, n:run}); cur = seq[k]; run = 1; }
+    }
+    runs.push({c:cur, n:run});
+    rows.push({ r:r, y:y, rs:rs, runs:runs });
+  }
+  return rows;
+}
+function metresFor(stitches){
+  var m = stitches * (SET.cmPerStitch || 5.5) / 100 * 1.15;
+  return m < 10 ? m.toFixed(1) : String(Math.round(m));
+}
+
+/* ==========================================================================
+   WORKING MODE — walk the pattern while the hook is in your hand
+   ========================================================================== */
+function startWork(key, name, w, h, cells){
+  var rows = patternRows(w, h, cells);
+  var cen = chartCensus(cells), label = {};
+  cen.order.forEach(function(c, j){ label[c] = String.fromCharCode(65 + (j % 26)); });
+  var pos = lsGet("work:" + key, {ri:0, si:0});
+  S.work = { key:key, name:name, w:w, h:h, cells:cells, rows:rows, label:label,
+             ri: Math.min(pos.ri || 0, rows.length-1), si: pos.si || 0 };
+  if(S.work.si >= rows[S.work.ri].runs.length) S.work.si = 0;
+  show("work");
+}
+function saveWorkPos(){
+  if(S.work) lsSet("work:" + S.work.key, { ri:S.work.ri, si:S.work.si });
+}
+function workStep(dir){
+  var W = S.work; if(!W) return;
+  var row = W.rows[W.ri];
+  if(dir > 0){
+    if(W.si < row.runs.length - 1) W.si++;
+    else if(W.ri < W.rows.length - 1){ W.ri++; W.si = 0; buzz(22); }
+    else { buzz(30); toast("That's the last stitch. Fasten off."); return; }
+  } else {
+    if(W.si > 0) W.si--;
+    else if(W.ri > 0){ W.ri--; W.si = W.rows[W.ri].runs.length - 1; }
+    else return;
+  }
+  buzz(8); saveWorkPos(); renderWork();
+}
+function drawWorkChart(){
+  var W = S.work, cv2 = $("work-chart");
+  var cell = Math.max(2, Math.min(14, Math.floor(Math.min(380 / W.w, 250 / W.h))));
+  cv2.width = W.w * cell; cv2.height = W.h * cell;
+  var x2 = cv2.getContext("2d");
+  x2.imageSmoothingEnabled = false;
+  x2.drawImage(smallCanvas(W.w, W.h, W.cells, false), 0, 0, cv2.width, cv2.height);
+  var row = W.rows[W.ri];
+  x2.fillStyle = "rgba(16,12,24,.52)";
+  x2.fillRect(0, 0, cv2.width, row.y * cell);
+  x2.fillRect(0, (row.y+1) * cell, cv2.width, cv2.height - (row.y+1) * cell);
+  var start = 0, i;
+  for(i=0;i<W.si;i++) start += row.runs[i].n;
+  var n = row.runs[W.si] ? row.runs[W.si].n : 0;
+  var x0 = row.rs ? (W.w - start - n) : start;
+  x2.strokeStyle = "#ffffff"; x2.lineWidth = 2;
+  x2.strokeRect(x0*cell - 1, row.y*cell - 1, n*cell + 2, cell + 2);
+  x2.strokeStyle = "rgba(0,0,0,.65)"; x2.lineWidth = 1;
+  x2.strokeRect(x0*cell - 2.5, row.y*cell - 2.5, n*cell + 5, cell + 5);
+}
+function renderWork(){
+  var W = S.work; if(!W){ goBack(); return; }
+  var row = W.rows[W.ri];
+  $("work-name").textContent = W.name;
+  $("work-row").textContent = "Row " + row.r;
+  $("work-side").textContent = row.rs ? "RS" : "WS";
+  $("work-dir").textContent = "of " + W.rows.length + " · " + (row.rs ? "right to left" : "left to right");
+  var doneRows = W.ri / W.rows.length;
+  $("work-fill").style.width = Math.round(doneRows * 100) + "%";
+  var box = $("work-runs"); box.innerHTML = "";
+  row.runs.forEach(function(run, i){
+    var sp = el("span", i === W.si ? "on" : (i < W.si ? "past" : ""));
+    var dot = el("i"); dot.style.background = run.c || "transparent";
+    if(!run.c) dot.style.borderStyle = "dashed";
+    sp.appendChild(dot);
+    sp.appendChild(document.createTextNode(run.n + (run.c ? (" " + W.label[run.c]) : " skip")));
+    sp.onclick = function(){ W.si = i; saveWorkPos(); renderWork(); };
+    box.appendChild(sp);
+  });
+  var cur = row.runs[W.si];
+  $("work-now").textContent = cur
+    ? (cur.c ? cur.n + " stitches in " + W.label[cur.c] + " (" + cur.c + ")" : "Skip " + cur.n + " squares")
+    : "—";
+  drawWorkChart();
+  keepAwake(true);
+}
+
+/* ==========================================================================
+   TRACING A PHOTO
+   ========================================================================== */
+var PH = { img:null, mode:"fit", src:"photo", k:8, cells:null, pal:[] };
+function quantise(d, k){
+  var n = d.length/4, step = Math.max(1, Math.floor(n/2500)), pts = [], i, j;
+  for(i=0;i<n;i+=step) if(d[i*4+3] > 24) pts.push([d[i*4], d[i*4+1], d[i*4+2]]);
+  if(!pts.length) return ["#000000"];
+  k = Math.max(2, Math.min(k, pts.length));
+  pts.sort(function(a,b){ return (a[0]+a[1]*2+a[2]) - (b[0]+b[1]*2+b[2]); });
+  var cent = [];
+  for(j=0;j<k;j++) cent.push(pts[Math.floor((j+0.5)*pts.length/k)].slice());
+  var assign = new Array(pts.length), it, best, bd, dist, dr, dg, db, sum, cnt, a;
+  for(it=0; it<8; it++){
+    for(i=0;i<pts.length;i++){
+      best = 0; bd = Infinity;
+      for(j=0;j<k;j++){
+        dr = pts[i][0]-cent[j][0]; dg = pts[i][1]-cent[j][1]; db = pts[i][2]-cent[j][2];
+        dist = dr*dr + dg*dg + db*db;
+        if(dist < bd){ bd = dist; best = j; }
+      }
+      assign[i] = best;
+    }
+    sum = []; cnt = [];
+    for(j=0;j<k;j++){ sum.push([0,0,0]); cnt.push(0); }
+    for(i=0;i<pts.length;i++){ a = assign[i]; sum[a][0]+=pts[i][0]; sum[a][1]+=pts[i][1]; sum[a][2]+=pts[i][2]; cnt[a]++; }
+    for(j=0;j<k;j++) if(cnt[j]) cent[j] = [sum[j][0]/cnt[j], sum[j][1]/cnt[j], sum[j][2]/cnt[j]];
+  }
+  var seen = {}, out = [];
+  cent.forEach(function(c){ var hx = rgbToHex(c[0],c[1],c[2]); if(!seen[hx]){ seen[hx] = 1; out.push(hx); } });
+  return out;
+}
+function photoLoad(file){
+  if(!file) return;
+  var fr = new FileReader();
+  fr.onerror = function(){ toast("Couldn't read that file."); };
+  fr.onload = function(){
+    var im = new Image();
+    im.onload = function(){ PH.img = im; $("photo-stage").hidden = false; photoRender(); };
+    im.onerror = function(){ toast("That doesn't look like a picture."); };
+    im.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+function photoRender(){
+  if(!PH.img || !S.proj) return;
+  var w = S.proj.w, h = S.proj.h;
+  var c = document.createElement("canvas"); c.width = w; c.height = h;
+  var x2 = c.getContext("2d");
+  x2.imageSmoothingEnabled = true;
+  var iw = PH.img.naturalWidth || 1, ih = PH.img.naturalHeight || 1;
+  var sc = (PH.mode === "fit") ? Math.min(w/iw, h/ih) : Math.max(w/iw, h/ih);
+  x2.drawImage(PH.img, (w - iw*sc)/2, (h - ih*sc)/2, iw*sc, ih*sc);
+  var d = x2.getImageData(0,0,w,h).data;
+  var pal = (PH.src === "basket") ? SET.basket.slice(0, PH.k) : quantise(d, PH.k);
+  if(!pal.length) pal = ["#000000"];
+  var prgb = pal.map(hexToRGB);
+  var out = new Array(w*h).fill(null), i, j, best, bd, dist, dr, dg, db;
+  for(i=0;i<w*h;i++){
+    if(d[i*4+3] < 24){ out[i] = null; continue; }
+    best = 0; bd = Infinity;
+    for(j=0;j<prgb.length;j++){
+      dr = d[i*4]-prgb[j][0]; dg = d[i*4+1]-prgb[j][1]; db = d[i*4+2]-prgb[j][2];
+      dist = dr*dr + dg*dg + db*db;
+      if(dist < bd){ bd = dist; best = j; }
+    }
+    out[i] = pal[best];
+  }
+  PH.cells = out; PH.pal = pal;
+  var pv = $("photo-prev");
+  pv.width = w; pv.height = h;
+  var pc = pv.getContext("2d");
+  pc.imageSmoothingEnabled = false;
+  pc.drawImage(smallCanvas(w, h, out, false), 0, 0);
+  $("ph-count").textContent = String(PH.k);
+  $("ph-fitmode").textContent = PH.mode === "fit" ? "Fit the whole photo" : "Fill the chart, crop the edges";
+  $("ph-source").textContent = PH.src === "photo" ? "Colours from the photo" : "Colours from my basket";
+}
+function photoApply(toGuide){
+  if(!PH.cells){ toast("Choose a photo first."); return; }
+  var p = S.proj;
+  if(toGuide){
+    p.guide = PH.cells.slice();
+    S.showGuide = true;
+    rebuildBuffer(); invalidate(); saveProject(p);
+  } else {
+    replaceAll(PH.cells.slice());
+  }
+  if(PH.src === "photo" && PH.pal.length){ SET.basket = PH.pal.slice(0,30); saveSettings(); renderSkeins(); }
+  closeSheet("sheet-photo");
+  toast(toGuide ? "On the guide — work over it." : "Stitched in. Undo takes it out.");
+}
+
+/* ==========================================================================
+   SELECTING PART OF A CHART
+   ========================================================================== */
+function selRect(){ return S.sel; }
+function selRead(){
+  var p = S.proj, r = S.sel, out = [], x, y;
+  for(y=r.y; y<r.y+r.h; y++) for(x=r.x; x<r.x+r.w; x++) out.push(p.cells[y*p.w + x]);
+  return out;
+}
+function selWrite(buf, ox2, oy2){
+  var p = S.proj, r = S.sel, x, y, tx, ty, i = 0;
+  for(y=0; y<r.h; y++) for(x=0; x<r.w; x++){
+    tx = r.x + x + (ox2||0); ty = r.y + y + (oy2||0);
+    if(tx>=0 && ty>=0 && tx<p.w && ty<p.h) put(ty*p.w + tx, buf[i]);
+    i++;
+  }
+}
+function selAction(what){
+  if(!S.sel) return;
+  var p = S.proj, r = S.sel, buf, i;
+  if(what === "done"){ S.sel = null; updateSelBar(); invalidate(); return; }
+  if(what === "copy"){
+    S.pasteBuf = { w:r.w, h:r.h, cells:selRead() };
+    S.stampKind = "cells";
+    setTool("motif", true);
+    S.sel = null; updateSelBar(); invalidate();
+    toast("Copied — tap the chart to press it down."); return;
+  }
+  beginStroke();
+  if(what === "fill" || what === "clear"){
+    var col = (what === "fill") ? S.yarn : null;
+    for(var y=r.y; y<r.y+r.h; y++) for(var x=r.x; x<r.x+r.w; x++) put(y*p.w + x, col);
+  } else if(what === "flipx" || what === "flipy" || what === "turn"){
+    buf = selRead();
+    var out = new Array(buf.length);
+    for(var yy=0; yy<r.h; yy++) for(var xx=0; xx<r.w; xx++){
+      var sx = (what === "flipx" || what === "turn") ? (r.w-1-xx) : xx;
+      var sy = (what === "flipy" || what === "turn") ? (r.h-1-yy) : yy;
+      out[yy*r.w + xx] = buf[sy*r.w + sx];
+    }
+    selWrite(out, 0, 0);
+  } else {
+    var dx = what === "left" ? -1 : (what === "right" ? 1 : 0);
+    var dy = what === "up" ? -1 : (what === "down" ? 1 : 0);
+    buf = selRead();
+    for(i=0;i<buf.length;i++){
+      var cx = r.x + (i % r.w), cy = r.y + Math.floor(i / r.w);
+      put(cy*p.w + cx, null);
+    }
+    S.sel = { x:r.x + dx, y:r.y + dy, w:r.w, h:r.h };
+    selWrite(buf, 0, 0);
+  }
+  endStroke(); invalidate(); buzz(10); updateSelBar();
+}
+function updateSelBar(){
+  var bar = $("selbar");
+  if(!bar) return;
+  if(S.sel && S.tool === "select"){
+    bar.hidden = false;
+    $("selinfo").textContent = S.sel.w + "×" + S.sel.h;
+  } else bar.hidden = true;
+}
+
+/* ==========================================================================
+   REPEATED, AND BLANKETS
+   ========================================================================== */
+function renderRepeat(){
+  var p = S.proj, cv2 = $("repeat-prev");
+  var cell = Math.max(1, Math.min(6, Math.floor(360 / (p.w*3))));
+  cv2.width = p.w*3*cell; cv2.height = p.h*3*cell;
+  var x2 = cv2.getContext("2d");
+  x2.imageSmoothingEnabled = false;
+  var tile = smallCanvas(p.w, p.h, p.cells, false);
+  for(var r=0;r<3;r++) for(var c=0;c<3;c++)
+    x2.drawImage(tile, c*p.w*cell, r*p.h*cell, p.w*cell, p.h*cell);
+  x2.strokeStyle = "rgba(182,42,99,.55)"; x2.lineWidth = 1;
+  x2.strokeRect(p.w*cell + .5, p.h*cell + .5, p.w*cell - 1, p.h*cell - 1);
+}
+function blankets(){ return lsGet("blankets", []); }
+function setBlankets(a){ return lsSet("blankets", a); }
+function currentBlanket(){
+  var all = blankets(), found = null;
+  all.forEach(function(b){ if(b.id === S.blanketId) found = b; });
+  return found;
+}
+function saveBlanket(b){
+  var all = blankets(), hit = false;
+  all.forEach(function(x, i){ if(x.id === b.id){ all[i] = b; hit = true; } });
+  if(!hit) all.unshift(b);
+  setBlankets(all);
+}
+function pieceById(id){
+  var found = null;
+  cabinet().forEach(function(x){ if(x.id === id) found = x; });
+  return found;
+}
+function blanketCanvas(b, canvas, slotPx){
+  var SL = slotPx || Math.max(24, Math.min(72, Math.floor(720 / Math.max(b.cols, b.rows))));
+  canvas.width = b.cols * SL; canvas.height = b.rows * SL;
+  var x2 = canvas.getContext("2d");
+  x2.imageSmoothingEnabled = false;
+  x2.fillStyle = css("--cloth-a") || "#ddd";
+  x2.fillRect(0, 0, canvas.width, canvas.height);
+  for(var i=0;i<b.cols*b.rows;i++){
+    var id = b.slots[i]; if(!id) continue;
+    var piece = pieceById(id); if(!piece) continue;
+    var tile = smallCanvas(piece.w, piece.h, decodeRLE(piece.rle, piece.w*piece.h), false);
+    x2.drawImage(tile, (i % b.cols)*SL, Math.floor(i / b.cols)*SL, SL, SL);
+  }
+  x2.strokeStyle = "rgba(0,0,0,.22)"; x2.lineWidth = 1;
+  for(var c=1;c<b.cols;c++){ x2.beginPath(); x2.moveTo(c*SL+.5, 0); x2.lineTo(c*SL+.5, canvas.height); x2.stroke(); }
+  for(var r=1;r<b.rows;r++){ x2.beginPath(); x2.moveTo(0, r*SL+.5); x2.lineTo(canvas.width, r*SL+.5); x2.stroke(); }
+}
+function renderBlankets(){
+  var list = $("blanket-list"); list.innerHTML = "";
+  var all = blankets();
+  if(!all.length){
+    list.innerHTML = '<div class="empty"><h3>No blankets yet</h3><p>Start one, then drop finished squares into it.</p></div>';
+    return;
+  }
+  all.forEach(function(b){
+    var card = el("button","blanketcard");
+    var c = document.createElement("canvas");
+    blanketCanvas(b, c, 22);
+    var filled = b.slots.filter(Boolean).length;
+    card.appendChild(c);
+    var t = el("span");
+    t.appendChild(el("span","t", b.name));
+    t.appendChild(el("span","h", b.cols + " across × " + b.rows + " down · " + filled + " of " + (b.cols*b.rows) + " filled"));
+    card.appendChild(t);
+    card.onclick = function(){ S.blanketId = b.id; show("blanket"); };
+    list.appendChild(card);
+  });
+}
+function renderBlanket(){
+  var b = currentBlanket();
+  if(!b){ goBack(); return; }
+  $("blanket-name").textContent = b.name;
+  blanketCanvas(b, $("blanket-prev"));
+  var filled = 0, sts = 0;
+  b.slots.forEach(function(id){ var pc = id && pieceById(id); if(pc){ filled++; sts += pc.stitches || 0; } });
+  $("blanket-facts").innerHTML =
+    '<div><b class="num">' + filled + " / " + (b.cols*b.rows) + '</b><span>Squares laid in</span></div>' +
+    '<div><b class="num">' + sts.toLocaleString() + '</b><span>Stitches so far</span></div>' +
+    '<div><b class="num">' + b.cols + "×" + b.rows + '</b><span>Layout</span></div>' +
+    '<div><b class="num">~' + metresFor(sts) + ' m</b><span>Yarn, near enough</span></div>';
+  var slots = $("blanket-slots");
+  slots.innerHTML = "";
+  var grid = el("div","bslots");
+  grid.style.gridTemplateColumns = "repeat(" + b.cols + ", 1fr)";
+  for(var i=0;i<b.cols*b.rows;i++)(function(i){
+    var cellBtn = el("button","bslot" + (b.slots[i] ? " set" : ""));
+    var piece = b.slots[i] && pieceById(b.slots[i]);
+    if(piece){
+      var c = document.createElement("canvas");
+      c.width = 40; c.height = 40;
+      paintInto(c, piece.w, piece.h, decodeRLE(piece.rle, piece.w*piece.h));
+      cellBtn.appendChild(c);
+    } else cellBtn.appendChild(el("span", null, "+"));
+    cellBtn.onclick = function(){ pickPieceFor(i); };
+    grid.appendChild(cellBtn);
+  })(i);
+  slots.appendChild(grid);
+}
+function pickPieceFor(index){
+  var b = currentBlanket(), list = $("pickpiece-list");
+  list.innerHTML = "";
+  var cab = cabinet();
+  if(!cab.length) list.innerHTML = '<div class="empty" style="grid-column:1/-1"><h3>Nothing finished yet</h3><p>Fasten a chart off and it can go in here.</p></div>';
+  cab.forEach(function(piece){
+    var btn = el("button","piece");
+    var f = el("div","frame"), c = document.createElement("canvas");
+    c.width = 140; c.height = 140;
+    f.appendChild(c); btn.appendChild(f);
+    btn.appendChild(el("div","t", piece.name));
+    paintInto(c, piece.w, piece.h, decodeRLE(piece.rle, piece.w*piece.h));
+    btn.onclick = function(){
+      if(index < 0){ for(var k=0;k<b.slots.length;k++) if(!b.slots[k]) b.slots[k] = piece.id; }
+      else b.slots[index] = piece.id;
+      saveBlanket(b);
+      closeSheet("sheet-pickpiece"); renderBlanket();
+    };
+    list.appendChild(btn);
+  });
+  $("pickpiece-clear").onclick = function(){
+    if(index < 0) b.slots = b.slots.map(function(){ return null; });
+    else b.slots[index] = null;
+    saveBlanket(b);
+    closeSheet("sheet-pickpiece"); renderBlanket();
+  };
+  openSheet("sheet-pickpiece");
+}
+function resizeBlanket(dc, dr){
+  var b = currentBlanket(); if(!b) return;
+  var nc = Math.max(1, Math.min(8, b.cols + dc)), nr = Math.max(1, Math.min(8, b.rows + dr));
+  var slots = new Array(nc*nr).fill(null);
+  for(var y=0;y<Math.min(nr, b.rows);y++) for(var x=0;x<Math.min(nc, b.cols);x++)
+    slots[y*nc + x] = b.slots[y*b.cols + x] || null;
+  b.cols = nc; b.rows = nr; b.slots = slots;
+  saveBlanket(b); renderBlanket();
+}
+
+/* ==========================================================================
+   WIRING
+   ========================================================================== */
+function wire(){
+  document.addEventListener("click", function(ev){
+    var g = ev.target.closest("[data-go]");
+    if(g){ show(g.getAttribute("data-go")); return; }
+    if(ev.target.closest("[data-back]")){ goBack(); return; }
+    var c = ev.target.closest("[data-close]");
+    if(c){ var sh = c.closest(".sheet"); if(sh) sh.classList.remove("on"); return; }
+  });
+
+  $("cast-on").onclick = castOn;
+
+  /* tools */
+  var tools = document.querySelectorAll("#tools .tool[data-tool]");
+  for(var i=0;i<tools.length;i++)(function(b){
+    b.onclick = function(){ setTool(b.getAttribute("data-tool")); };
+  })(tools[i]);
+  $("btn-mirror").onclick = openMirror;
+  $("btn-aim").onclick = function(){
+    S.aim = !S.aim;
+    $("btn-aim").classList.toggle("on", S.aim);
+    $("nudge").classList.toggle("on", S.aim);
+    if(S.aim && S.view.scale < 12) zoomAbout({x:stage.getBoundingClientRect().width/2, y:stage.getBoundingClientRect().height/2}, 18);
+    invalidate();
+    if(S.aim) toast("Arrows move one stitch at a time. The tick works the tool.");
+  };
+  $("nudge").addEventListener("click", function(ev){
+    var b = ev.target.closest("button"); if(!b) return;
+    var n = b.getAttribute("data-n"); if(!n) return;
+    var d = n.split(",");
+    setCursor({ x:S.cursor.x + parseInt(d[0],10), y:S.cursor.y + parseInt(d[1],10) });
+    ensureCursorVisible(); clampView(); invalidate();
+  });
+  $("nudge-go").addEventListener("click", applyToolAtCursor);
+
+  $("dye").onclick = openDye;
+  $("btn-undo").onclick = undo;
+  $("btn-redo").onclick = redo;
+  $("btn-more").onclick = function(){
+    var st = S.proj.cells.filter(Boolean).length;
+    $("more-sub").textContent = S.proj.name + " · " + S.proj.w + "×" + S.proj.h + " · " + st.toLocaleString() + " stitches worked";
+    $("m-grid-state").textContent = S.showGrid ? "on" : "off";
+    openSheet("sheet-more");
+  };
+  $("m-fasten").onclick = fastenOff;
+  $("m-write").onclick = function(){
+    closeSheet("sheet-more");
+    showWritten(S.proj.name, S.proj.w, S.proj.h, S.proj.cells, "chart:" + S.proj.id);
+  };
+  $("m-mirror").onclick = function(){ closeSheet("sheet-more"); openMirror(); };
+  $("m-shape").onclick  = function(){ closeSheet("sheet-more"); renderRegauge(); openSheet("sheet-shape"); };
+  $("m-yarns").onclick  = function(){ closeSheet("sheet-more"); renderYarnsSheet(); openSheet("sheet-yarns"); };
+  $("m-code").onclick   = function(){
+    closeSheet("sheet-more");
+    copyText(chartCode(S.proj.name, S.proj.w, S.proj.h, S.proj.cells), "Chart code copied — paste it to whoever you like.");
+    SET.stats.gifted = true; saveSettings();
+  };
+
+  /* shape */
+  $("sh-flipx").onclick  = function(){ replaceAll(mapCells(function(x,y,w){ return [w-1-x, y]; })); };
+  $("sh-flipy").onclick  = function(){ replaceAll(mapCells(function(x,y,w,h){ return [x, h-1-y]; })); };
+  $("sh-rot180").onclick = function(){ replaceAll(mapCells(function(x,y,w,h){ return [w-1-x, h-1-y]; })); };
+  $("sh-rot90").onclick  = function(){
+    if(S.proj.w !== S.proj.h){ toast("A quarter turn only works on a square chart."); return; }
+    replaceAll(mapCells(function(x,y,w,h){ return [h-1-y, x]; }));
+  };
+  $("sheet-shape").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-shift]"); if(!b) return;
+    var d = b.getAttribute("data-shift").split(",");
+    var dx = parseInt(d[0],10), dy = parseInt(d[1],10);
+    replaceAll(mapCells(function(x,y){ return [x+dx, y+dy]; }));
+  });
+
+  /* zoom pill */
+  function stageMid(){ var r = stage.getBoundingClientRect(); return {x:r.width/2, y:r.height/2}; }
+  $("z-in").onclick  = function(){ zoomAbout(stageMid(), Math.min(80, S.view.scale*1.6)); };
+  $("z-out").onclick = function(){ zoomAbout(stageMid(), Math.max(1.2, S.view.scale/1.6)); };
+  $("z-fit").onclick = function(){ fitView(); invalidate(); };
+  $("z-pan").onclick = function(){
+    S.panLock = !S.panLock;
+    $("z-pan").classList.toggle("on", S.panLock);
+    toast(S.panLock ? "One finger pans now." : "One finger draws again.");
+  };
+  $("tips-ok").onclick = function(){ $("tips").hidden = true; SET.tipsSeen = true; saveSettings(); };
+
+  /* settings */
+  $("settings-btn").onclick = function(){ renderSettings(); openSheet("sheet-settings"); };
+  $("set-theme").onclick = function(){ cycleTheme(); renderSettings(); };
+  $("set-buzz").onclick  = function(){ SET.buzz = !SET.buzz; saveSettings(); renderSettings(); buzz(20); };
+  $("set-awake").onclick = function(){
+    SET.awake = !SET.awake; saveSettings(); renderSettings();
+    keepAwake(SET.awake && S.screen === "loom");
+  };
+  $("set-rule").onclick  = function(){ SET.rule = SET.rule === 10 ? 8 : (SET.rule === 8 ? 5 : 10); saveSettings(); renderSettings(); invalidate(); };
+  $("set-tips").onclick  = function(){ SET.tipsSeen = false; saveSettings(); closeSheet("sheet-settings"); toast("They'll show next time you open a chart."); };
+
+  /* photo */
+  $("m-photo").onclick  = function(){
+    closeSheet("sheet-more");
+    $("photo-stage").hidden = !PH.img;
+    if(PH.img) photoRender();
+    openSheet("sheet-photo");
+  };
+  $("photoin").addEventListener("change", function(){ photoLoad(this.files && this.files[0]); });
+  $("ph-fitmode").onclick = function(){ PH.mode = PH.mode === "fit" ? "fill" : "fit"; photoRender(); };
+  $("ph-source").onclick  = function(){ PH.src = PH.src === "photo" ? "basket" : "photo"; photoRender(); };
+  $("ph-less").onclick    = function(){ PH.k = Math.max(2, PH.k - 1); photoRender(); };
+  $("ph-more").onclick    = function(){ PH.k = Math.min(16, PH.k + 1); photoRender(); };
+  $("ph-guide").onclick   = function(){ photoApply(true); };
+  $("ph-stitch").onclick  = function(){ photoApply(false); };
+
+  /* repeated */
+  $("m-repeat").onclick = function(){ closeSheet("sheet-more"); renderRepeat(); openSheet("sheet-repeat"); };
+
+  /* selection */
+  $("selbar").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-sel]"); if(!b) return;
+    selAction(b.getAttribute("data-sel"));
+  });
+
+  /* blankets */
+  $("blanket-new").onclick = function(){
+    ask({ title:"A new blanket", msg:"What's it going to be called?", input:true, value:"Blanket", ok:"Start it" })
+      .then(function(v){
+        if(v === null) return;
+        var b = { id:uid(), name:String(v || "Blanket").slice(0,40), cols:3, rows:4, slots:new Array(12).fill(null), at:Date.now() };
+        saveBlanket(b); S.blanketId = b.id; show("blanket");
+      });
+  };
+  $("scr-blanket").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-blanket]"); if(!b) return;
+    var k = b.getAttribute("data-blanket");
+    resizeBlanket(k === "cols+" ? 1 : (k === "cols-" ? -1 : 0), k === "rows+" ? 1 : (k === "rows-" ? -1 : 0));
+  });
+  $("blanket-rename").onclick = function(){
+    var b = currentBlanket(); if(!b) return;
+    ask({ title:"Rename", msg:"What's this blanket called?", input:true, value:b.name, ok:"Rename" })
+      .then(function(v){ if(v === null) return; b.name = String(v || b.name).slice(0,40); saveBlanket(b); renderBlanket(); });
+  };
+  $("blanket-fill").onclick = function(){ if(currentBlanket()) pickPieceFor(-1); };
+  $("blanket-del").onclick = function(){
+    var b = currentBlanket(); if(!b) return;
+    ask({ title:"Take it apart?", msg:"The layout goes; the squares stay in the cabinet.", ok:"Take it apart", danger:true })
+      .then(function(ok){
+        if(!ok) return;
+        setBlankets(blankets().filter(function(x){ return x.id !== b.id; }));
+        goBack();
+      });
+  };
+
+  /* working mode */
+  $("work-next").onclick = function(){ workStep(1); };
+  $("work-prev").onclick = function(){ workStep(-1); };
+  $("work-restart").onclick = function(){
+    ask({ title:"Start again?", msg:"Back to row 1, first stitch.", ok:"Start again" }).then(function(ok){
+      if(!ok || !S.work) return;
+      S.work.ri = 0; S.work.si = 0; saveWorkPos(); renderWork();
+    });
+  };
+  $("written-work").onclick = function(){
+    var c = S.writtenCtx; if(!c) return;
+    closeSheet("sheet-written");
+    startWork(c.key, c.name, c.w, c.h, c.cells);
+  };
+  $("set-store").onclick = function(){ askPersist(false); };
+  $("set-yarn").onclick = function(){
+    var steps = [3.5, 4.5, 5.5, 7, 9], i = steps.indexOf(SET.cmPerStitch);
+    SET.cmPerStitch = steps[(i + 1) % steps.length];
+    saveSettings(); renderSettings();
+  };
+
+  $("m-guide").onclick = function(){
+    closeSheet("sheet-more");
+    renderTemplates();
+    $("g-show-state").textContent = S.showGuide ? "showing" : "hidden";
+    openSheet("sheet-guide");
+  };
+  $("g-show").onclick = function(){
+    S.showGuide = !S.showGuide;
+    $("g-show-state").textContent = S.showGuide ? "showing" : "hidden";
+    rebuildBuffer(); invalidate();
+  };
+  $("g-copy").onclick = function(){
+    S.proj.guide = S.proj.cells.slice();
+    S.showGuide = true;
+    rebuildBuffer(); invalidate(); saveProject(S.proj);
+    closeSheet("sheet-guide");
+    toast("Copied down. Unravel the chart and work over it.");
+  };
+  $("g-clear").onclick = function(){
+    S.proj.guide = null;
+    rebuildBuffer(); invalidate(); saveProject(S.proj);
+    closeSheet("sheet-guide");
+    toast("Guide cleared.");
+  };
+  $("m-fit").onclick = function(){ fitView(); invalidate(); closeSheet("sheet-more"); };
+  $("m-grid").onclick = function(){ S.showGrid = !S.showGrid; $("m-grid-state").textContent = S.showGrid ? "on" : "off"; invalidate(); };
+
+  /* letters */
+  $("textin").addEventListener("input", refreshTextPreview);
+  $("text-dir").onclick = function(){
+    S.textDir = S.textDir === "across" ? "down" : "across";
+    $("text-dir").textContent = S.textDir === "across" ? "Across" : "Down";
+    refreshTextPreview();
+  };
+  $("text-load").onclick = function(){
+    refreshTextPreview();
+    if(!S.textArt){ toast("Type something first."); return; }
+    if(S.textArt[0].length > S.proj.w || S.textArt.length > S.proj.h)
+      toast("That's wider than the chart — it'll be cut off at the edges.");
+    else toast("Loaded — tap the chart to place it.");
+    S.stampKind = "text";
+    setTool("motif", true);
+    closeSheet("sheet-motif");
+    SET.stats.lettered = true; saveSettings();
+    renderMotifs();
+  };
+  $("m-rename").onclick = function(){
+    closeSheet("sheet-more");
+    ask({ title:"Rename", msg:"What is this chart called?", input:true, value:S.proj.name, ok:"Rename" })
+      .then(function(v){
+        if(v === null) return;
+        S.proj.name = (v || S.proj.name).slice(0,48);
+        $("loom-name").textContent = S.proj.name;
+        saveProject(S.proj);
+      });
+  };
+  $("m-clear").onclick = function(){
+    closeSheet("sheet-more");
+    ask({ title:"Unravel", msg:"Take out every stitch on this chart. Undo can put them back.",
+          ok:"Unravel it", danger:true }).then(function(ok){
+      if(!ok) return;
+      beginStroke();
+      for(var k=0;k<S.proj.cells.length;k++) put(k, null);
+      endStroke(); invalidate();
+    });
+  };
+  $("m-delete").onclick = function(){
+    closeSheet("sheet-more");
+    var name = S.proj.name, id = S.proj.id;
+    ask({ title:"Throw it away?", msg:"“"+name+"” goes for good. Fasten it off first if you want to keep it.",
+          ok:"Throw it away", danger:true }).then(function(ok){
+      if(!ok) return;
+      deleteProject(id);
+      S.proj = null; S.stack = []; show("hearth", true);
+    });
+  };
+
+  /* the chart surface */
+  cv.addEventListener("pointerdown", function(ev){
+    ev.preventDefault();
+    if(pointers.size === 0 && isDoubleTap(ev)){
+      takeBackLastStroke();
+      var pt = localPoint(ev);
+      zoomAbout(pt, S.view.scale < 16 ? 22 : Math.max(2, S.view.scale/3));
+      lastTap = 0;
+      return;
+    }
+    onDown(ev);
+  }, {passive:false});
+  cv.addEventListener("pointermove", onMove, {passive:false});
+  cv.addEventListener("pointerup", onUp);
+  cv.addEventListener("pointercancel", onUp);
+  cv.addEventListener("contextmenu", function(ev){ ev.preventDefault(); });
+
+  /* colour picker */
+  canvasDrag($("sv"), function(p){ pk.s = p.x; pk.v = 1-p.y; syncPicker(); });
+  canvasDrag($("hue"), function(p){ pk.h = p.x*360; syncPicker(); });
+  $("phex").addEventListener("input", function(){
+    var v = $("phex").value;
+    if(isValidHex(v)){
+      var rgb = hexToRGB(normHex(v)), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
+      pk.h = hsv[0]; pk.s = hsv[1]; pk.v = hsv[2];
+      syncPicker(true);
+    }
+  });
+  $("pkeep").onclick = function(){
+    var hex = pkHex();
+    if(SET.basket.indexOf(hex) < 0){ SET.basket.unshift(hex); if(SET.basket.length > 30) SET.basket.pop(); }
+    saveSettings(); renderBasketGrid(); renderSkeins(); setYarn(hex);
+    toast("Into the basket.");
+  };
+
+  /* the ask sheet */
+  $("ask-yes").onclick = function(){ var i = $("ask-input"); askDone(i.hidden ? true : i.value); };
+  $("ask-no").onclick  = function(){ askDone(null); };
+  $("ask-scrim").onclick = function(){ askDone(null); };
+  $("ask-input").addEventListener("keydown", function(ev){ if(ev.key === "Enter"){ ev.preventDefault(); askDone($("ask-input").value); } });
+
+  /* charms */
+  $("codego").onclick = sayCharm;
+  $("codein").addEventListener("keydown", function(ev){ if(ev.key === "Enter") sayCharm(); });
+
+  /* share */
+  $("install-btn").onclick = function(){
+    if(!deferredInstall) return;
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(function(){ deferredInstall = null; installState(); });
+  };
+  $("update-btn").onclick = function(){
+    if(!swWaiting) return;
+    swWaiting.postMessage("skip-waiting");
+    toast("Updating…");
+  };
+  $("copylink").onclick = function(){ copyText(location.href.split("#")[0], "Link copied."); };
+  $("backup-file").onclick = function(){
+    if(saveFile("threadwyn-backup-" + stamp() + ".json", collectBackup())) toast("Saved to Downloads.");
+    else toast("Couldn't save a file here — copy the backup text instead.");
+  };
+  $("restorein").addEventListener("change", function(){ readBackupFile(this.files && this.files[0]); });
+  $("backup-make").onclick = function(){ copyText(collectBackup(), "Backup copied. Paste it somewhere safe."); };
+  $("backup-load").onclick = function(){ restoreBackup($("backup").value); };
+  $("code-load").onclick = function(){ openChartCode($("backup").value); };
+
+  /* the phone turning, the keyboard opening */
+  var resizeTimer;
+  function onResize(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function(){
+      if(S.screen !== "loom" || !S.proj) return;
+      sizeCanvas(); clampView(); invalidate();
+    }, 90);
+  }
+  window.addEventListener("resize", onResize);
+  window.addEventListener("orientationchange", onResize);
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden) saveProject(S.proj);
+    else if(S.screen === "loom") keepAwake(true);
+  });
+  window.addEventListener("pagehide", function(){ saveProject(S.proj); });
+}
+
+/* ==========================================================================
+   FILES — real downloads, which only work outside a sandboxed frame
+   ========================================================================== */
+function inFrame(){ try{ return window.top !== window.self; }catch(e){ return true; } }
+function canSaveFiles(){ return !inFrame(); }
+function saveFile(name, data, mime){
+  try{
+    var blob = (data instanceof Blob) ? data : new Blob([data], { type: mime || "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 4000);
+    return true;
+  }catch(e){ return false; }
+}
+function stamp(){
+  var d = new Date();
+  function two(v){ return (v < 10 ? "0" : "") + v; }
+  return d.getFullYear() + "-" + two(d.getMonth()+1) + "-" + two(d.getDate());
+}
+function dataURLtoBlob(url){
+  var parts = url.split(","), mime = /:(.*?);/.exec(parts[0])[1];
+  var bin = atob(parts[1]), len = bin.length, arr = new Uint8Array(len);
+  for(var i=0;i<len;i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime });
+}
+function safeName(s){ return String(s || "piece").replace(/[^A-Za-z0-9 _-]/g, "").trim().replace(/\s+/g, "-").slice(0,40) || "piece"; }
+function readBackupFile(file){
+  if(!file) return;
+  var fr = new FileReader();
+  fr.onerror = function(){ toast("Couldn't read that file."); };
+  fr.onload = function(){ restoreBackup(String(fr.result)); };
+  fr.readAsText(file);
+}
+
+/* ==========================================================================
+   KEEPING THE WORK — persistent storage
+   ========================================================================== */
+function refreshStorage(){
+  var st = $("set-store-state"); if(!st) return;
+  if(!navigator.storage || !navigator.storage.estimate){ st.textContent = "not offered here"; return; }
+  var parts = [];
+  function paint(){ st.textContent = parts.join(" · ") || "unknown"; }
+  if(navigator.storage.persisted){
+    navigator.storage.persisted().then(function(ok){
+      parts[0] = ok ? "protected" : "tap to protect"; paint();
+    }, function(){ parts[0] = "unknown"; paint(); });
+  } else parts[0] = "unknown";
+  navigator.storage.estimate().then(function(e){
+    if(e && e.usage != null) parts[1] = (e.usage < 1048576 ? Math.round(e.usage/1024) + " KB" : (e.usage/1048576).toFixed(1) + " MB") + " used";
+    paint();
+  }, function(){});
+  paint();
+}
+function askPersist(quiet){
+  if(!navigator.storage || !navigator.storage.persist){ if(!quiet) toast("This browser doesn't offer it."); return; }
+  navigator.storage.persist().then(function(ok){
+    if(!quiet) toast(ok ? "Protected. The browser will keep her work." : "The browser said no for now — it usually says yes once the app is installed and used a few times.");
+    refreshStorage();
+  }, function(){ if(!quiet) toast("Couldn't ask for that here."); });
+}
+
+/* ==========================================================================
+   INSTALLING, AND KEEPING UP TO DATE
+   ========================================================================== */
+var deferredInstall = null, swWaiting = null;
+function installState(){
+  var btn = $("install-btn"), note = $("install-note"), upd = $("update-btn");
+  if(!btn) return;
+  var standalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+  var framed = false;
+  try{ framed = window.top !== window.self; }catch(e){ framed = true; }
+
+  btn.hidden = !deferredInstall;
+  upd.hidden = !swWaiting;
+
+  if(standalone) note.textContent = "Installed. It opens from your home screen and works with no signal.";
+  else if(deferredInstall) note.textContent = "Adds Threadwyn to the home screen. It then opens full screen and keeps working offline.";
+  else if(framed) note.textContent = "Opened inside another page, so it can't install itself here. Open the link in your browser and the option appears.";
+  else note.textContent = "If no button shows, use the browser menu — Add to Home screen on Android, or Share then Add to Home Screen on iPhone.";
+}
+window.addEventListener("beforeinstallprompt", function(ev){
+  ev.preventDefault();
+  deferredInstall = ev;
+  installState();
+});
+window.addEventListener("appinstalled", function(){
+  deferredInstall = null;
+  installState();
+  toast("Installed. Look for the yarn icon.");
+});
+function registerWorker(){
+  if(!("serviceWorker" in navigator)) return;
+  if(location.protocol !== "http:" && location.protocol !== "https:") return;
+  try{
+    navigator.serviceWorker.register("./sw.js").then(function(reg){
+      if(reg.waiting){ swWaiting = reg.waiting; installState(); }
+      reg.addEventListener("updatefound", function(){
+        var sw = reg.installing;
+        if(!sw) return;
+        sw.addEventListener("statechange", function(){
+          if(sw.state === "installed" && navigator.serviceWorker.controller){
+            swWaiting = sw; installState();
+            toast("A new version is ready — Share & backup to take it.");
+          }
+        });
+      });
+    }, function(){});
+    var hadController = !!navigator.serviceWorker.controller, reloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function(){
+      if(!hadController || reloading) return;   /* first install: nothing to reload for */
+      reloading = true;
+      location.reload();
+    });
+  }catch(e){}
+}
+
+/* ---------------- boot ---------------- */
+function start(hot){
+  cv = $("cv"); stage = $("stage");
+  loupeEl = $("loupe"); loupeCv = $("loupe-cv"); loupeCtx = loupeCv.getContext("2d");
+  applyTheme();
+  seedFirstRun();
+  wire();
+  registerWorker();
+  try{
+    if(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) askPersist(true);
+  }catch(e){}
+  renderMotifs();
+  setYarn(SET.basket[6] || "#B62A63");
+  var target = "hearth";
+  if(hot && hot.screen && SCREENS.indexOf(hot.screen) >= 0){
+    if(hot.screen === "loom" && hot.projectId){
+      var p = loadProject(hot.projectId);
+      if(p){ S.proj = p; target = "loom"; }
+    } else if(hot.screen !== "loom" && hot.screen !== "piece") target = hot.screen;
+  }
+  show(target, true);
+}
+if(window.claude && window.claude.hot){
+  try{ window.claude.hot.snapshot(function(){ return { screen:S.screen, projectId:S.proj ? S.proj.id : null }; }); }catch(e){}
+  if(window.claude.hot.ready) window.claude.hot.ready(start);
+  else start(window.claude.hot.data || {});
+} else start({});
+
+})();
+</script>

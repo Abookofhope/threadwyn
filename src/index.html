@@ -118,7 +118,7 @@ input,textarea{font:inherit;color:inherit}
 #loupe canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
 #loupe.on{display:block}
 
-.tray{background:var(--paper);border-top:1px solid var(--line);
+.tray{position:relative;background:var(--paper);border-top:1px solid var(--line);
   padding:9px max(10px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom));
   display:flex;flex-direction:column;gap:9px}
 .tools{display:flex;gap:5px}
@@ -277,6 +277,11 @@ input,textarea{font:inherit;color:inherit}
 .tipcard li::marker{color:var(--accent)}
 .note-line{font-size:13px;color:var(--ink-2);font-style:italic;text-align:center;padding:0 10px}
 .railsep{height:1px;background:var(--line);margin:3px 5px}
+.toolhint{display:none;position:absolute;left:8px;right:8px;bottom:100%;margin-bottom:8px;z-index:4;
+  font-size:12.5px;line-height:1.4;color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--line);border-radius:11px;padding:8px 12px;box-shadow:var(--shadow-2)}
+.toolhint.on{display:block}
+.toolhint b{color:var(--ink);font-weight:700}
 .zoompill .badge{position:absolute;bottom:2px;right:4px;font-size:9px;font-weight:700}
 .zoompill button{position:relative}
 .selbar{display:flex;gap:6px;overflow-x:auto;padding:2px;scrollbar-width:none;align-items:center}
@@ -514,6 +519,7 @@ input,textarea{font:inherit;color:inherit}
    </div>
  </div>
  <div class="tray">
+   <div class="toolhint" id="toolhint">—</div>
    <div class="tools" id="tools">
      <button class="tool on" data-tool="stitch" title="Stitch"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
      <button class="tool" data-tool="unpick" title="Unpick"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-erase"/></svg></button>
@@ -522,7 +528,7 @@ input,textarea{font:inherit;color:inherit}
      <button class="tool" data-tool="row" title="Straight run"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-line"/></svg></button>
      <button class="tool" data-tool="block" title="Block"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg></button>
      <button class="tool" data-tool="select" title="Select"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-select"/></svg></button>
-     <button class="tool" data-tool="motif" title="Stamp"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stamp"/></svg></button>
+     <button class="tool" data-tool="motif" title="Stamps"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stamp"/></svg></button>
    </div>
    <div class="selbar" id="selbar" hidden>
      <span class="selinfo" id="selinfo">—</span>
@@ -2109,6 +2115,7 @@ function setTool(t, quiet){
   var all = document.querySelectorAll("#tools .tool[data-tool]");
   for(var i=0;i<all.length;i++) all[i].classList.toggle("on", all[i].getAttribute("data-tool") === t);
   if(t === "motif" && !quiet) openSheet("sheet-motif");
+  showToolHint(t);
   updateSelBar();
 }
 function setYarn(hex){
@@ -3346,6 +3353,8 @@ function wire(){
   for(var i=0;i<tools.length;i++)(function(b){
     b.onclick = function(){ setTool(b.getAttribute("data-tool")); };
   })(tools[i]);
+  bindHoldHints($("tools"));
+  bindHoldHints(document.querySelector(".zoompill"));
   $("btn-mirror").onclick = openMirror;
   $("btn-aim").onclick = function(){
     S.aim = !S.aim;
@@ -3659,6 +3668,66 @@ function wire(){
     else if(S.screen === "loom") keepAwake(true);
   });
   window.addEventListener("pagehide", function(){ saveProject(S.proj); });
+}
+
+/* ==========================================================================
+   WHAT THIS BUTTON DOES
+   A `title` attribute only shows on hover, and a phone has no hover — so every
+   control says its name on selection, and on a long press.
+   ========================================================================== */
+var TOOL_HELP = {
+  stitch: { n:"Stitch",        d:"Drag to lay yarn down, one square at a time." },
+  unpick: { n:"Unpick",        d:"Drag to take stitches back out." },
+  flood:  { n:"Flood",         d:"Tap a patch and the whole patch fills in one go." },
+  match:  { n:"Match a yarn",  d:"Tap any stitch to load the colour it's worked in." },
+  row:    { n:"Straight run",  d:"Drag from one square to another for a clean line." },
+  block:  { n:"Block",         d:"Drag out a rectangle and fill it solid." },
+  select: { n:"Select",        d:"Drag a box, then nudge, flip, turn, copy or clear just that part." },
+  motif:  { n:"Stamps",        d:"Hearts, stars, and letters you can type. Tap the chart to press one in." },
+  "btn-mirror": { n:"Mirror",  d:"Work one half and the other follows. The crease can sit anywhere." },
+  "btn-aim":    { n:"Aim pad", d:"Arrows move one stitch at a time; the tick works the tool. For fiddly bits." },
+  "z-in":       { n:"Closer",  d:"Zoom in on the middle of the chart." },
+  "z-out":      { n:"Further", d:"Zoom back out." },
+  "z-fit":      { n:"Fit",     d:"Bring the whole chart back onto the screen." },
+  "z-pan":      { n:"Hand",    d:"One finger slides the chart instead of drawing on it." }
+};
+var hintTimer;
+function showToolHint(key){
+  var h = TOOL_HELP[key], box = $("toolhint");
+  if(!box) return;
+  if(!h){ box.classList.remove("on"); return; }
+  box.innerHTML = "<b>" + h.n + "</b> — " + h.d;
+  box.classList.add("on");
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(function(){ box.classList.remove("on"); }, 2800);
+}
+/* Hold any control for a moment to be told what it is, without setting it off. */
+function bindHoldHints(host){
+  var timer = null, fired = false, from = null;
+  host.addEventListener("pointerdown", function(ev){
+    var b = ev.target.closest("button"); if(!b) return;
+    fired = false; from = { x:ev.clientX, y:ev.clientY };
+    clearTimeout(timer);
+    timer = setTimeout(function(){
+      fired = true;
+      showToolHint(b.getAttribute("data-tool") || b.id);
+      buzz(14);
+    }, 420);
+  });
+  host.addEventListener("pointermove", function(ev){
+    if(!from) return;
+    if(Math.abs(ev.clientX - from.x) > 12 || Math.abs(ev.clientY - from.y) > 12) clearTimeout(timer);
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(function(e){
+    host.addEventListener(e, function(){ clearTimeout(timer); from = null; });
+  });
+  /* Capture phase, so a long press never also triggers the button. */
+  host.addEventListener("click", function(ev){
+    if(!fired) return;
+    fired = false;
+    ev.preventDefault();
+    ev.stopPropagation();
+  }, true);
 }
 
 /* ==========================================================================

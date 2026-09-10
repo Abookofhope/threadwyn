@@ -33,6 +33,24 @@ uploaded anywhere.
   blankets before sewing a seam.
 - **Charm codes** — words that unlock skein sets, bigger looms and extra tools.
 
+## Worked up
+
+Any chart can be seen as **actual fabric**. Every square is drawn as a
+procedural single crochet — a rounded body, light falling across it, the V of
+its two top loops, and the bar of the row below tucking underneath. Rows lean
+alternately because right-side and wrong-side rows really do, they overlap the
+row beneath so the fabric looks layered rather than tiled, and each stitch
+carries a fixed sliver of colour variation so it reads as worked rather than
+printed.
+
+It is drawn once into an offscreen canvas, so a 100×100 costs no more to look
+at than a coaster.
+
+Set your own tension (stitches and rows per 10 cm — work a swatch and count)
+and the screen tells you the **true finished size in centimetres**, plus a
+shopping list: every colour named in plain words, with its stitch count and
+roughly how many metres of it you need.
+
 ## Shortcuts worth knowing
 
 | Gesture | What it does |

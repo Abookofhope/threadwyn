@@ -294,6 +294,25 @@ input,textarea{font:inherit;color:inherit}
 .tipcard li::marker{color:var(--accent)}
 .note-line{font-size:13px;color:var(--ink-2);font-style:italic;text-align:center;padding:0 10px}
 .railsep{height:1px;background:var(--line);margin:3px 5px}
+.fabwrap{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;
+  padding:14px max(16px,env(safe-area-inset-left)) calc(20px + env(safe-area-inset-bottom))}
+.fabstage{border-radius:16px;overflow:hidden;background:var(--ground);border:1px solid var(--line);
+  box-shadow:var(--shadow-2);display:grid;place-items:center;padding:10px}
+#fabric-cv{width:100%;height:auto;display:block;border-radius:8px}
+.fabbar{display:flex}
+.fabbar .seg{flex:1}
+.gaugerow{display:flex;align-items:center;gap:6px;margin-top:8px}
+.gaugerow button{width:38px;height:38px;border:1px solid var(--line);border-radius:11px;display:grid;place-items:center;background:var(--paper);flex:none}
+.gaugerow .gv{flex:1;text-align:center;font-size:13px;color:var(--ink-3);white-space:nowrap}
+.gaugerow .gv b{font-family:var(--display);font-size:19px;color:var(--ink);margin-right:3px}
+.gaugerow .gsep{width:1px;height:26px;background:var(--line);flex:none;margin:0 2px}
+.shadelist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.shaderow{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.shaderow i{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);flex:none;display:block}
+.shaderow .nm2{flex:1;min-width:0;font-size:13.5px}
+.shaderow .nm2 b{display:block;font-family:var(--display);font-size:15px;font-weight:600}
+.shaderow .nm2 span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.shaderow .amt{font-size:12px;color:var(--ink-3);text-align:right;flex:none;font-variant-numeric:tabular-nums}
 .tilegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .tile{display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center;padding:12px 4px;
   border:1px solid var(--line);border-radius:15px;background:var(--raise);min-height:76px;
@@ -385,6 +404,7 @@ input,textarea{font:inherit;color:inherit}
 <g id="i-down"><path d="M12 6v12M6.5 12.5L12 18l5.5-5.5"/></g>
 <g id="i-left"><path d="M18 12H6M11.5 6.5L6 12l5.5 5.5"/></g>
 <g id="i-right"><path d="M6 12h12M12.5 6.5L18 12l-5.5 5.5"/></g>
+<g id="i-yarn"><circle cx="12" cy="12" r="8.5"/><path d="M6.2 6.6c3.2 1.6 5.4 4.6 6.1 8.3M17.8 6.6c-3.2 1.6-5.4 4.6-6.1 8.3M3.6 13.4c3.8-.6 7.4.6 10 3.4M20.4 13.4c-3.8-.6-7.4.6-10 3.4"/></g>
 <g id="i-rotate"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.5V9h-5.5"/></g>
 <g id="i-palette"><path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.4 0 2-.9 2-1.8 0-1.3-1.1-1.7-1.1-2.9 0-.8.7-1.4 1.6-1.4h1.6A4.4 4.4 0 0 0 20.5 10c0-3.6-3.8-6.5-8.5-6.5z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/></g>
 <g id="i-layers"><path d="M12 3.5l8.5 4.3L12 12 3.5 7.8z"/><path d="M4 12.2l8 4 8-4M4 16.2l8 4 8-4"/></g>
@@ -611,10 +631,44 @@ input,textarea{font:inherit;color:inherit}
    <div class="facts" id="piece-facts"></div>
    <button class="btn" id="piece-note-btn">Add a note to this piece</button>
    <button class="btn" id="piece-code">Copy this chart as a code</button>
+   <button class="btn" id="piece-fabric">See it worked up in yarn</button>
    <button class="btn go" id="piece-work">Work it with me, row by row</button>
    <button class="btn" id="piece-write">Write it out as a crochet pattern</button>
    <button class="btn" id="piece-copy">Work it again on a fresh chart</button>
    <button class="btn danger" id="piece-del">Take it out of the cabinet</button>
+ </div>
+</section>
+
+<!-- ============ THE FABRIC ============ -->
+<section class="screen flex" id="scr-fabric">
+ <div class="bar">
+   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <h2 id="fabric-name">Worked up</h2>
+   <button class="ib" id="fabric-save" hidden aria-label="Save the picture"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-share"/></svg></button>
+ </div>
+ <div class="fabwrap">
+   <div class="fabstage" id="fabstage"><canvas id="fabric-cv"></canvas></div>
+   <div class="fabbar">
+     <div class="seg" id="fab-seg">
+       <button data-fab="yarn" class="on"><span>Worked up</span></button>
+       <button data-fab="chart"><span>Chart</span></button>
+     </div>
+   </div>
+   <div class="facts" id="fabric-facts"></div>
+   <div class="axis">
+     <div class="lab">Your tension — per 10&nbsp;cm</div>
+     <div class="gaugerow">
+       <button data-g="sts-"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+       <span class="gv"><b id="g-sts">16</b> sts</span>
+       <button data-g="sts+"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       <span class="gsep"></span>
+       <button data-g="rows-"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+       <span class="gv"><b id="g-rows">18</b> rows</span>
+       <button data-g="rows+"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+     </div>
+     <p class="note" style="margin:8px 2px 0">Work a 10&nbsp;cm square, count what you actually get, and put it in here. Everything below is then true to your hands.</p>
+   </div>
+   <div id="fabric-shades"></div>
  </div>
 </section>
 
@@ -763,6 +817,7 @@ input,textarea{font:inherit;color:inherit}
      <button class="tile" id="m-yarns"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-palette"/></svg><span>Yarns</span></button>
      <button class="tile" id="m-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-photo"/></svg><span>Photo</span></button>
      <button class="tile" id="m-guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-layers"/></svg><span>Guide</span></button>
+     <button class="tile" id="m-fabric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-yarn"/></svg><span>Worked up</span></button>
      <button class="tile" id="m-repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid4"/></svg><span>Repeat</span></button>
      <button class="tile" id="m-fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg><span>Fit</span></button>
      <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span>Lines <b id="m-grid-state">on</b></span></button>
@@ -1253,6 +1308,7 @@ var S = {
   undoStack: [], redoStack: [],
   view: {scale:10, ox:0, oy:0},
   pieceId: null, prevYarn: null, chartActId: null,
+  fabric: null, fabricMode: "yarn",
   sel: null, selPreview: null, pasteBuf: null,
   work: null, blanketId: null, writtenCtx: null,
   newGauge: 2,
@@ -1261,6 +1317,7 @@ var S = {
 var SET = lsGet("settings", null) || {
   theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
   buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5, recent:[],
+  gaugeSts:16, gaugeRows:18,
   stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
          bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
   seeded:false
@@ -1276,6 +1333,8 @@ if(SET.awake === undefined) SET.awake = true;
 if(!SET.rule) SET.rule = 10;
 if(!SET.cmPerStitch) SET.cmPerStitch = 5.5;
 if(!SET.recent) SET.recent = [];
+if(!SET.gaugeSts) SET.gaugeSts = 16;
+if(!SET.gaugeRows) SET.gaugeRows = 18;
 function saveSettings(){ lsSet("settings", SET); }
 function hasCharm(c){ return !c || SET.charms.indexOf(c) >= 0; }
 
@@ -2014,7 +2073,7 @@ function pieceDataURL(piece, cells){
 /* ==========================================================================
    SCREENS
    ========================================================================== */
-var SCREENS = ["hearth","new","book","works","loom","cabinet","piece","charms","share","blankets","blanket","work"];
+var SCREENS = ["hearth","new","book","works","loom","cabinet","piece","charms","share","blankets","blanket","work","fabric"];
 function show(name, replace){
   if(S.screen === "loom" && name !== "loom"){ saveProject(S.proj); keepAwake(false); }
   if(!replace && S.screen !== name) S.stack.push(S.screen);
@@ -2032,6 +2091,7 @@ function show(name, replace){
   if(name === "blankets") renderBlankets();
   if(name === "blanket")  renderBlanket();
   if(name === "work")     renderWork();
+  if(name === "fabric")   renderFabricScreen();
   if(name !== "work" && name !== "loom") keepAwake(false);
   if(name === "loom")    enterLoom();
 }
@@ -2595,6 +2655,7 @@ function renderPiece(){
     (pat ? '<div style="grid-column:1/-1"><b>'+pat.t+'</b><span>From the pattern book</span></div>' : "");
   $("piece-write").onclick = function(){ showWritten(piece.name, piece.w, piece.h, cells, "piece:" + piece.id); };
   $("piece-work").onclick  = function(){ startWork("piece:" + piece.id, piece.name, piece.w, piece.h, cells); };
+  $("piece-fabric").onclick = function(){ showFabric(piece.name, piece.w, piece.h, cells); };
   var nl = $("piece-note");
   if(piece.note){ nl.hidden = false; nl.textContent = "\u201C" + piece.note + "\u201D"; }
   else nl.hidden = true;
@@ -3143,6 +3204,157 @@ function renderSettings(){
 }
 
 /* ==========================================================================
+   WORKED UP — the chart drawn as actual fabric
+
+   Every square becomes a procedurally drawn stitch: a rounded body, a light
+   that falls across it, the V of its two top loops, and the bar of the row
+   below tucking underneath. Rows lean alternately, because right-side and
+   wrong-side rows really do lean opposite ways, and each stitch gets a fixed
+   sliver of colour variation so the fabric looks worked rather than printed.
+
+   Drawn once into an offscreen canvas and then just displayed, so a hundred
+   by a hundred is no more work to look at than a coaster.
+   ========================================================================== */
+function clamp255(v){ return v < 0 ? 0 : (v > 255 ? 255 : v); }
+function shadeRGB(rgb, amt){
+  if(amt >= 0) return [rgb[0] + (255-rgb[0])*amt, rgb[1] + (255-rgb[1])*amt, rgb[2] + (255-rgb[2])*amt];
+  return [rgb[0]*(1+amt), rgb[1]*(1+amt), rgb[2]*(1+amt)];
+}
+function rgbCss(rgb){ return "rgb(" + Math.round(clamp255(rgb[0])) + "," + Math.round(clamp255(rgb[1])) + "," + Math.round(clamp255(rgb[2])) + ")"; }
+function roundPath(g, x, y, w, h, r){
+  r = Math.min(r, w/2, h/2);
+  g.beginPath();
+  g.moveTo(x+r, y);
+  g.arcTo(x+w, y,   x+w, y+h, r);
+  g.arcTo(x+w, y+h, x,   y+h, r);
+  g.arcTo(x,   y+h, x,   y,   r);
+  g.arcTo(x,   y,   x+w, y,   r);
+  g.closePath();
+}
+/* A fixed wobble per square — the same every time, so the fabric doesn't
+   shimmer when it is redrawn. */
+function wobble(i){
+  var v = Math.sin(i * 12.9898) * 43758.5453;
+  return (v - Math.floor(v)) * 2 - 1;
+}
+function renderFabric(w, h, cells, aspect){
+  var budget = 1700;
+  var sw = Math.max(5, Math.min(28, Math.floor(budget / Math.max(w, h * aspect))));
+  var sh = Math.max(4, Math.round(sw * aspect));
+  var cv2 = document.createElement("canvas");
+  cv2.width = w * sw; cv2.height = h * sh;
+  var g = cv2.getContext("2d");
+  g.lineCap = "round";
+  g.lineJoin = "round";
+
+  /* One gradient, reused: every stitch is drawn about a translated origin, so
+     the light falls the same way on all of them. Ten thousand gradients would
+     not. */
+  var lightFall = g.createLinearGradient(-sw/2, -sh/2, sw/2, sh/2);
+  lightFall.addColorStop(0,    "rgba(255,255,255,0.26)");
+  lightFall.addColorStop(0.38, "rgba(255,255,255,0.04)");
+  lightFall.addColorStop(0.72, "rgba(0,0,0,0.06)");
+  lightFall.addColorStop(1,    "rgba(0,0,0,0.30)");
+
+  /* Stitches are drawn larger than their cell so they crowd together the way
+     real ones do, and rows are drawn from the bottom up so each row overlaps
+     the tops of the row below — which is what makes crochet look layered
+     rather than tiled. */
+  var ow = sw * 1.16, oh = sh * 1.30;
+  var r = Math.min(ow, oh) * 0.30;
+  var fine = sw >= 9;
+  var x, y, i, hex, rgb, body, lean;
+  for(y = h - 1; y >= 0; y--){
+    var rowNo = h - y;
+    lean = (rowNo % 2 === 1 ? 1 : -1) * sw * 0.05;
+    for(x = 0; x < w; x++){
+      i = y*w + x;
+      hex = cells[i];
+      if(!hex) continue;
+      rgb = hexToRGB(hex);
+      var jit = 1 + wobble(i) * 0.05;
+      body = [rgb[0]*jit, rgb[1]*jit, rgb[2]*jit];
+
+      g.save();
+      g.translate(x*sw + sw/2 + lean, y*sh + sh/2);
+
+      roundPath(g, -ow/2, -oh/2, ow, oh, r);
+      g.fillStyle = rgbCss(body);
+      g.fill();
+      g.fillStyle = lightFall;
+      g.fill();
+
+      if(fine){
+        /* the crease where this row meets the one above */
+        g.lineWidth = Math.max(1, sh * 0.10);
+        g.strokeStyle = "rgba(0,0,0,0.20)";
+        g.beginPath();
+        g.moveTo(-ow*0.48, -sh*0.44);
+        g.quadraticCurveTo(0, -sh*0.30, ow*0.48, -sh*0.44);
+        g.stroke();
+
+        /* the two top loops — the V that says crochet */
+        g.lineWidth = sw * 0.17;
+        g.strokeStyle = rgbCss(shadeRGB(body, 0.34));
+        g.beginPath();
+        g.moveTo(-sw*0.36, -sh*0.16);
+        g.lineTo(0,         sh*0.26);
+        g.lineTo( sw*0.36, -sh*0.16);
+        g.stroke();
+
+        /* a hint of ply along the post */
+        g.lineWidth = Math.max(0.7, sw * 0.05);
+        g.strokeStyle = "rgba(0,0,0,0.10)";
+        g.beginPath();
+        g.moveTo(-sw*0.20, sh*0.44);
+        g.lineTo(-sw*0.06, sh*0.16);
+        g.moveTo( sw*0.20, sh*0.44);
+        g.lineTo( sw*0.06, sh*0.16);
+        g.stroke();
+      }
+
+      g.restore();
+    }
+  }
+  return cv2;
+}
+
+/* ==========================================================================
+   NAMING A COLOUR
+   Not brand shades — plain descriptive names, so a colour can be asked for in
+   a wool shop instead of read out as a hex code.
+   ========================================================================== */
+var SHADES = [
+ ["Snow","#FFFFFF"],["Cream","#F6EFE0"],["Oatmeal","#E8DCC8"],["Parchment","#EFE6D3"],
+ ["Bone","#DED6C6"],["Stone","#C9C2B6"],["Putty","#B6ADA0"],["Mushroom","#9C9184"],
+ ["Taupe","#847668"],["Cocoa","#6B5647"],["Chestnut","#7A4A2E"],["Chocolate","#4A3225"],
+ ["Charcoal","#3A3A3C"],["Slate","#5A616B"],["Graphite","#2B2D33"],["Ink","#14131A"],
+ ["Silver","#C3C7CC"],["Dove","#A9AFB6"],["Pewter","#7C838C"],["Steel","#5C6672"],
+ ["Blush","#F3C9CE"],["Rose","#E39AA8"],["Raspberry","#B6376A"],["Cherry","#C2263B"],
+ ["Scarlet","#D93B2B"],["Rust","#A9482A"],["Terracotta","#C46A45"],["Apricot","#F0A56B"],
+ ["Peach","#F7C6A4"],["Marigold","#E9962E"],["Mustard","#CE9A2A"],["Ochre","#B7822B"],
+ ["Butter","#F4DE93"],["Straw","#E5D08A"],["Lemon","#F2E86B"],["Chartreuse","#C4D34A"],
+ ["Meadow","#8FC155"],["Fern","#5E9A48"],["Moss","#6B7A3C"],["Olive","#7C7C41"],
+ ["Forest","#2E5A3A"],["Pine","#1F4433"],["Sage","#A9BFA2"],["Eucalyptus","#7FA98F"],
+ ["Mint","#A9E0C4"],["Jade","#2E9E7B"],["Teal","#1F7A78"],["Petrol","#17545C"],
+ ["Duck Egg","#B7DCE0"],["Sky","#8FC4E3"],["Cornflower","#6E92D4"],["Denim","#41628F"],
+ ["Storm","#3F5570"],["Navy","#20304F"],["Midnight","#161E33"],["Periwinkle","#A3A8E0"],
+ ["Lilac","#C4AEE0"],["Lavender","#B7A3D6"],["Violet","#7E5CB0"],["Grape","#5B3D80"],
+ ["Plum","#6B2F53"],["Magenta","#C13A94"],["Fuchsia","#E05FAF"],["Candy","#F49AC8"]
+];
+function nearestShade(hex){
+  var c = hexToRGB(hex), best = null, bd = Infinity, i, s2, dr, dg, db, d;
+  for(i=0;i<SHADES.length;i++){
+    s2 = hexToRGB(SHADES[i][1]);
+    /* Weighted a little toward how the eye actually judges difference. */
+    dr = (c[0]-s2[0]) * 0.9; dg = (c[1]-s2[1]) * 1.2; db = (c[2]-s2[2]) * 0.7;
+    d = dr*dr + dg*dg + db*db;
+    if(d < bd){ bd = d; best = SHADES[i]; }
+  }
+  return { name: best[0], hex: best[1], close: bd < 900 };
+}
+
+/* ==========================================================================
    ROW WALK — shared by the written pattern and working mode
    ========================================================================== */
 function patternRows(w, h, cells){
@@ -3240,6 +3452,86 @@ function renderWork(){
     : "—";
   drawWorkChart();
   keepAwake(true);
+}
+
+/* ==========================================================================
+   THE FABRIC SCREEN
+   ========================================================================== */
+function showFabric(name, w, h, cells){
+  S.fabric = { name:name, w:w, h:h, cells:cells };
+  show("fabric");
+}
+function fabricAspect(){ return (SET.gaugeSts || 16) / (SET.gaugeRows || 18); }
+function cmSize(w, h){
+  return { w: w / (SET.gaugeSts || 16) * 10, h: h / (SET.gaugeRows || 18) * 10 };
+}
+function niceCm(v){ return v < 10 ? v.toFixed(1) : String(Math.round(v)); }
+function renderFabricScreen(){
+  var F = S.fabric;
+  if(!F){ goBack(); return; }
+  $("fabric-name").textContent = F.name;
+  $("fabric-save").hidden = !canSaveFiles();
+
+  var cv2 = $("fabric-cv");
+  var made = (S.fabricMode === "chart")
+    ? (function(){
+        var small = smallCanvas(F.w, F.h, F.cells, false);
+        var cell = Math.max(2, Math.min(20, Math.floor(1200 / Math.max(F.w, F.h))));
+        var big = document.createElement("canvas");
+        big.width = F.w*cell; big.height = F.h*cell;
+        var g2 = big.getContext("2d");
+        g2.imageSmoothingEnabled = false;
+        g2.drawImage(small, 0, 0, big.width, big.height);
+        return big;
+      })()
+    : renderFabric(F.w, F.h, F.cells, fabricAspect());
+  cv2.width = made.width; cv2.height = made.height;
+  var g = cv2.getContext("2d");
+  g.clearRect(0,0,cv2.width,cv2.height);
+  g.drawImage(made, 0, 0);
+  cv2.style.imageRendering = (S.fabricMode === "chart") ? "pixelated" : "auto";
+
+  var segs = $("fab-seg").querySelectorAll("button");
+  for(var i=0;i<segs.length;i++) segs[i].classList.toggle("on", segs[i].getAttribute("data-fab") === S.fabricMode);
+
+  var cen = chartCensus(F.cells), total = 0;
+  cen.order.forEach(function(c){ total += cen.counts[c]; });
+  var size = cmSize(F.w, F.h);
+  $("fabric-facts").innerHTML =
+    '<div><b class="num">' + niceCm(size.w) + " × " + niceCm(size.h) + ' cm</b><span>Finished size</span></div>' +
+    '<div><b class="num">' + F.w + "×" + F.h + '</b><span>Stitches and rows</span></div>' +
+    '<div><b class="num">' + total.toLocaleString() + '</b><span>Stitches to work</span></div>' +
+    '<div><b class="num">~' + metresFor(total) + ' m</b><span>Yarn in total</span></div>';
+  $("g-sts").textContent = String(SET.gaugeSts);
+  $("g-rows").textContent = String(SET.gaugeRows);
+
+  var box = $("fabric-shades");
+  box.innerHTML = "";
+  if(!cen.order.length) return;
+  var head = el("span","eyebrow", "What to buy");
+  box.appendChild(head);
+  var list = el("div","shadelist");
+  cen.order.forEach(function(hex){
+    var sh = nearestShade(hex);
+    var row = el("div","shaderow");
+    var dot = el("i"); dot.style.background = hex;
+    var mid = el("span","nm2");
+    mid.appendChild(el("b", null, sh.name + (sh.close ? "" : "-ish")));
+    mid.appendChild(el("span", null, hex));
+    var amt = el("span","amt");
+    amt.innerHTML = cen.counts[hex].toLocaleString() + " sts<br>~" + metresFor(cen.counts[hex]) + " m";
+    row.appendChild(dot); row.appendChild(mid); row.appendChild(amt);
+    list.appendChild(row);
+  });
+  box.appendChild(list);
+}
+function nudgeGauge(what){
+  if(what === "sts-")  SET.gaugeSts  = Math.max(6,  SET.gaugeSts - 1);
+  if(what === "sts+")  SET.gaugeSts  = Math.min(60, SET.gaugeSts + 1);
+  if(what === "rows-") SET.gaugeRows = Math.max(6,  SET.gaugeRows - 1);
+  if(what === "rows+") SET.gaugeRows = Math.min(60, SET.gaugeRows + 1);
+  saveSettings();
+  renderFabricScreen();
 }
 
 /* ==========================================================================
@@ -3691,6 +3983,24 @@ function wire(){
   $("ph-stitch").onclick  = function(){ photoApply(false); };
 
   /* repeated */
+  $("m-fabric").onclick = function(){
+    closeSheet("sheet-more");
+    showFabric(S.proj.name, S.proj.w, S.proj.h, S.proj.cells.slice());
+  };
+  $("fab-seg").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-fab]"); if(!b) return;
+    S.fabricMode = b.getAttribute("data-fab");
+    renderFabricScreen();
+  });
+  $("scr-fabric").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-g]"); if(!b) return;
+    nudgeGauge(b.getAttribute("data-g"));
+  });
+  $("fabric-save").onclick = function(){
+    var cv2 = $("fabric-cv");
+    if(saveFile(safeName(S.fabric.name) + "-worked-up.png", dataURLtoBlob(cv2.toDataURL("image/png")))) toast("Saved to Downloads.");
+    else toast("Press and hold the picture instead.");
+  };
   $("m-repeat").onclick = function(){ closeSheet("sheet-more"); renderRepeat(); openSheet("sheet-repeat"); };
 
   /* selection */

@@ -16,8 +16,10 @@
   --teal:#1F6F62; --brass:#9C6410; --brass-bright:#D19A35;
   --cloth-a:#DCD6E6; --cloth-b:#D3CCDF;
   --edge:#B9B0C9;
-  --shadow-1:0 1px 0 rgba(30,24,38,.06), 0 6px 16px -10px rgba(30,24,38,.45);
-  --shadow-2:0 2px 0 rgba(30,24,38,.08), 0 18px 34px -18px rgba(30,24,38,.55);
+  --shadow-1:0 1px 2px rgba(30,24,38,.05), 0 4px 12px -4px rgba(30,24,38,.13);
+  --shadow-2:0 2px 6px rgba(30,24,38,.07), 0 16px 40px -12px rgba(30,24,38,.28);
+  --shadow-up:0 -1px 0 rgba(30,24,38,.05), 0 -16px 44px -10px rgba(30,24,38,.26);
+  --ease:cubic-bezier(.32,.72,0,1);
   --tap:46px;
   --display:"Fraunces",Georgia,"Times New Roman",serif;
   --ui:"Karla",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -31,8 +33,9 @@
     --teal:#4FC4AC; --brass:#F2BC5C; --brass-bright:#F2BC5C;
     --cloth-a:#241F33; --cloth-b:#2B2540;
     --edge:#463D5E;
-    --shadow-1:0 1px 0 rgba(0,0,0,.30), 0 6px 16px -10px rgba(0,0,0,.8);
-    --shadow-2:0 2px 0 rgba(0,0,0,.35), 0 18px 34px -18px rgba(0,0,0,.9);
+    --shadow-1:0 1px 2px rgba(0,0,0,.40), 0 4px 12px -4px rgba(0,0,0,.60);
+  --shadow-up:0 -1px 0 rgba(0,0,0,.5), 0 -16px 44px -10px rgba(0,0,0,.7);
+    --shadow-2:0 2px 6px rgba(0,0,0,.50), 0 16px 40px -12px rgba(0,0,0,.80);
   }
 }
 :root[data-theme="dark"]{
@@ -43,8 +46,9 @@
   --teal:#4FC4AC; --brass:#F2BC5C; --brass-bright:#F2BC5C;
   --cloth-a:#241F33; --cloth-b:#2B2540;
   --edge:#463D5E;
-  --shadow-1:0 1px 0 rgba(0,0,0,.30), 0 6px 16px -10px rgba(0,0,0,.8);
-  --shadow-2:0 2px 0 rgba(0,0,0,.35), 0 18px 34px -18px rgba(0,0,0,.9);
+  --shadow-1:0 1px 2px rgba(0,0,0,.40), 0 4px 12px -4px rgba(0,0,0,.60);
+  --shadow-up:0 -1px 0 rgba(0,0,0,.5), 0 -16px 44px -10px rgba(0,0,0,.7);
+  --shadow-2:0 2px 6px rgba(0,0,0,.50), 0 16px 40px -12px rgba(0,0,0,.80);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.45;
@@ -58,6 +62,8 @@ input,textarea{font:inherit;color:inherit}
 /* ---------- screens ---------- */
 .screen{display:none;min-height:100vh;min-height:100dvh}
 .screen.on{display:block}
+@keyframes screen-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.screen.on:not(#scr-loom):not(#scr-work){animation:screen-in .24s var(--ease) both}
 .screen.flex.on{display:flex;flex-direction:column}
 .pad{padding-block:22px;padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));max-width:620px;margin:0 auto}
 .stack{display:flex;flex-direction:column;gap:14px}
@@ -71,7 +77,7 @@ input,textarea{font:inherit;color:inherit}
 .sampler{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;width:100%;max-width:220px;margin:14px 0 4px;aspect-ratio:12/3}
 .sampler i{border-radius:1px;background:var(--line-soft)}
 
-.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-1)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-1)}
 .resume{display:flex;gap:14px;align-items:center;padding:12px;text-align:left;width:100%}
 .resume canvas{width:64px;height:64px;border-radius:8px;border:1px solid var(--line);flex:none;background:var(--cloth-a);image-rendering:pixelated}
 .resume .t{font-family:var(--display);font-size:19px;line-height:1.15}
@@ -80,8 +86,8 @@ input,textarea{font:inherit;color:inherit}
 
 .menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mbtn{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:14px;background:var(--paper);
-  border:1px solid var(--line);border-radius:14px;min-height:96px;box-shadow:var(--shadow-1)}
-.mbtn:active{transform:translateY(1px)}
+  border:1px solid var(--line);border-radius:18px;min-height:96px;box-shadow:var(--shadow-1)}
+.mbtn:active{transform:scale(.975)}
 .mbtn.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0;gap:12px}
 .mbtn .n{font-family:var(--display);font-size:17px}
 .mbtn .d{font-size:12.5px;color:var(--ink-3);line-height:1.35}
@@ -90,7 +96,7 @@ input,textarea{font:inherit;color:inherit}
 .mbtn.primary .d{color:var(--on-accent);opacity:.8}
 .mbtn.primary svg{color:var(--on-accent)}
 
-.tally{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper)}
+.tally{display:flex;gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow-1)}
 .tally div{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--line-soft)}
 .tally div:last-child{border-right:0}
 .tally b{display:block;font-family:var(--display);font-size:20px;font-weight:600}
@@ -98,7 +104,9 @@ input,textarea{font:inherit;color:inherit}
 
 /* ---------- generic bar ---------- */
 .bar{display:flex;align-items:center;gap:8px;padding:8px max(10px,env(safe-area-inset-left));
-  padding-top:calc(8px + env(safe-area-inset-top));background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  padding-top:calc(8px + env(safe-area-inset-top));border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+  background:var(--paper);background:color-mix(in srgb, var(--paper) 78%, transparent);
+  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4)}
 .bar h2{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ib{width:var(--tap);height:var(--tap);display:grid;place-items:center;border-radius:11px;flex:none;color:var(--ink-2)}
 .ib:active{background:var(--line-soft)}
@@ -118,7 +126,9 @@ input,textarea{font:inherit;color:inherit}
 #loupe canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
 #loupe.on{display:block}
 
-.tray{position:relative;background:var(--paper);border-top:1px solid var(--line);
+.tray{position:relative;border-top:1px solid var(--line);
+  background:var(--paper);background:color-mix(in srgb, var(--paper) 84%, transparent);
+  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
   padding:9px max(10px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom));
   display:flex;flex-direction:column;gap:9px}
 .tools{display:flex;gap:5px}
@@ -149,18 +159,25 @@ input,textarea{font:inherit;color:inherit}
 .nudge .sp{visibility:hidden}
 
 /* ---------- sheets ---------- */
-.sheet{position:fixed;inset:0;z-index:40;display:none}
-.sheet.on{display:block}
-.sheet .scrim{position:absolute;inset:0;background:rgba(20,15,28,.5)}
+.sheet{position:fixed;inset:0;z-index:40;visibility:hidden;pointer-events:none;transition:visibility 0s .32s}
+.sheet.on{visibility:visible;pointer-events:auto;transition:visibility 0s}
+.sheet .scrim{position:absolute;inset:0;background:rgba(16,11,24,.46);opacity:0;transition:opacity .28s ease;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.sheet.on .scrim{opacity:1}
 .sheet-in{position:absolute;left:0;right:0;bottom:0;background:var(--paper);border-top:1px solid var(--line);
-  border-radius:20px 20px 0 0;padding:10px max(16px,env(safe-area-inset-left)) calc(16px + env(safe-area-inset-bottom));
-  max-height:88dvh;overflow:auto;box-shadow:var(--shadow-2)}
-.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:2px auto 12px}
+  border-radius:26px 26px 0 0;padding:8px max(16px,env(safe-area-inset-left)) calc(16px + env(safe-area-inset-bottom));
+  max-height:88dvh;overflow:auto;overscroll-behavior:contain;box-shadow:var(--shadow-up);
+  transform:translateY(100%);transition:transform .32s var(--ease)}
+.sheet.on .sheet-in{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:6px auto 14px;flex:none}
 .sheet h2{font-size:20px;margin-bottom:2px}
 .sheet .sub{color:var(--ink-3);font-size:12.5px;margin:0 0 14px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);padding:0 16px;border-radius:12px;
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);padding:0 16px;border-radius:14px;
   background:var(--raise);border:1px solid var(--line);font-weight:600;width:100%}
-.btn:active{transform:translateY(1px)}
+.btn,.mbtn,.tool,.ib,.skein,.dye,.piece,.pat,.charm,.tmpl,.blanketcard,.daily,.resume,.seg button,.selbar button,.yarnrow button{
+  transition:transform .13s var(--ease), background-color .13s ease, border-color .13s ease, box-shadow .13s ease}
+.btn:active,.piece:active,.pat:active,.charm:active,.tmpl:active,.blanketcard:active,.daily:active,.resume:active,.selbar button:active,.yarnrow button:active{transform:scale(.975)}
+.tool:active,.ib:active,.skein:active,.dye:active,.zoompill button:active{transform:scale(.9)}
 .btn.go{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn.quiet{background:transparent;border-color:transparent;color:var(--ink-3)}
 .btn.danger{color:var(--accent);border-color:var(--line)}
@@ -277,6 +294,18 @@ input,textarea{font:inherit;color:inherit}
 .tipcard li::marker{color:var(--accent)}
 .note-line{font-size:13px;color:var(--ink-2);font-style:italic;text-align:center;padding:0 10px}
 .railsep{height:1px;background:var(--line);margin:3px 5px}
+.tilegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.tile{display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center;padding:12px 4px;
+  border:1px solid var(--line);border-radius:15px;background:var(--raise);min-height:76px;
+  font-size:11px;line-height:1.2;text-align:center;color:var(--ink-2);
+  transition:transform .13s var(--ease), background-color .13s ease}
+.tile:active{transform:scale(.94);background:var(--line-soft)}
+.tile svg{width:22px;height:22px;color:var(--accent);flex:none}
+.tile b{color:var(--ink);font-weight:700}
+.saved{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;flex:none;
+  background:var(--teal);color:var(--paper);opacity:0;transform:scale(.6);
+  transition:opacity .18s ease, transform .18s var(--ease)}
+.saved.on{opacity:1;transform:none}
 .toolhint{display:none;position:absolute;left:8px;right:8px;bottom:100%;margin-bottom:8px;z-index:4;
   font-size:12.5px;line-height:1.4;color:var(--ink-2);background:var(--paper);
   border:1px solid var(--line);border-radius:11px;padding:8px 12px;box-shadow:var(--shadow-2)}
@@ -356,6 +385,9 @@ input,textarea{font:inherit;color:inherit}
 <g id="i-down"><path d="M12 6v12M6.5 12.5L12 18l5.5-5.5"/></g>
 <g id="i-left"><path d="M18 12H6M11.5 6.5L6 12l5.5 5.5"/></g>
 <g id="i-right"><path d="M6 12h12M12.5 6.5L18 12l-5.5 5.5"/></g>
+<g id="i-rotate"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.5V9h-5.5"/></g>
+<g id="i-palette"><path d="M12 3.5a8.5 8.5 0 0 0 0 17c1.4 0 2-.9 2-1.8 0-1.3-1.1-1.7-1.1-2.9 0-.8.7-1.4 1.6-1.4h1.6A4.4 4.4 0 0 0 20.5 10c0-3.6-3.8-6.5-8.5-6.5z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/></g>
+<g id="i-layers"><path d="M12 3.5l8.5 4.3L12 12 3.5 7.8z"/><path d="M4 12.2l8 4 8-4M4 16.2l8 4 8-4"/></g>
 <g id="i-select"><rect x="4.5" y="4.5" width="15" height="15" rx="1.5" stroke-dasharray="3.2 2.6"/></g>
 <g id="i-photo"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M4 16.5l4.5-4 3 2.5 3.5-3.5 5 5"/></g>
 <g id="i-grid4"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1"/><rect x="13" y="13" width="7.5" height="7.5" rx="1"/></g>
@@ -480,6 +512,7 @@ input,textarea{font:inherit;color:inherit}
  <div class="bar">
   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
   <h2 id="loom-name">Sampler</h2>
+  <span class="saved" id="saved" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></span>
   <button class="ib" id="btn-undo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
   <button class="ib" id="btn-redo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-redo"/></svg></button>
   <button class="ib" id="btn-more"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-more"/></svg></button>
@@ -710,6 +743,7 @@ input,textarea{font:inherit;color:inherit}
      <input id="phex" maxlength="7" autocomplete="off" spellcheck="false">
      <button class="btn go" id="pkeep" style="width:auto;flex:none;padding:0 16px">Keep</button>
    </div>
+   <div class="skeingroup" id="recent-group" hidden><div class="nm"><span>Just used</span><span style="color:var(--ink-3);font-weight:400">newest first</span></div><div class="swatchgrid" id="recent-grid"></div></div>
    <div class="skeingroup"><div class="nm"><span>In the basket</span><span style="color:var(--ink-3);font-weight:400">hold to remove</span></div><div class="swatchgrid" id="basket-grid"></div></div>
    <div id="preset-groups"></div>
    <button class="btn quiet" data-close style="margin-top:14px">Done</button>
@@ -722,19 +756,23 @@ input,textarea{font:inherit;color:inherit}
    <div class="grab"></div>
    <h2>This chart</h2>
    <p class="sub" id="more-sub">—</p>
-   <div class="stack" style="gap:8px">
-     <button class="btn go" id="m-fasten">Fasten off — put it in the cabinet</button>
-     <button class="btn" id="m-rename">Rename it</button>
+   <button class="btn go" id="m-fasten">Fasten off — put it in the cabinet</button>
+   <div class="tilegrid">
+     <button class="tile" id="m-mirror"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-mirror"/></svg><span>Mirror</span></button>
+     <button class="tile" id="m-shape"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-rotate"/></svg><span>Shape</span></button>
+     <button class="tile" id="m-yarns"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-palette"/></svg><span>Yarns</span></button>
+     <button class="tile" id="m-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-photo"/></svg><span>Photo</span></button>
+     <button class="tile" id="m-guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-layers"/></svg><span>Guide</span></button>
+     <button class="tile" id="m-repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid4"/></svg><span>Repeat</span></button>
+     <button class="tile" id="m-fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg><span>Fit</span></button>
+     <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span>Lines <b id="m-grid-state">on</b></span></button>
+   </div>
+   <div class="stack" style="gap:8px;margin-top:14px">
      <button class="btn" id="m-write">Write it out as a crochet pattern</button>
-     <button class="btn" id="m-mirror">Mirror &amp; fold lines</button>
-     <button class="btn" id="m-shape">Shape &amp; gauge</button>
-     <button class="btn" id="m-yarns">Yarns in this chart</button>
-     <button class="btn" id="m-photo">Trace a photo</button>
-     <button class="btn" id="m-repeat">See it repeated</button>
-     <button class="btn" id="m-guide">Guide layer &amp; templates</button>
+     <button class="btn" id="m-rename">Rename it</button>
      <button class="btn" id="m-code">Copy this chart as a code</button>
-     <button class="btn" id="m-fit">Fit the chart to the screen</button>
-     <button class="btn" id="m-grid">Chart lines: <b id="m-grid-state">on</b></button>
+   </div>
+   <div class="stack" style="gap:8px;margin-top:14px">
      <button class="btn danger" id="m-clear">Unravel — clear every stitch</button>
      <button class="btn danger" id="m-delete">Throw this chart away</button>
      <button class="btn quiet" data-close>Back to work</button>
@@ -758,6 +796,23 @@ input,textarea{font:inherit;color:inherit}
    </div>
    <canvas id="text-prev" width="10" height="10"></canvas>
    <button class="btn quiet" data-close style="margin-top:16px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-chart">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2 id="chartact-name">Chart</h2>
+   <p class="sub" id="chartact-sub">—</p>
+   <div class="stack" style="gap:8px">
+     <button class="btn go" id="ca-open">Open it</button>
+     <button class="btn" id="ca-rename">Rename</button>
+     <button class="btn" id="ca-dup">Make a copy</button>
+     <button class="btn" id="ca-code">Copy as a chart code</button>
+     <button class="btn danger" id="ca-del">Throw it away</button>
+     <button class="btn quiet" data-close>Cancel</button>
+   </div>
  </div>
 </div>
 
@@ -1197,7 +1252,7 @@ var S = {
   cursor: {x:0, y:0},
   undoStack: [], redoStack: [],
   view: {scale:10, ox:0, oy:0},
-  pieceId: null,
+  pieceId: null, prevYarn: null, chartActId: null,
   sel: null, selPreview: null, pasteBuf: null,
   work: null, blanketId: null, writtenCtx: null,
   newGauge: 2,
@@ -1205,7 +1260,7 @@ var S = {
 };
 var SET = lsGet("settings", null) || {
   theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
-  buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5,
+  buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5, recent:[],
   stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
          bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
   seeded:false
@@ -1220,6 +1275,7 @@ if(SET.buzz === undefined) SET.buzz = true;
 if(SET.awake === undefined) SET.awake = true;
 if(!SET.rule) SET.rule = 10;
 if(!SET.cmPerStitch) SET.cmPerStitch = 5.5;
+if(!SET.recent) SET.recent = [];
 function saveSettings(){ lsSet("settings", SET); }
 function hasCharm(c){ return !c || SET.charms.indexOf(c) >= 0; }
 
@@ -1279,7 +1335,17 @@ function newProject(w,h,name,pattern){
           created:Date.now(), updated:Date.now(), cells:new Array(w*h).fill(null), guide:null, fx:w, fy:h};
 }
 var saveTimer;
-function autosave(){ clearTimeout(saveTimer); saveTimer = setTimeout(function(){ saveProject(S.proj); }, 260); }
+var savedTimer;
+function flashSaved(){
+  var t = $("saved"); if(!t) return;
+  t.classList.add("on");
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(function(){ t.classList.remove("on"); }, 900);
+}
+function autosave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){ saveProject(S.proj); flashSaved(); }, 260);
+}
 
 /* ---------------- cabinet ---------------- */
 function cabinet(){ return lsGet("cabinet", []); }
@@ -1592,6 +1658,10 @@ function endStroke(){
   if(S.undoStack.length > 160) S.undoStack.shift();
   S.redoStack.length = 0;
   SET.stats.stitches += placed;
+  if(placed){
+    var used = S.yarn;
+    SET.recent = [used].concat(SET.recent.filter(function(c){ return c !== used; })).slice(0, 12);
+  }
   saveSettings();
   refreshUndoButtons();
   autosave();
@@ -1728,6 +1798,9 @@ function refreshTextPreview(){
 
 /* ---------------- pointers ---------------- */
 var pointers = new Map(), gesture = null, lastCell = null, anchor = null, pinch = null, panLast = null;
+/* A two-finger tap undoes. Pinching always involves travel, so requiring both
+   fingers to stay put and leave quickly keeps the two gestures apart. */
+var twoTap = null;
 
 function pointToCell(px, py){
   var v = S.view;
@@ -1809,7 +1882,9 @@ function toolUp(){
 
 function onDown(ev){
   if(!S.proj) return;
-  cv.setPointerCapture && cv.setPointerCapture(ev.pointerId);
+  /* Capture can throw when the pointer has already gone (fast taps, synthetic
+     events). Losing capture is harmless; an exception here is not. */
+  try{ if(cv.setPointerCapture) cv.setPointerCapture(ev.pointerId); }catch(e){}
   var pt = localPoint(ev);
   pointers.set(ev.pointerId, pt);
 
@@ -1823,6 +1898,7 @@ function onDown(ev){
       scale: S.view.scale, ox: S.view.ox, oy: S.view.oy
     };
     gesture = "pinch";
+    twoTap = { at: Date.now(), a: {x:a.x, y:a.y}, b: {x:b.x, y:b.y}, moved: 0 };
     return;
   }
   if(pointers.size > 2) return;
@@ -1851,6 +1927,9 @@ function onMove(ev){
     var it = pointers.values(), a = it.next().value, b = it.next().value;
     var d = Math.hypot(a.x-b.x, a.y-b.y);
     var mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+    if(twoTap) twoTap.moved = Math.max(twoTap.moved,
+      Math.hypot(a.x - twoTap.a.x, a.y - twoTap.a.y),
+      Math.hypot(b.x - twoTap.b.x, b.y - twoTap.b.y));
     var k = d / (pinch.d || 1);
     var ns = Math.max(1.2, Math.min(80, pinch.scale * k));
     k = ns / pinch.scale;
@@ -1871,7 +1950,13 @@ function onUp(ev){
   pointers.delete(ev.pointerId);
   if(gesture === "paint" && pointers.size === 0){ toolUp(); hideLoupe(); }
   if(gesture === "pan" && pointers.size === 0){ gesture = null; panLast = null; }
-  if(gesture === "pinch" && pointers.size < 2){ gesture = null; pinch = null; }
+  if(gesture === "pinch" && pointers.size < 2){
+    if(twoTap && twoTap.moved < 14 && Date.now() - twoTap.at < 360 && S.undoStack.length){
+      undo(); buzz(14); toast("Undone.");
+    }
+    twoTap = null;
+    gesture = null; pinch = null;
+  }
   if(pointers.size === 0) gesture = null;
 }
 
@@ -2024,6 +2109,11 @@ function renderNew(){
     };
     list.appendChild(b);
   });
+  var custom = el("button", "piece");
+  custom.style.textAlign = "center";
+  custom.innerHTML = '<div class="t" style="margin-top:0">Any</div><div class="s">your own size</div>';
+  custom.onclick = askCustomGauge;
+  list.appendChild(custom);
 
   var m = $("new-mission"); m.innerHTML = "";
   var opts = [{id:null, t:"Free loom", hint:"No brief. Make whatever turns up."}];
@@ -2041,15 +2131,33 @@ function renderNew(){
 }
 function patternById(id){ for(var i=0;i<PATTERNS.length;i++) if(PATTERNS[i].id===id) return PATTERNS[i]; return null; }
 
-function castOn(){
-  var g = GAUGES[S.newGauge];
-  if(!hasCharm(g.charm)){ toast("That loom is still locked."); return; }
+function castOnSize(w, h){
   var pat = S.newPattern ? patternById(S.newPattern) : null;
-  var p = newProject(g.w, g.h, pat ? pat.t : niceName(), S.newPattern);
+  var p = newProject(w, h, pat ? pat.t : niceName(), S.newPattern);
   saveProject(p);
   S.proj = p; S.undoStack = []; S.redoStack = [];
   S.stack = ["hearth"];
   show("loom", true);
+}
+function castOn(){
+  var g = GAUGES[S.newGauge];
+  if(!hasCharm(g.charm)){ toast("That loom is still locked."); return; }
+  castOnSize(g.w, g.h);
+}
+function askCustomGauge(){
+  ask({ title:"Any size you like", msg:"How many stitches across, and how many rows down? Write it like 40x60.",
+        input:true, value:"40x60", ok:"Cast on" }).then(function(v){
+    if(v === null) return;
+    var m = /(\d{1,3})\s*[x×*,\s]\s*(\d{1,3})/i.exec(String(v));
+    if(!m){ toast("Try something like 40x60."); return; }
+    var w = Math.max(4, Math.min(100, parseInt(m[1], 10)));
+    var h = Math.max(4, Math.min(100, parseInt(m[2], 10)));
+    if((w > 64 || h > 64) && !hasCharm("BIGLOOM")){
+      toast("Anything past 64 needs a charm. Try the Charm Codes.");
+      return;
+    }
+    castOnSize(w, h);
+  });
 }
 var NAMES = ["Sampler","Small work","Odd square","Evening piece","Scrap of an idea","Untitled chart","Rough draft","Something new"];
 function niceName(){ return NAMES[Math.floor(Math.random()*NAMES.length)]; }
@@ -2090,8 +2198,31 @@ function renderWorks(){
     b.appendChild(t); b.appendChild(s);
     paintInto(c, p.w, p.h, p.cells);
     b.onclick = function(){ openProject(p.id); };
+    holdFor(b, function(){ openChartActions(p.id); });
     list.appendChild(b);
   });
+}
+/* Hold anything to get its menu, without the tap also going through. */
+function holdFor(node, fn){
+  var t = null, held = false;
+  node.addEventListener("pointerdown", function(){
+    held = false;
+    t = setTimeout(function(){ held = true; buzz(14); fn(); }, 480);
+  });
+  ["pointerup","pointercancel","pointerleave","pointermove"].forEach(function(e){
+    node.addEventListener(e, function(){ clearTimeout(t); });
+  });
+  node.addEventListener("click", function(ev){
+    if(held){ held = false; ev.preventDefault(); ev.stopPropagation(); }
+  }, true);
+}
+function openChartActions(id){
+  var p = loadProject(id);
+  if(!p){ toast("That chart has gone."); return; }
+  S.chartActId = id;
+  $("chartact-name").textContent = p.name;
+  $("chartact-sub").textContent = p.w + "×" + p.h + " · " + p.cells.filter(Boolean).length.toLocaleString() + " stitches · " + when(p.updated);
+  openSheet("sheet-chart");
 }
 function when(ts){
   var d = Math.floor((Date.now()-ts)/86400000);
@@ -2127,7 +2258,9 @@ function setTool(t, quiet){
   updateSelBar();
 }
 function setYarn(hex){
-  S.yarn = normHex(hex);
+  var next = normHex(hex);
+  if(next !== S.yarn) S.prevYarn = S.yarn;
+  S.yarn = next;
   if(S.textArt && $("text-prev")) drawArtPreview($("text-prev"), S.textArt);
   $("dye").style.background = S.yarn;
   var s = document.querySelectorAll("#skeins .skein");
@@ -2155,6 +2288,52 @@ function updateMirrorBadge(){
 /* ---------------- dyeing yarn ---------------- */
 var pk = {h:335, s:.77, v:.71};
 function openSheet(id){ $(id).classList.add("on"); }
+/* Closing has to go through here: the ask sheet owes a promise an answer, and
+   a sheet dismissed by a swipe would otherwise leave it hanging for ever. */
+function dismissSheet(sheet){
+  if(!sheet) return;
+  if(sheet.id === "sheet-ask"){ askDone(null); return; }
+  sheet.classList.remove("on");
+}
+/* Pull a sheet down to put it away, the way every other app on the phone does.
+   Only starts when the sheet is scrolled to the top and the drag is downward,
+   so scrolling a long sheet still scrolls it. */
+function bindSheetDrag(sheet){
+  var inner = sheet.querySelector(".sheet-in");
+  if(!inner) return;
+  var startY = null, dy = 0, dragging = false, justDragged = false;
+  inner.addEventListener("pointerdown", function(ev){
+    justDragged = false;
+    if(ev.target.closest("input,textarea,canvas")) return;
+    if(inner.scrollTop > 0) return;
+    startY = ev.clientY; dy = 0; dragging = false;
+  });
+  inner.addEventListener("pointermove", function(ev){
+    if(startY === null) return;
+    dy = ev.clientY - startY;
+    if(dy > 8){
+      if(!dragging){ dragging = true; inner.style.transition = "none"; }
+      inner.style.transform = "translateY(" + dy + "px)";
+      ev.preventDefault();
+    }
+  });
+  function finish(){
+    if(startY === null) return;
+    var far = dragging && dy > 90;
+    if(dragging) justDragged = true;
+    inner.style.transition = "";
+    inner.style.transform = "";
+    startY = null; dy = 0; dragging = false;
+    if(far) dismissSheet(sheet);
+  }
+  ["pointerup","pointercancel","pointerleave"].forEach(function(e){ inner.addEventListener(e, finish); });
+  inner.addEventListener("click", function(ev){
+    if(!justDragged) return;
+    justDragged = false;
+    ev.preventDefault();
+    ev.stopPropagation();
+  }, true);
+}
 var askResolve = null;
 function ask(o){
   return new Promise(function(res){
@@ -2212,9 +2391,25 @@ function syncPicker(fromInput){
 function openDye(){
   var rgb = hexToRGB(S.yarn), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
   pk.h = hsv[0]; pk.s = hsv[1]; pk.v = hsv[2];
-  renderBasketGrid(); renderPresets();
+  renderRecent(); renderBasketGrid(); renderPresets();
   openSheet("sheet-dye");
   requestAnimationFrame(function(){ syncPicker(); });
+}
+function renderRecent(){
+  var wrap = $("recent-group"), g = $("recent-grid");
+  var list = (SET.recent || []).filter(function(c){ return SET.basket.indexOf(c) < 0; });
+  wrap.hidden = !list.length;
+  g.innerHTML = "";
+  list.forEach(function(c){
+    var b = el("button");
+    b.style.background = c;
+    b.setAttribute("aria-label", "Yarn " + c);
+    b.onclick = function(){
+      var rgb = hexToRGB(c), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
+      pk.h = hsv[0]; pk.s = hsv[1]; pk.v = hsv[2]; syncPicker();
+    };
+    g.appendChild(b);
+  });
 }
 function renderBasketGrid(){
   var g = $("basket-grid"); g.innerHTML = "";
@@ -3351,7 +3546,7 @@ function wire(){
     if(g){ show(g.getAttribute("data-go")); return; }
     if(ev.target.closest("[data-back]")){ goBack(); return; }
     var c = ev.target.closest("[data-close]");
-    if(c){ var sh = c.closest(".sheet"); if(sh) sh.classList.remove("on"); return; }
+    if(c){ dismissSheet(c.closest(".sheet")); return; }
   });
 
   $("cast-on").onclick = castOn;
@@ -3361,6 +3556,8 @@ function wire(){
   for(var i=0;i<tools.length;i++)(function(b){
     b.onclick = function(){ setTool(b.getAttribute("data-tool")); };
   })(tools[i]);
+  var sheets = document.querySelectorAll(".sheet");
+  for(var si=0; si<sheets.length; si++) bindSheetDrag(sheets[si]);
   bindHoldHints($("tools"));
   bindHoldHints(document.querySelector(".zoompill"));
   $("btn-mirror").onclick = openMirror;
@@ -3381,6 +3578,42 @@ function wire(){
   });
   $("nudge-go").addEventListener("click", applyToolAtCursor);
 
+  (function(){
+    var t = null, held = false;
+    $("skeins").addEventListener("pointerdown", function(ev){
+      var b = ev.target.closest(".skein"); if(!b) return;
+      held = false;
+      t = setTimeout(function(){
+        held = true;
+        setYarn(b.getAttribute("data-c"));
+        openDye();
+        buzz(14);
+        toast("Change this yarn, then Keep.");
+      }, 480);
+    });
+    ["pointerup","pointercancel","pointerleave","pointermove"].forEach(function(e){
+      $("skeins").addEventListener(e, function(){ clearTimeout(t); });
+    });
+    $("skeins").addEventListener("click", function(ev){
+      if(held){ held = false; ev.preventDefault(); ev.stopPropagation(); }
+    }, true);
+
+    var dt = null, dheld = false;
+    $("dye").addEventListener("pointerdown", function(){
+      dheld = false;
+      dt = setTimeout(function(){
+        dheld = true;
+        if(S.prevYarn){ var back = S.prevYarn; setYarn(back); buzz(14); toast("Back to " + back + "."); }
+        else toast("No previous yarn yet.");
+      }, 480);
+    });
+    ["pointerup","pointercancel","pointerleave"].forEach(function(e){
+      $("dye").addEventListener(e, function(){ clearTimeout(dt); });
+    });
+    $("dye").addEventListener("click", function(ev){
+      if(dheld){ dheld = false; ev.preventDefault(); ev.stopPropagation(); }
+    }, true);
+  })();
   $("dye").onclick = openDye;
   $("btn-undo").onclick = undo;
   $("btn-redo").onclick = redo;
@@ -3467,6 +3700,49 @@ function wire(){
   });
 
   /* blankets */
+  $("ca-open").onclick = function(){ closeSheet("sheet-chart"); openProject(S.chartActId); };
+  $("ca-rename").onclick = function(){
+    var p = loadProject(S.chartActId); if(!p) return;
+    closeSheet("sheet-chart");
+    ask({ title:"Rename", msg:"What is this chart called?", input:true, value:p.name, ok:"Rename" })
+      .then(function(v){
+        if(v === null) return;
+        p.name = String(v || p.name).slice(0,48);
+        saveProject(p);
+        if(S.proj && S.proj.id === p.id){ S.proj.name = p.name; $("loom-name").textContent = p.name; }
+        renderWorks();
+      });
+  };
+  $("ca-dup").onclick = function(){
+    var p = loadProject(S.chartActId); if(!p) return;
+    var copy = newProject(p.w, p.h, p.name + " (copy)", p.pattern);
+    copy.cells = p.cells.slice();
+    copy.guide = p.guide ? p.guide.slice() : null;
+    copy.fx = p.fx; copy.fy = p.fy;
+    saveProject(copy);
+    closeSheet("sheet-chart");
+    renderWorks();
+    toast("Copied. The original is untouched.");
+  };
+  $("ca-code").onclick = function(){
+    var p = loadProject(S.chartActId); if(!p) return;
+    closeSheet("sheet-chart");
+    copyText(chartCode(p.name, p.w, p.h, p.cells), "Chart code copied.");
+    SET.stats.gifted = true; saveSettings();
+  };
+  $("ca-del").onclick = function(){
+    var p = loadProject(S.chartActId); if(!p) return;
+    closeSheet("sheet-chart");
+    ask({ title:"Throw it away?", msg:"“" + p.name + "” goes for good.", ok:"Throw it away", danger:true })
+      .then(function(ok){
+        if(!ok) return;
+        if(S.proj && S.proj.id === p.id) S.proj = null;
+        deleteProject(p.id);
+        renderWorks();
+        toast("Gone.");
+      });
+  };
+
   $("blanket-new").onclick = function(){
     ask({ title:"A new blanket", msg:"What's it going to be called?", input:true, value:"Blanket", ok:"Start it" })
       .then(function(v){

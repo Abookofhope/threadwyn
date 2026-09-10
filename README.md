@@ -33,6 +33,18 @@ uploaded anywhere.
   blankets before sewing a seam.
 - **Charm codes** — words that unlock skein sets, bigger looms and extra tools.
 
+## Shortcuts worth knowing
+
+| Gesture | What it does |
+|---|---|
+| Two-finger tap on the chart | Undo. Pinching never triggers it — it requires both fingers to stay put and leave quickly. |
+| Hold a tool, or a corner-rail button | Says what it does, without setting it off. |
+| Hold a yarn in the basket | Opens the dyer on that colour, to change it. |
+| Hold the dye button | Snaps back to the yarn you were using before. |
+| Hold a chart in Works in progress | Open, rename, duplicate, copy as a code, or throw away. |
+| Pull a sheet down | Puts it away. |
+| Double-tap the chart | Zooms in on that stitch, without leaving a mark. |
+
 ## Install it
 
 Open the site in a browser and choose **Install** on the Share & backup screen,

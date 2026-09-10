@@ -14,7 +14,7 @@ It also stamps the service worker's cache name with a hash of the page, so a
 deploy invalidates the previous cache by construction. That is the whole
 update mechanism: push, and phones pick it up on next open.
 """
-import hashlib, os, re, shutil, sys
+import datetime, hashlib, os, re, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC  = os.path.join(HERE, "src")
@@ -30,6 +30,20 @@ img{max-width:100%}
 [hidden]{display:none!important}
 </style>"""
 
+def git_count():
+    """Commits on this branch — the version number, so it maintains itself."""
+    try:
+        out = subprocess.check_output(["git", "rev-list", "--count", "HEAD"],
+                                      cwd=HERE, stderr=subprocess.DEVNULL)
+        return out.decode().strip()
+    except Exception:
+        return "x"
+
+
+def today():
+    return datetime.date.today().isoformat()
+
+
 def main():
     src = open(os.path.join(SRC, "index.html"), encoding="utf-8").read()
     end = src.find("</style>")
@@ -41,6 +55,14 @@ def main():
     page = ('<!doctype html>\n<html lang="en">\n<head>\n'
             + HEAD + "\n" + head.strip()
             + "\n</head>\n<body>\n" + body.strip() + "\n</body>\n</html>\n")
+
+    # Stamp the build. The version is the commit count, so it climbs by itself
+    # on every deploy and can never be forgotten; the id is the content hash,
+    # so two builds of the same page always read the same.
+    content_id = hashlib.sha256(page.encode("utf-8")).hexdigest()[:7]
+    page = re.sub(r'var BUILD = "[^"]*";',
+                  'var BUILD = "v1.%s|%s|%s";' % (git_count(), today(), content_id),
+                  page, count=1)
 
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)

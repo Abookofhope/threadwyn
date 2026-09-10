@@ -51,6 +51,17 @@ and the screen tells you the **true finished size in centimetres**, plus a
 shopping list: every colour named in plain words, with its stitch count and
 roughly how many metres of it you need.
 
+## Version
+
+The home screen carries a build stamp in the bottom right, like `v1.6 · 34c8c93`.
+Tap it for the version, the build date, whether a newer one is waiting, and a
+button to go and fetch it.
+
+Nothing about it is hand-maintained. `build.py` sets the version from the
+commit count, so it climbs by itself on every deploy and cannot be forgotten,
+and the build id is a hash of the page, so identical pages always read the
+same. Opened straight from `src/`, it reads `0.0.0-dev`.
+
 ## Shortcuts worth knowing
 
 | Gesture | What it does |

@@ -24,6 +24,9 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # build.py counts commits for the version number
+          fetch-depth: 0
       - uses: actions/configure-pages@v5
         with:
           enablement: true

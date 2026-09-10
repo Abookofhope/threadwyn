@@ -258,6 +258,9 @@ input,textarea{font:inherit;color:inherit}
 #backup{width:100%;height:110px;border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:10px;
   font-size:11px;font-family:ui-monospace,Menlo,monospace;resize:none;-webkit-user-select:text;user-select:text}
 .mbtn .n,.mbtn .d{display:block}
+.ver{display:block;width:100%;text-align:right;padding:2px 2px 4px;background:none;border:0;
+  font-size:11px;letter-spacing:.09em;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.ver:active{color:var(--accent)}
 .defn{font-size:12.5px;color:var(--ink-3);border-left:2px solid var(--accent);padding-left:10px;margin:10px 0 0!important}
 .defn b{color:var(--ink-2);letter-spacing:.02em}
 .daily{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px 14px;border:1px solid var(--accent);
@@ -483,6 +486,7 @@ input,textarea{font:inherit;color:inherit}
     <button class="btn quiet" data-go="share">Share &amp; backup</button>
     <button class="btn quiet" id="settings-btn">Settings</button>
   </div>
+  <button class="ver" id="ver">—</button>
  </div>
 </section>
 
@@ -851,6 +855,20 @@ input,textarea{font:inherit;color:inherit}
    </div>
    <canvas id="text-prev" width="10" height="10"></canvas>
    <button class="btn quiet" data-close style="margin-top:16px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-about">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>This copy</h2>
+   <p class="sub">Useful when you are trying to work out whether a phone has the newest one.</p>
+   <div class="facts" id="about-facts"></div>
+   <div class="stack" style="gap:8px;margin-top:14px">
+     <button class="btn go" id="about-refresh">Fetch the newest version</button>
+     <button class="btn quiet" data-close>Done</button>
+   </div>
  </div>
 </div>
 
@@ -1337,6 +1355,14 @@ if(!SET.gaugeSts) SET.gaugeSts = 16;
 if(!SET.gaugeRows) SET.gaugeRows = 18;
 function saveSettings(){ lsSet("settings", SET); }
 function hasCharm(c){ return !c || SET.charms.indexOf(c) >= 0; }
+
+/* Replaced by build.py with the commit count, date and content hash. Left as
+   a -dev marker when the source is opened directly. */
+var BUILD = "0.0.0-dev";
+function buildParts(){
+  var raw = BUILD.split("|");
+  return { version: raw[0] || "dev", date: raw[1] || "", id: raw[2] || "" };
+}
 
 /* ---------------- tiny helpers ---------------- */
 function $(id){ return document.getElementById(id); }
@@ -2138,6 +2164,8 @@ function renderHearth(){
   $("t-stitch").textContent = SET.stats.stitches.toLocaleString();
   $("t-done").textContent   = cabinet().filter(function(x){ return !x.example; }).length;
   $("t-ribbon").textContent = earnedRibbons().length;
+  var bp = buildParts();
+  $("ver").textContent = bp.version + (bp.id ? " · " + bp.id : "");
 
   /* the little woven sampler under the wordmark */
   var s = $("sampler");
@@ -3957,6 +3985,25 @@ function wire(){
   $("tips-ok").onclick = function(){ $("tips").hidden = true; SET.tipsSeen = true; saveSettings(); };
 
   /* settings */
+  $("ver").onclick = function(){
+    var bp = buildParts();
+    var rows = '<div><b class="num">' + bp.version + '</b><span>Version</span></div>' +
+               '<div><b class="num">' + (bp.id || "—") + '</b><span>Build</span></div>' +
+               '<div><b>' + (bp.date || "not stamped") + '</b><span>Made on</span></div>' +
+               '<div><b>' + (swWaiting ? "one is waiting" : "up to date") + '</b><span>Newer version</span></div>';
+    $("about-facts").innerHTML = rows;
+    openSheet("sheet-about");
+  };
+  $("about-refresh").onclick = function(){
+    if(swWaiting){ swWaiting.postMessage("skip-waiting"); toast("Updating…"); return; }
+    toast("Checking…");
+    if(navigator.serviceWorker && navigator.serviceWorker.getRegistration){
+      navigator.serviceWorker.getRegistration().then(function(reg){
+        if(reg && reg.update) reg.update();
+        setTimeout(function(){ location.reload(); }, 700);
+      }, function(){ location.reload(); });
+    } else location.reload();
+  };
   $("settings-btn").onclick = function(){ renderSettings(); openSheet("sheet-settings"); };
   $("set-theme").onclick = function(){ cycleTheme(); renderSettings(); };
   $("set-buzz").onclick  = function(){ SET.buzz = !SET.buzz; saveSettings(); renderSettings(); buzz(20); };

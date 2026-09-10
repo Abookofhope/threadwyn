@@ -51,6 +51,17 @@ and the screen tells you the **true finished size in centimetres**, plus a
 shopping list: every colour named in plain words, with its stitch count and
 roughly how many metres of it you need.
 
+## Levels
+
+Finishing a piece earns experience — roughly a point per eight stitches, plus a
+bonus per colour, so ambitious pieces are worth more. The level curve is
+`40 × level^1.55`, which makes the first two levels arrive almost immediately
+and every one after that cost noticeably more.
+
+Anyone updating from an earlier version keeps their credit: on first run the
+app walks the cabinet, awards the experience those pieces would have earned,
+and turns over a letter for each of them.
+
 ## Version
 
 The home screen carries a build stamp in the bottom right, like `v1.6 · 34c8c93`.

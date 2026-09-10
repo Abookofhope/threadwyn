@@ -246,6 +246,10 @@ input,textarea{font:inherit;color:inherit}
 .charm .n{font-family:var(--display);font-size:15px;letter-spacing:.06em}
 .charm .r{font-size:12.5px;color:var(--ink-3);font-style:italic}
 .charm .w{font-size:12.5px;color:var(--ink-2)}
+.charm .cbody{flex:1;min-width:0}
+.charm .n,.charm .w,.charm .r{display:block}
+.charm .r{margin-top:7px}
+.charm .next{display:block;margin-top:6px;font-size:12px;color:var(--accent);font-weight:600}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:var(--ink);
   color:var(--ground);padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:60;opacity:0;
   pointer-events:none;transition:opacity .18s,transform .18s;max-width:90vw;text-align:center}
@@ -258,6 +262,27 @@ input,textarea{font:inherit;color:inherit}
 #backup{width:100%;height:110px;border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:10px;
   font-size:11px;font-family:ui-monospace,Menlo,monospace;resize:none;-webkit-user-select:text;user-select:text}
 .mbtn .n,.mbtn .d{display:block}
+.xpcard{display:block;width:100%;text-align:left;padding:13px 15px;border:1px solid var(--line);
+  border-radius:18px;background:var(--paper);box-shadow:var(--shadow-1)}
+.xprow{display:flex;align-items:center;gap:12px}
+.xprow .lv{flex:none;width:46px;height:46px;border-radius:14px;background:var(--accent);color:var(--on-accent);
+  display:grid;place-items:center;line-height:1}
+.xprow .lv b{font-family:var(--display);font-size:21px;font-weight:700;display:block}
+.xprow .lv span{font-size:8px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;display:block;margin-top:1px}
+.xprow .ttl{flex:1;min-width:0}
+.xprow .ttl .t{display:block;font-family:var(--display);font-size:16.5px;line-height:1.15}
+.xprow .ttl .s{display:block;font-size:12px;color:var(--ink-3);margin-top:2px;font-variant-numeric:tabular-nums}
+.xpbar{display:block;height:8px;border-radius:4px;background:var(--line-soft);overflow:hidden;margin-top:11px}
+.xpbar i{display:block;height:100%;border-radius:4px;background:var(--accent);width:0;
+  transition:width .6s var(--ease)}
+.rwxp{text-align:center;padding:14px 0 4px}
+.rwxp .big{display:block;font-family:var(--display);font-size:46px;font-weight:700;color:var(--accent);line-height:1}
+.rwxp .lbl{display:block;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-top:4px}
+.wordtiles{display:flex;gap:5px;flex-wrap:wrap}
+.wordtiles i{flex:1 1 18px;max-width:34px;aspect-ratio:3/4;border-radius:7px;background:var(--raise);
+  border:1px solid var(--line);display:grid;place-items:center;font-family:var(--display);
+  font-size:16px;font-weight:700;font-style:normal;color:var(--ink-3)}
+.wordtiles i.got{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .ver{display:block;width:100%;text-align:right;padding:2px 2px 4px;background:none;border:0;
   font-size:11px;letter-spacing:.09em;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .ver:active{color:var(--accent)}
@@ -433,6 +458,17 @@ input,textarea{font:inherit;color:inherit}
    <p class="defn"><b>thread·wyn</b> <i>(n.)</i> — thread, and <i>wyn</i>, the old word for joy: the quiet pleasure of a pattern coming out even.</p>
    <p>Work a chart square by square. Fasten off when it's done, and it goes in the cabinet for good.</p>
   </div>
+
+  <button class="xpcard" id="xpcard">
+    <span class="xprow">
+      <span class="lv"><b id="xp-lv">1</b><span>level</span></span>
+      <span class="ttl">
+        <span class="t" id="xp-title">New to the hook</span>
+        <span class="s" id="xp-sub">— to the next</span>
+      </span>
+    </span>
+    <span class="xpbar"><i id="xp-fill"></i></span>
+  </button>
 
   <button class="daily" id="daily" hidden>
     <span>
@@ -855,6 +891,34 @@ input,textarea{font:inherit;color:inherit}
    </div>
    <canvas id="text-prev" width="10" height="10"></canvas>
    <button class="btn quiet" data-close style="margin-top:16px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-reward">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2 id="rw-head">Fastened off</h2>
+   <p class="sub" id="rw-sub">—</p>
+   <div class="rwxp">
+     <span class="big" id="rw-xp">+0</span>
+     <span class="lbl">experience</span>
+   </div>
+   <div class="xprow" style="margin-top:12px">
+     <span class="lv"><b id="rw-lv">1</b><span>level</span></span>
+     <span class="ttl"><span class="t" id="rw-title">—</span><span class="s" id="rw-sub2">—</span></span>
+   </div>
+   <span class="xpbar" style="margin-top:8px"><i id="rw-fill"></i></span>
+   <div id="rw-letter" hidden>
+     <span class="eyebrow" style="display:block;margin-top:20px">A letter turned up</span>
+     <p class="sub" id="rw-riddle" style="font-style:italic;margin:6px 0 10px">—</p>
+     <div class="wordtiles" id="rw-tiles"></div>
+     <p class="note" id="rw-hint" style="margin-top:10px">Think you know it? Say it in Charm Codes.</p>
+   </div>
+   <div class="stack" style="gap:8px;margin-top:16px">
+     <button class="btn go" id="rw-charms">Go and say it</button>
+     <button class="btn quiet" data-close>Lovely</button>
+   </div>
  </div>
 </div>
 
@@ -1335,7 +1399,7 @@ var S = {
 var SET = lsGet("settings", null) || {
   theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
   buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5, recent:[],
-  gaugeSts:16, gaugeRows:18,
+  gaugeSts:16, gaugeRows:18, xp:null, letters:null,
   stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
          bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
   seeded:false
@@ -1353,6 +1417,20 @@ if(!SET.cmPerStitch) SET.cmPerStitch = 5.5;
 if(!SET.recent) SET.recent = [];
 if(!SET.gaugeSts) SET.gaugeSts = 16;
 if(!SET.gaugeRows) SET.gaugeRows = 18;
+if(!SET.letters) SET.letters = {};
+if(SET.xp == null){
+  /* First run on a version that counts: credit everything already finished,
+     rather than starting a full cabinet back at nothing. */
+  var back = 0, done = 0;
+  lsGet("cabinet", []).forEach(function(pc){
+    if(pc.example) return;
+    back += pieceXP(pc.stitches || 0, pc.yarns || 1);
+    done++;
+  });
+  SET.xp = back;
+  for(var mi = 0; mi < done; mi++) turnOverLetter();
+  saveSettings();
+}
 function saveSettings(){ lsSet("settings", SET); }
 function hasCharm(c){ return !c || SET.charms.indexOf(c) >= 0; }
 
@@ -2164,6 +2242,12 @@ function renderHearth(){
   $("t-stitch").textContent = SET.stats.stitches.toLocaleString();
   $("t-done").textContent   = cabinet().filter(function(x){ return !x.example; }).length;
   $("t-ribbon").textContent = earnedRibbons().length;
+  var L = levelFor(SET.xp);
+  $("xp-lv").textContent = String(L.level);
+  $("xp-title").textContent = L.title;
+  $("xp-sub").textContent = L.into.toLocaleString() + " / " + L.need.toLocaleString() + " to level " + (L.level + 1);
+  requestAnimationFrame(function(){ $("xp-fill").style.width = Math.round(L.into / L.need * 100) + "%"; });
+
   var bp = buildParts();
   $("ver").textContent = bp.version + (bp.id ? " · " + bp.id : "");
 
@@ -2609,8 +2693,18 @@ function fastenOff(){
     if(hr >= 22 || hr < 4) st.nightFinish = true;
     p.name = name; saveProject(p); saveSettings();
     $("loom-name").textContent = name;
-    toast("Fastened off. It's in the cabinet.");
-    setTimeout(function(){ S.pieceId = piece.id; show("piece"); }, 420);
+
+    var gained = pieceXP(stitched, count);
+    var wasLevel = levelFor(SET.xp).level;
+    SET.xp = (SET.xp || 0) + gained;
+    var turned = turnOverLetter();
+    saveSettings();
+
+    setTimeout(function(){
+      S.pieceId = piece.id;
+      show("piece");
+      showReward(name, gained, wasLevel, turned);
+    }, 420);
   });
 }
 
@@ -2806,12 +2900,28 @@ function renderTemplates(){
 /* ---------------- charms ---------------- */
 function renderCharms(){
   var list = $("charm-list"); list.innerHTML = "";
+  var active = activeCharm();
   CHARMS.forEach(function(c){
-    var got = hasCharm(c.code);
+    var got = hasCharm(c.code), shown = lettersFor(c.code);
     var n = el("div","charm" + (got ? " got" : ""));
-    n.innerHTML = '<span class="key">'+icon("key",18)+'</span>' +
-      '<span><span class="n">'+(got ? c.code : "· · · · · ·")+'</span><br>' +
-      (got ? '<span class="w">'+c.gives+'</span>' : '<span class="r">"'+c.riddle+'"</span>')+'</span>';
+    var key = el("span","key"); key.innerHTML = icon("key", 18);
+    var body = el("span","cbody");
+    if(got){
+      body.appendChild(el("span","n", c.code));
+      body.appendChild(el("span","w", c.gives));
+    } else {
+      var tiles = el("div","wordtiles");
+      paintTiles(tiles, c.code);
+      body.appendChild(tiles);
+      body.appendChild(el("span","r", "\u201C" + c.riddle + "\u201D"));
+      if(active && active.code === c.code){
+        var tag = el("span","next", shown
+          ? shown + " of " + c.code.length + " turned over — the next thing you fasten off turns another."
+          : "The next thing you fasten off turns over a letter here.");
+        body.appendChild(tag);
+      }
+    }
+    n.appendChild(key); n.appendChild(body);
     list.appendChild(n);
   });
 }
@@ -3232,6 +3342,85 @@ function renderSettings(){
 }
 
 /* ==========================================================================
+   LEVELS
+   Cheap to begin with, then steadily dearer: the first finished thing should
+   move the bar a long way, the twentieth should feel earned.
+   ========================================================================== */
+var TITLES = [
+  [1,  "New to the hook"],
+  [3,  "Finding the rhythm"],
+  [5,  "Steady hands"],
+  [8,  "Counts without looking"],
+  [12, "Reads a chart at a glance"],
+  [16, "Yarn goes missing near her"],
+  [21, "Never drops a stitch"],
+  [27, "Makes it look easy"],
+  [34, "The one people ask"],
+  [42, "Weald-hearted"]
+];
+function levelNeed(level){ return Math.round(40 * Math.pow(level, 1.55)); }
+function levelFor(xp){
+  var lv = 1, need = levelNeed(1), left = Math.max(0, xp || 0);
+  while(left >= need && lv < 99){ left -= need; lv++; need = levelNeed(lv); }
+  return { level:lv, into:left, need:need, title:titleFor(lv) };
+}
+function titleFor(lv){
+  var t = TITLES[0][1];
+  for(var i=0;i<TITLES.length;i++) if(lv >= TITLES[i][0]) t = TITLES[i][1];
+  return t;
+}
+function pieceXP(stitches, yarns){ return Math.round(stitches / 8) + yarns * 6; }
+
+/* ==========================================================================
+   THE LETTER BOARD
+   Every finished piece turns over one letter of the charm you are working
+   towards. Guess it early and the rest are yours to keep for the next one.
+   ========================================================================== */
+function revealOrder(code){
+  var idx = [], i, seed = 7;
+  for(i=0;i<code.length;i++){ idx.push(i); seed = (seed * 31 + code.charCodeAt(i)) % 2147483647; }
+  for(i = idx.length - 1; i > 0; i--){
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    var j = seed % (i + 1), t = idx[i];
+    idx[i] = idx[j]; idx[j] = t;
+  }
+  return idx;
+}
+function lettersFor(code){ return (SET.letters && SET.letters[code]) || 0; }
+function maskOf(code){
+  var order = revealOrder(code), shown = {}, k, count = lettersFor(code);
+  for(k = 0; k < count && k < order.length; k++) shown[order[k]] = 1;
+  var out = [];
+  for(k = 0; k < code.length; k++) out.push({ ch: code[k], on: !!shown[k] });
+  return out;
+}
+/* The charm currently being turned over: the first locked one with letters
+   still hidden, so progress never stalls on a word already fully shown. */
+function activeCharm(){
+  var i;
+  for(i=0;i<CHARMS.length;i++)
+    if(!hasCharm(CHARMS[i].code) && lettersFor(CHARMS[i].code) < CHARMS[i].code.length) return CHARMS[i];
+  for(i=0;i<CHARMS.length;i++) if(!hasCharm(CHARMS[i].code)) return CHARMS[i];
+  return null;
+}
+function turnOverLetter(){
+  var c = activeCharm();
+  if(!c) return null;
+  if(!SET.letters) SET.letters = {};
+  if(lettersFor(c.code) >= c.code.length) return { charm:c, full:true };
+  SET.letters[c.code] = lettersFor(c.code) + 1;
+  return { charm:c, full: SET.letters[c.code] >= c.code.length };
+}
+function paintTiles(host, code){
+  host.innerHTML = "";
+  maskOf(code).forEach(function(t){
+    var i2 = el("i", t.on ? "got" : "");
+    i2.textContent = t.on ? t.ch : "";
+    host.appendChild(i2);
+  });
+}
+
+/* ==========================================================================
    WORKED UP — the chart drawn as actual fabric
 
    Every square becomes a procedurally drawn stitch: a rounded body, a light
@@ -3480,6 +3669,31 @@ function renderWork(){
     : "—";
   drawWorkChart();
   keepAwake(true);
+}
+
+function showReward(name, gained, wasLevel, turned){
+  var L = levelFor(SET.xp), levelled = L.level > wasLevel;
+  $("rw-head").textContent = levelled ? "Level " + L.level + "!" : "Fastened off";
+  $("rw-sub").textContent = levelled ? name + " took you up a level." : name + " is on the shelf.";
+  $("rw-xp").textContent = "+" + gained.toLocaleString();
+  $("rw-lv").textContent = String(L.level);
+  $("rw-title").textContent = L.title;
+  $("rw-sub2").textContent = L.into.toLocaleString() + " / " + L.need.toLocaleString() + " to level " + (L.level + 1);
+  $("rw-fill").style.width = "0%";
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ $("rw-fill").style.width = Math.round(L.into / L.need * 100) + "%"; });
+  });
+  var box = $("rw-letter");
+  if(turned && turned.charm){
+    box.hidden = false;
+    $("rw-riddle").textContent = "\u201C" + turned.charm.riddle + "\u201D";
+    paintTiles($("rw-tiles"), turned.charm.code);
+    $("rw-hint").textContent = turned.full
+      ? "That's the whole word. Go and say it."
+      : "Think you already know it? You don't have to wait for the rest.";
+  } else box.hidden = true;
+  buzz(levelled ? 40 : 18);
+  openSheet("sheet-reward");
 }
 
 /* ==========================================================================
@@ -3985,6 +4199,8 @@ function wire(){
   $("tips-ok").onclick = function(){ $("tips").hidden = true; SET.tipsSeen = true; saveSettings(); };
 
   /* settings */
+  $("xpcard").onclick = function(){ show("charms"); };
+  $("rw-charms").onclick = function(){ closeSheet("sheet-reward"); S.stack = ["hearth"]; show("charms", true); };
   $("ver").onclick = function(){
     var bp = buildParts();
     var rows = '<div><b class="num">' + bp.version + '</b><span>Version</span></div>' +

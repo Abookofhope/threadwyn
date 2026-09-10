@@ -1950,6 +1950,14 @@ function show(name, replace){
   if(name !== "work" && name !== "loom") keepAwake(false);
   if(name === "loom")    enterLoom();
 }
+/* A link can carry a screen name: .../#install goes straight to Share & backup.
+   Handy for sending someone "here is where the install button is". */
+var HASH_SCREENS = { install:"share", share:"share", cabinet:"cabinet", book:"book",
+                     charms:"charms", blankets:"blankets", "new":"new" };
+function screenFromHash(){
+  var h = (location.hash || "").replace(/^#\/?/, "").toLowerCase();
+  return HASH_SCREENS[h] || null;
+}
 function goBack(){
   var prev = S.stack.pop() || "hearth";
   show(prev, true);
@@ -3661,6 +3669,10 @@ function wire(){
       sizeCanvas(); clampView(); invalidate();
     }, 90);
   }
+  window.addEventListener("hashchange", function(){
+    var want = screenFromHash();
+    if(want && want !== S.screen){ S.stack = ["hearth"]; show(want, true); }
+  });
   window.addEventListener("resize", onResize);
   window.addEventListener("orientationchange", onResize);
   document.addEventListener("visibilitychange", function(){
@@ -3811,7 +3823,7 @@ function installState(){
   if(standalone) note.textContent = "Installed. It opens from your home screen and works with no signal.";
   else if(deferredInstall) note.textContent = "Adds Threadwyn to the home screen. It then opens full screen and keeps working offline.";
   else if(framed) note.textContent = "Opened inside another page, so it can't install itself here. Open the link in your browser and the option appears.";
-  else note.textContent = "If no button shows, use the browser menu — Add to Home screen on Android, or Share then Add to Home Screen on iPhone.";
+  else note.textContent = "No button? If you opened this from a message, tap the browser's ⋮ menu and choose Open in Chrome first — a chat app's built-in browser never offers it. Otherwise use the ⋮ menu and Add to Home screen, or on iPhone, Share then Add to Home Screen.";
 }
 window.addEventListener("beforeinstallprompt", function(ev){
   ev.preventDefault();
@@ -3862,8 +3874,9 @@ function start(hot){
   }catch(e){}
   renderMotifs();
   setYarn(SET.basket[6] || "#B62A63");
-  var target = "hearth";
-  if(hot && hot.screen && SCREENS.indexOf(hot.screen) >= 0){
+  var target = screenFromHash() || "hearth";
+  if(target !== "hearth") S.stack = ["hearth"];
+  if(target === "hearth" && hot && hot.screen && SCREENS.indexOf(hot.screen) >= 0){
     if(hot.screen === "loom" && hot.projectId){
       var p = loadProject(hot.projectId);
       if(p){ S.proj = p; target = "loom"; }

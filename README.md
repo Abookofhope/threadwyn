@@ -62,6 +62,23 @@ Anyone updating from an earlier version keeps their credit: on first run the
 app walks the cabinet, awards the experience those pieces would have earned,
 and turns over a letter for each of them.
 
+## Telling colours apart
+
+The starting basket is chosen so every pair of yarns is far apart to the eye,
+not merely different by name — the first version had six violet-greys in it and
+they were unreadable on a chart.
+
+Three tools back that up:
+
+- **Show me** — pick any yarn in *Yarns in this chart* and everything else
+  fades right back, so you can see exactly where that colour went.
+- **The dyer warns you** when a colour lands within redmean distance ~65 of one
+  already in the basket, and **Push apart** walks it clear — lightness first,
+  because that is the difference that survives a small square on a phone, then
+  hue.
+- Picking a yarn names it, so *Marigold* and *Ochre* are told apart by word as
+  well as by eye.
+
 ## Version
 
 The home screen carries a build stamp in the bottom right, like `v1.6 · 34c8c93`.

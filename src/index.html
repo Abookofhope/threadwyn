@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Karla:wght@400;500;700&display=swap">
 <style>
 :root{
+  --ubar:0px;
   --ink:#1E1826; --ink-2:#4A4059; --ink-3:#7B7189;
   --ground:#E6E2EC; --paper:#F7F5FA; --raise:#FFFFFF;
   --line:#CFC8DA; --line-soft:#E0DAE9;
@@ -283,6 +284,36 @@ input,textarea{font:inherit;color:inherit}
   border:1px solid var(--line);display:grid;place-items:center;font-family:var(--display);
   font-size:16px;font-weight:700;font-style:normal;color:var(--ink-3)}
 .wordtiles i.got{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+body.has-update{--ubar:calc(48px + env(safe-area-inset-top))}
+.screen{padding-top:var(--ubar)}
+.bar{top:var(--ubar)}
+body.has-update .bar{padding-top:8px}
+.updatebar{position:fixed;left:0;right:0;top:0;z-index:60;display:flex;align-items:center;gap:10px;
+  height:calc(48px + env(safe-area-inset-top));padding:0 10px 0 14px;padding-top:env(safe-area-inset-top);
+  background:var(--accent);color:var(--on-accent);box-shadow:0 6px 20px -8px rgba(0,0,0,.45)}
+.updatebar .ub-dot{width:8px;height:8px;border-radius:50%;background:var(--on-accent);flex:none;
+  animation:ubpulse 1.8s ease-in-out infinite}
+@keyframes ubpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.7)}}
+.updatebar .ub-text{flex:1;min-width:0;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.updatebar .ub-go{flex:none;height:32px;padding:0 14px;border-radius:9px;background:var(--on-accent);
+  color:var(--accent);font-weight:700;font-size:13px}
+.updatebar .ub-x{flex:none;width:34px;height:34px;border-radius:9px;font-size:21px;line-height:1;color:var(--on-accent);opacity:.75}
+.installcard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;
+  border:1px solid var(--teal);border-radius:18px;background:var(--paper);box-shadow:var(--shadow-1)}
+.installcard .ic-icon{width:40px;height:40px;border-radius:12px;background:var(--teal);color:var(--paper);
+  display:grid;place-items:center;flex:none}
+.installcard .ic-body{flex:1;min-width:0}
+.installcard .ic-body .t{display:block;font-family:var(--display);font-size:16px;line-height:1.15}
+.installcard .ic-body .s{display:block;font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.installcard .ic-go{flex:none;padding:8px 14px;border-radius:11px;background:var(--teal);color:var(--paper);
+  font-weight:700;font-size:13px}
+.chver{display:flex;align-items:baseline;gap:9px;margin:18px 0 7px}
+.chver b{font-family:var(--display);font-size:18px}
+.chver span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.chver.now b{color:var(--accent)}
+.chlist{margin:0;padding-left:19px;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.chlist li{margin-bottom:3px}
+.chlist li::marker{color:var(--accent)}
 .ver{display:block;width:100%;text-align:right;padding:2px 2px 4px;background:none;border:0;
   font-size:11px;letter-spacing:.09em;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .ver:active{color:var(--accent)}
@@ -321,6 +352,19 @@ input,textarea{font:inherit;color:inherit}
 .tipcard ul{margin:0 0 12px;padding-left:18px;font-size:13px;color:var(--ink-2);line-height:1.6}
 .tipcard li::marker{color:var(--accent)}
 .note-line{font-size:13px;color:var(--ink-2);font-style:italic;text-align:center;padding:0 10px}
+.isochip{position:absolute;top:8px;left:10px;display:flex;align-items:center;gap:7px;z-index:4;
+  background:var(--paper);border:1px solid var(--accent);border-radius:999px;padding:5px 12px 5px 7px;
+  box-shadow:var(--shadow-1);font-size:12px;max-width:70%}
+.isochip i{width:14px;height:14px;border-radius:50%;border:1px solid var(--line);flex:none}
+.isochip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.isochip .x{color:var(--ink-3);font-size:11px;flex:none}
+.clash{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:13px;
+  border:1px solid var(--brass);background:var(--accent-soft)}
+.clash .cl-sw{display:flex;gap:4px;flex:none}
+.clash .cl-sw i{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:block}
+.clash .cl-t{flex:1;min-width:0;font-size:12.5px;line-height:1.35;color:var(--ink-2)}
+.clash button{flex:none;height:34px;padding:0 12px;border-radius:10px;border:1px solid var(--accent);
+  background:var(--accent);color:var(--on-accent);font-size:12.5px;font-weight:700}
 .railsep{height:1px;background:var(--line);margin:3px 5px}
 .fabwrap{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;
   padding:14px max(16px,env(safe-area-inset-left)) calc(20px + env(safe-area-inset-bottom))}
@@ -459,6 +503,15 @@ input,textarea{font:inherit;color:inherit}
    <p>Work a chart square by square. Fasten off when it's done, and it goes in the cabinet for good.</p>
   </div>
 
+  <button class="installcard" id="installcard" hidden>
+    <span class="ic-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v12M7.5 11L12 15.5 16.5 11M4.5 19.5h15"/></svg></span>
+    <span class="ic-body">
+      <span class="t">Put it on your home screen</span>
+      <span class="s">Opens full screen, works with no signal.</span>
+    </span>
+    <span class="ic-go">Install</span>
+  </button>
+
   <button class="xpcard" id="xpcard">
     <span class="xprow">
       <span class="lv"><b id="xp-lv">1</b><span>level</span></span>
@@ -580,6 +633,7 @@ input,textarea{font:inherit;color:inherit}
  <div class="stage" id="stage">
    <canvas id="cv"></canvas>
    <div class="gauge" id="gauge">R<b>1</b> · St<b>1</b></div>
+   <button class="isochip" id="isochip" hidden><i id="iso-dot"></i><span id="iso-name">—</span><span class="x">tap to stop</span></button>
    <div id="loupe"><canvas id="loupe-cv" width="96" height="96"></canvas></div>
    <div class="zoompill">
      <button id="z-in" aria-label="Zoom in"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
@@ -832,6 +886,11 @@ input,textarea{font:inherit;color:inherit}
    <p class="sub">Any colour there is. Drag the square, then the strip.</p>
    <canvas id="sv" width="320" height="180"></canvas>
    <canvas id="hue" width="320" height="26"></canvas>
+   <div class="clash" id="clash" hidden>
+     <span class="cl-sw"><i id="cl-a"></i><i id="cl-b"></i></span>
+     <span class="cl-t" id="cl-text">—</span>
+     <button id="cl-fix">Push apart</button>
+   </div>
    <div class="hexrow">
      <span id="pchip"></span>
      <input id="phex" maxlength="7" autocomplete="off" spellcheck="false">
@@ -894,6 +953,17 @@ input,textarea{font:inherit;color:inherit}
  </div>
 </div>
 
+<div class="sheet" id="sheet-changes">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2 id="ch-head">What's changed</h2>
+   <p class="sub" id="ch-sub">Everything that's been added, newest first.</p>
+   <div id="ch-list"></div>
+   <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
 <div class="sheet" id="sheet-reward">
  <div class="scrim" data-close></div>
  <div class="sheet-in">
@@ -931,6 +1001,7 @@ input,textarea{font:inherit;color:inherit}
    <div class="facts" id="about-facts"></div>
    <div class="stack" style="gap:8px;margin-top:14px">
      <button class="btn go" id="about-refresh">Fetch the newest version</button>
+     <button class="btn" id="about-changes">What's changed</button>
      <button class="btn quiet" data-close>Done</button>
    </div>
  </div>
@@ -1125,6 +1196,13 @@ input,textarea{font:inherit;color:inherit}
  </div>
 </div>
 
+<div class="updatebar" id="updatebar" hidden>
+  <span class="ub-dot"></span>
+  <span class="ub-text">A new version is ready</span>
+  <button class="ub-go" id="ub-go">Update</button>
+  <button class="ub-x" id="ub-x" aria-label="Not now">&times;</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -1157,12 +1235,17 @@ var GAUGES = [
   {w:100,h:100,name:"Bedspread",charm:"BIGLOOM"}
 ];
 
-var BASE_YARNS = ["#1B1523","#3B3350","#6B6A85","#A6A3B8","#E9E6EF","#FFFFFF",
-                  "#B62A63","#F2789A","#E8A33D","#F5D77E","#7BB661","#2E7D6E",
-                  "#3E7CB1","#7A5EA8","#8C5A3C","#D9B08C"];
+/* Chosen so that every pair is far apart to the eye, not just different in
+   name: one neutral at each end plus one in the middle, then a full turn of
+   hue. The old set had six violet-greys in it and they were unreadable on a
+   chart. */
+var BASE_YARNS = ["#141018","#8C8F99","#FFFFFF",
+                  "#C4262B","#E8722C","#F2C230","#7CB342","#12796B",
+                  "#2D6FB8","#6B4BA8","#D94A94","#8B5A3C",
+                  "#F2A0B4","#9FD4C0","#F7E3A1","#5C6470"];
 
 var SKEIN_SETS = [
-  {id:"cotton", name:"Cotton basics", charm:null,
+  {id:"cotton", name:"Easy to tell apart", charm:null,
    colors:BASE_YARNS},
   {id:"moon", name:"Moonwool", charm:"MOONWOOL",
    colors:["#0B1026","#1B2450","#2E3D77","#4C5FA6","#7C8BC4","#B4BEE0","#E6E9F7","#F2E7C9","#C9A227","#6E5AA8","#3A2E5C","#141024"]},
@@ -1389,7 +1472,7 @@ var S = {
   cursor: {x:0, y:0},
   undoStack: [], redoStack: [],
   view: {scale:10, ox:0, oy:0},
-  pieceId: null, prevYarn: null, chartActId: null,
+  pieceId: null, prevYarn: null, chartActId: null, isolate: null,
   fabric: null, fabricMode: "yarn",
   sel: null, selPreview: null, pasteBuf: null,
   work: null, blanketId: null, writtenCtx: null,
@@ -1441,6 +1524,56 @@ function buildParts(){
   var raw = BUILD.split("|");
   return { version: raw[0] || "dev", date: raw[1] || "", id: raw[2] || "" };
 }
+
+/* Newest first. Written for the person playing, not for me. */
+var CHANGELOG = [
+ { v:"1.8", d:"11 Sep", items:[
+   "This list — every change so far, in the version panel at the bottom of the home screen.",
+   "A banner across the top when a new version is ready, so an update is one tap instead of a hunt.",
+   "A card on the home screen offering to put the game on your home screen.",
+   "Colours you can actually tell apart: a new starting basket chosen so no two yarns look alike.",
+   "Show me — pick any yarn and everything else fades, so you can see exactly where it went.",
+   "The dyer warns you when a colour is too close to one already in the basket, and offers to push it apart."
+ ]},
+ { v:"1.7", d:"10 Sep", items:[
+   "Charms are earned now: every piece you fasten off turns over a letter of the word you're working towards.",
+   "Guess a charm early and the letters you didn't need carry on to the next one.",
+   "An experience bar on the home screen, with levels and a title for each.",
+   "Finishing a piece opens a proper reward panel instead of a message that scrolls away.",
+   "Anything already in the cabinet was counted, so nobody started from nothing."
+ ]},
+ { v:"1.6", d:"10 Sep", items:[
+   "A version stamp at the bottom right of the home screen.",
+   "Tap it to see the build, whether a newer one is waiting, and to go and fetch it."
+ ]},
+ { v:"1.5", d:"10 Sep", items:[
+   "Worked up — see any chart as real crochet fabric, every stitch drawn rather than squared off.",
+   "Tell it your tension and it gives the true finished size in centimetres.",
+   "A shopping list: every colour named in plain words, with how many metres of it you need."
+ ]},
+ { v:"1.4", d:"10 Sep", items:[
+   "Sheets rise and can be pulled back down to put away.",
+   "Two-finger tap on the chart undoes.",
+   "Hold a yarn to re-dye it; hold the dye button to snap back to the last colour.",
+   "Hold a chart in Works in progress to rename, duplicate or throw it away.",
+   "Cast on at any size you like, not just the set gauges.",
+   "The chart menu is a grid of tiles instead of a long scroll."
+ ]},
+ { v:"1.3", d:"10 Sep", items:[
+   "Links can open a screen directly, so a link can point straight at Install."
+ ]},
+ { v:"1.2", d:"10 Sep", items:[
+   "Every tool says what it does when you tap it, and describes itself when you hold it."
+ ]},
+ { v:"1.1", d:"10 Sep", items:[
+   "The first version: charts up to 100×100, a loupe above your fingertip, and an aim pad for one stitch at a time.",
+   "Mirror and fold lines you can move a half-stitch at a time, and Fold to reflect what's already there.",
+   "Trace a photo into a chart, at your chart's gauge, in as many yarns as you choose.",
+   "Written crochet patterns, and a row-by-row mode to follow while you work.",
+   "The Cabinet, ribbons, blankets, a pattern book of thirty-two prompts and nine charm codes.",
+   "Everything saved on your own phone, with backup files and shareable chart codes."
+ ]}
+];
 
 /* ---------------- tiny helpers ---------------- */
 function $(id){ return document.getElementById(id); }
@@ -1569,7 +1702,13 @@ function makeBuffer(){
 }
 function cellRGB(x, y, i){
   var p = S.proj, c = p.cells[i];
-  if(c) return hexToRGB(c);
+  if(c){
+    if(S.isolate && c !== S.isolate){
+      /* still visible, but plainly not the one you asked for */
+      return mixRGB(hexToRGB(c), ((x+y)&1) ? clothB : clothA, 0.82);
+    }
+    return hexToRGB(c);
+  }
   var ground = ((x+y)&1) ? clothB : clothA;
   if(S.showGuide && p.guide && p.guide[i]) return mixRGB(ground, hexToRGB(p.guide[i]), 0.40);
   return ground;
@@ -1771,6 +1910,18 @@ function showLoupe(px, py){
 }
 function hideLoupe(){ loupeEl.classList.remove("on"); }
 
+function setIsolate(hex){
+  S.isolate = hex || null;
+  var chip = $("isochip");
+  if(chip){
+    chip.hidden = !S.isolate;
+    if(S.isolate){
+      $("iso-dot").style.background = S.isolate;
+      $("iso-name").textContent = nearestShade(S.isolate).name;
+    }
+  }
+  if(S.proj && bimg){ rebuildBuffer(); invalidate(); }
+}
 function updateGauge(){
   var g = $("gauge"); if(!g || !S.proj) return;
   g.innerHTML = "R<b>" + (S.cursor.y+1) + "</b> · St<b>" + (S.cursor.x+1) + "</b> &nbsp;·&nbsp; " + S.proj.w + "×" + S.proj.h;
@@ -2180,6 +2331,7 @@ function pieceDataURL(piece, cells){
 var SCREENS = ["hearth","new","book","works","loom","cabinet","piece","charms","share","blankets","blanket","work","fabric"];
 function show(name, replace){
   if(S.screen === "loom" && name !== "loom"){ saveProject(S.proj); keepAwake(false); }
+  if(name !== "loom" && S.isolate) S.isolate = null;
   if(!replace && S.screen !== name) S.stack.push(S.screen);
   SCREENS.forEach(function(n){ var e = $("scr-"+n); if(e) e.classList.toggle("on", n === name); });
   S.screen = name;
@@ -2429,10 +2581,17 @@ function setTool(t, quiet){
   showToolHint(t);
   updateSelBar();
 }
-function setYarn(hex){
+function setYarn(hex, quiet){
   var next = normHex(hex);
   if(next !== S.yarn) S.prevYarn = S.yarn;
   S.yarn = next;
+  if(!quiet && $("toolhint")){
+    var sh2 = nearestShade(next), box2 = $("toolhint");
+    box2.innerHTML = "<b>" + sh2.name + (sh2.close ? "" : "-ish") + "</b> — " + next;
+    box2.classList.add("on");
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function(){ box2.classList.remove("on"); }, 1800);
+  }
   if(S.textArt && $("text-prev")) drawArtPreview($("text-prev"), S.textArt);
   $("dye").style.background = S.yarn;
   var s = document.querySelectorAll("#skeins .skein");
@@ -2558,7 +2717,22 @@ function syncPicker(fromInput){
   $("pchip").style.background = hex;
   if(!fromInput) $("phex").value = hex;
   drawSV(); drawHueStrip();
-  setYarn(hex);
+  setYarn(hex, true);
+  var clash = tooCloseTo(hex, SET.basket);
+  var box = $("clash");
+  if(clash){
+    box.hidden = false;
+    $("cl-a").style.background = hex;
+    $("cl-b").style.background = clash.hex;
+    $("cl-text").textContent = "Very close to a yarn you already have. On a chart these two will look the same.";
+    $("cl-fix").onclick = function(){
+      var moved = pushApart(hex, SET.basket);
+      var rgb2 = hexToRGB(moved), hsv2 = rgbToHSV(rgb2[0], rgb2[1], rgb2[2]);
+      pk.h = hsv2[0]; pk.s = hsv2[1]; pk.v = hsv2[2];
+      syncPicker();
+      toast("Moved it clear.");
+    };
+  } else box.hidden = true;
 }
 function openDye(){
   var rgb = hexToRGB(S.yarn), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
@@ -3275,7 +3449,13 @@ function renderYarnsSheet(){
     take.onclick = function(){ swapYarn(hex, null); renderYarnsSheet(); toast("Taken out."); };
     var load = el("button", null, "Load");
     load.onclick = function(){ setYarn(hex); toast("Loaded " + hex + "."); };
-    row.appendChild(sw); row.appendChild(mid); row.appendChild(load); row.appendChild(swap); row.appendChild(take);
+    var showme = el("button", null, S.isolate === hex ? "Stop" : "Show me");
+    showme.onclick = function(){
+      setIsolate(S.isolate === hex ? null : hex);
+      closeSheet("sheet-yarns");
+      if(S.isolate) toast("Everything else has faded back.");
+    };
+    row.appendChild(sw); row.appendChild(mid); row.appendChild(showme); row.appendChild(load); row.appendChild(swap); row.appendChild(take);
     list.appendChild(row);
   });
   $("yarns-basket").onclick = function(){
@@ -3332,6 +3512,38 @@ function dailyPattern(){
   var key = d.getFullYear()*372 + d.getMonth()*31 + d.getDate();
   return PATTERNS[key % PATTERNS.length];
 }
+function renderChanges(){
+  var box = $("ch-list"); box.innerHTML = "";
+  var here = buildParts().version.replace(/^v/, "");
+  CHANGELOG.forEach(function(entry){
+    var head = el("div","chver" + (entry.v === here ? " now" : ""));
+    head.appendChild(el("b", null, "v" + entry.v));
+    head.appendChild(el("span", null, entry.v === here ? "you have this" : entry.d));
+    box.appendChild(head);
+    var ul = document.createElement("ul");
+    ul.className = "chlist";
+    entry.items.forEach(function(t){
+      var li = document.createElement("li");
+      li.textContent = t;
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+  });
+}
+/* After an update, show what arrived — once, and never on a first install. */
+function maybeShowWhatsNew(){
+  var here = buildParts().version;
+  if(here.indexOf("dev") >= 0) return;
+  var seen = SET.seenVersion;
+  SET.seenVersion = here;
+  saveSettings();
+  if(!seen || seen === here) return;
+  $("ch-head").textContent = "New in " + here;
+  $("ch-sub").textContent = "Here's what arrived since you last opened it.";
+  renderChanges();
+  setTimeout(function(){ openSheet("sheet-changes"); }, 700);
+}
+
 function renderSettings(){
   $("set-theme-state").textContent = SET.theme === null ? "follows your phone" : (SET.theme === "light" ? "daylight" : "lamplight");
   $("set-buzz-state").textContent = SET.buzz ? "on" : "off";
@@ -3559,6 +3771,44 @@ var SHADES = [
  ["Lilac","#C4AEE0"],["Lavender","#B7A3D6"],["Violet","#7E5CB0"],["Grape","#5B3D80"],
  ["Plum","#6B2F53"],["Magenta","#C13A94"],["Fuchsia","#E05FAF"],["Candy","#F49AC8"]
 ];
+/* Redmean distance — still cheap, but far closer to how an eye judges two
+   colours than plain RGB, which is what makes "these two look the same"
+   answerable at all. Roughly 0-765; under about 65 reads as the same yarn. */
+function colourGap(h1, h2){
+  var a = hexToRGB(h1), b = hexToRGB(h2);
+  var rm = (a[0] + b[0]) / 2;
+  var dr = a[0]-b[0], dg = a[1]-b[1], db = a[2]-b[2];
+  return Math.sqrt((2 + rm/256)*dr*dr + 4*dg*dg + (2 + (255-rm)/256)*db*db);
+}
+function tooCloseTo(hex, list, gap){
+  var worst = null, wd = Infinity;
+  (list || []).forEach(function(c){
+    if(c === hex) return;
+    var d = colourGap(hex, c);
+    if(d < wd){ wd = d; worst = c; }
+  });
+  return (worst && wd < (gap || 65)) ? { hex:worst, gap:Math.round(wd) } : null;
+}
+/* Walk the colour away from its neighbours: lightness first, because that is
+   the difference that survives a small square on a phone, then hue. */
+function pushApart(hex, list){
+  var rgb = hexToRGB(hex), hsv = rgbToHSV(rgb[0], rgb[1], rgb[2]);
+  var tries = [], i;
+  for(i = 1; i <= 6; i++){
+    tries.push([hsv[0], hsv[1], Math.min(1, hsv[2] + i*0.09)]);
+    tries.push([hsv[0], hsv[1], Math.max(0.06, hsv[2] - i*0.09)]);
+  }
+  for(i = 1; i <= 6; i++){
+    tries.push([hsv[0] + i*22, Math.min(1, hsv[1] + 0.1), hsv[2]]);
+    tries.push([hsv[0] - i*22, Math.min(1, hsv[1] + 0.1), hsv[2]]);
+  }
+  for(i = 0; i < tries.length; i++){
+    var t = tries[i], c = hsvToRGB(t[0], t[1], t[2]);
+    var hx = rgbToHex(c[0], c[1], c[2]);
+    if(!tooCloseTo(hx, list, 95)) return hx;
+  }
+  return hex;
+}
 function nearestShade(hex){
   var c = hexToRGB(hex), best = null, bd = Infinity, i, s2, dr, dg, db, d;
   for(i=0;i<SHADES.length;i++){
@@ -4199,6 +4449,28 @@ function wire(){
   $("tips-ok").onclick = function(){ $("tips").hidden = true; SET.tipsSeen = true; saveSettings(); };
 
   /* settings */
+  $("ub-go").onclick = function(){
+    if(swWaiting){ swWaiting.postMessage("skip-waiting"); toast("Updating…"); }
+    else location.reload();
+  };
+  $("ub-x").onclick = function(){ updateBanner(false); };
+  $("installcard").onclick = function(){
+    if(!deferredInstall){ show("share"); return; }
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(function(r){
+      deferredInstall = null;
+      if(r && r.outcome === "dismissed"){ SET.hideInstall = true; saveSettings(); }
+      installState();
+    });
+  };
+  $("about-changes").onclick = function(){
+    closeSheet("sheet-about");
+    $("ch-head").textContent = "What's changed";
+    $("ch-sub").textContent = "Everything that's been added, newest first.";
+    renderChanges();
+    openSheet("sheet-changes");
+  };
+  $("isochip").onclick = function(){ setIsolate(null); };
   $("xpcard").onclick = function(){ show("charms"); };
   $("rw-charms").onclick = function(){ closeSheet("sheet-reward"); S.stack = ["hearth"]; show("charms", true); };
   $("ver").onclick = function(){
@@ -4659,8 +4931,24 @@ function askPersist(quiet){
    INSTALLING, AND KEEPING UP TO DATE
    ========================================================================== */
 var deferredInstall = null, swWaiting = null;
+function updateBanner(on){
+  var bar = $("updatebar");
+  if(!bar) return;
+  bar.hidden = !on;
+  document.body.classList.toggle("has-update", !!on);
+  if(S.screen === "loom" && S.proj){
+    /* the chart area just changed height */
+    requestAnimationFrame(function(){ sizeCanvas(); clampView(); invalidate(); });
+  }
+}
 function installState(){
   var btn = $("install-btn"), note = $("install-note"), upd = $("update-btn");
+  var card = $("installcard");
+  if(card){
+    var standalone2 = false;
+    try{ standalone2 = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches; }catch(e){}
+    card.hidden = !deferredInstall || standalone2 || SET.hideInstall;
+  }
   if(!btn) return;
   var standalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
   var framed = false;
@@ -4689,14 +4977,14 @@ function registerWorker(){
   if(location.protocol !== "http:" && location.protocol !== "https:") return;
   try{
     navigator.serviceWorker.register("./sw.js").then(function(reg){
-      if(reg.waiting){ swWaiting = reg.waiting; installState(); }
+      if(reg.waiting){ swWaiting = reg.waiting; installState(); updateBanner(true); }
       reg.addEventListener("updatefound", function(){
         var sw = reg.installing;
         if(!sw) return;
         sw.addEventListener("statechange", function(){
           if(sw.state === "installed" && navigator.serviceWorker.controller){
-            swWaiting = sw; installState();
-            toast("A new version is ready — Share & backup to take it.");
+            swWaiting = sw; installState(); updateBanner(true);
+            buzz(16);
           }
         });
       });
@@ -4723,6 +5011,7 @@ function start(hot){
   }catch(e){}
   renderMotifs();
   setYarn(SET.basket[6] || "#B62A63");
+  setTimeout(maybeShowWhatsNew, 400);
   var target = screenFromHash() || "hearth";
   if(target !== "hearth") S.stack = ["hearth"];
   if(target === "hearth" && hot && hot.screen && SCREENS.indexOf(hot.screen) >= 0){

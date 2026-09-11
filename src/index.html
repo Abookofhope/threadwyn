@@ -307,6 +307,20 @@ body.has-update .bar{padding-top:8px}
 .installcard .ic-body .s{display:block;font-size:12.5px;color:var(--ink-3);margin-top:2px}
 .installcard .ic-go{flex:none;padding:8px 14px;border-radius:11px;background:var(--teal);color:var(--paper);
   font-weight:700;font-size:13px}
+.markrow{display:flex;align-items:center;gap:10px;width:100%}
+.markrow .eyebrow{flex:1;min-width:0}
+.langchip{display:flex;align-items:center;gap:6px;flex:none;padding:6px 12px 6px 10px;border-radius:999px;
+  border:1px solid var(--line);background:var(--paper);box-shadow:var(--shadow-1);
+  font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.langchip svg{color:var(--accent);flex:none}
+.langrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 15px;
+  border:1px solid var(--line);border-radius:14px;background:var(--raise)}
+.langrow.on{border-color:var(--accent);background:var(--accent-soft)}
+.langrow .ln{flex:1;min-width:0}
+.langrow .ln b{display:block;font-family:var(--display);font-size:17px;font-weight:600}
+.langrow .ln span{display:block;font-size:12px;color:var(--ink-3);margin-top:1px}
+.langrow .tick{flex:none;color:var(--accent);opacity:0}
+.langrow.on .tick{opacity:1}
 .chver{display:flex;align-items:baseline;gap:9px;margin:18px 0 7px}
 .chver b{font-family:var(--display);font-size:18px}
 .chver span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
@@ -496,7 +510,13 @@ body.has-update .bar{padding-top:8px}
 <section class="screen on" id="scr-hearth">
  <div class="pad stack">
   <div class="mark">
-   <span class="eyebrow">A pixel picture creator</span>
+   <div class="markrow">
+     <span class="eyebrow">A pixel picture creator</span>
+     <button class="langchip" id="langchip">
+       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M3.4 12h17.2M12 3.4c2.3 2.4 3.5 5.4 3.5 8.6s-1.2 6.2-3.5 8.6c-2.3-2.4-3.5-5.4-3.5-8.6s1.2-6.2 3.5-8.6z"/></svg>
+       <span id="lang-now">English</span>
+     </button>
+   </div>
    <h1>Thread<em>wyn</em></h1>
    <div class="sampler" id="sampler"></div>
    <p class="defn"><b>thread·wyn</b> <i>(n.)</i> — thread, and <i>wyn</i>, the old word for joy: the quiet pleasure of a pattern coming out even.</p>
@@ -953,6 +973,17 @@ body.has-update .bar{padding-top:8px}
  </div>
 </div>
 
+<div class="sheet" id="sheet-lang">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Language</h2>
+   <p class="sub">Everything in the game, in the language you'd rather read.</p>
+   <div class="stack" style="gap:8px" id="lang-list"></div>
+   <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
 <div class="sheet" id="sheet-changes">
  <div class="scrim" data-close></div>
  <div class="sheet-in">
@@ -1140,6 +1171,7 @@ body.has-update .bar{padding-top:8px}
    <h2>Settings</h2>
    <p class="sub">All of this stays on this phone.</p>
    <div class="stack" style="gap:8px">
+     <button class="btn" id="set-lang">Language: <b id="set-lang-state">English</b></button>
      <button class="btn" id="set-theme">Look: <b id="set-theme-state">follows your phone</b></button>
      <button class="btn" id="set-buzz">Buzz when a stitch lands: <b id="set-buzz-state">on</b></button>
      <button class="btn" id="set-awake">Keep the screen awake: <b id="set-awake-state">on</b></button>
@@ -1482,7 +1514,7 @@ var S = {
 var SET = lsGet("settings", null) || {
   theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
   buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5, recent:[],
-  gaugeSts:16, gaugeRows:18, xp:null, letters:null,
+  gaugeSts:16, gaugeRows:18, xp:null, letters:null, lang:null,
   stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
          bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
   seeded:false
@@ -1527,6 +1559,11 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.9", d:"11 Sep", items:[
+   "The whole game in English, French, Spanish or German — every screen, every prompt, every riddle, and the colour names too.",
+   "The language button sits at the top of the home screen, where you can't miss it.",
+   "It starts in your phone's own language the first time, if it knows it."
+ ]},
  { v:"1.8", d:"11 Sep", items:[
    "This list — every change so far, in the version panel at the bottom of the home screen.",
    "A banner across the top when a new version is ready, so an update is one tap instead of a hunt.",
@@ -1575,12 +1612,1453 @@ var CHANGELOG = [
  ]}
 ];
 
+/* ==========================================================================
+   LANGUAGES
+   Keyed on the English string itself, so nothing in the markup had to be
+   marked up. A tree walk translates what is on screen and remembers the
+   original English on each node, which is what lets it switch back and
+   forth. An observer catches anything rendered afterwards.
+   ========================================================================== */
+var LANGS = [
+  { id:"en", name:"English",  sub:"English" },
+  { id:"fr", name:"Fran\u00e7ais", sub:"French" },
+  { id:"es", name:"Espa\u00f1ol",  sub:"Spanish" },
+  { id:"de", name:"Deutsch",  sub:"German" }
+];
+var LANG = "en";
+var I18N = { fr:{
+ "80×80 and 100×100 charts.":"Des grilles de 80×80 et 100×100.",
+ "A Bird Nobody Has Named":"Un oiseau sans nom",
+ "A Fair Isle Band":"Une bande jacquard",
+ "A House With The Light On":"Une maison avec la lumière allumée",
+ "A Map Of Nowhere":"Une carte de nulle part",
+ "A Name In Stitches":"Un prénom en mailles",
+ "A Small Ghost":"Un petit fantôme",
+ "A Window Into Winter":"Une fenêtre sur l'hiver",
+ "A chart code is a short blob of text holding a single chart. Send one to a friend and they can paste it in below to get their own copy to work on — it won't touch anything else they've made.":"Un code de grille est un court texte qui contient une seule grille. Envoyez-en un à une amie : elle le colle ci-dessous et obtient sa propre copie à travailler, sans toucher à ses autres ouvrages.",
+ "A ghost under the chart to work over. It never becomes stitches and never shows in the cabinet.":"Un fantôme sous la grille, pour travailler par-dessus. Il ne devient jamais des mailles et n'apparaît jamais en vitrine.",
+ "A letter turned up":"Une lettre s'est retournée",
+ "A motif that would repeat forever if you let it.":"Un motif qui se répéterait sans fin si on le laissait.",
+ "A new version is ready":"Une nouvelle version est prête",
+ "A new version is ready — update now":"Une nouvelle version est prête — mettre à jour",
+ "A pixel picture creator":"Un créateur d'images en mailles",
+ "A shelf of five":"Une étagère de cinq",
+ "A single yarn. The shape does all the work.":"Un seul fil. C'est la forme qui fait tout.",
+ "A thousand in one":"Mille d'un coup",
+ "Across":"En largeur",
+ "Add a note to this piece":"Ajouter une note",
+ "Aim pad":"Pavé de visée",
+ "All of this stays on this phone.":"Tout cela reste sur ce téléphone.",
+ "Any":"Libre",
+ "Any colour there is. Drag the square, then the strip.":"Toutes les couleurs. Glissez dans le carré, puis sur la bande.",
+ "Anything you've fastened off can go in this space.":"Tout ce que vous avez arrêté peut aller ici.",
+ "Apricot":"Abricot",
+ "Arrows move one stitch at a time; the tick works the tool. For fiddly bits.":"Les flèches avancent d'une maille ; la coche applique l'outil. Pour les détails délicats.",
+ "Back":"Retour",
+ "Back to work":"Retour à l'ouvrage",
+ "Be honest.":"Soyez honnête.",
+ "Bedspread":"Couvre-lit",
+ "Big heart":"Grand cœur",
+ "Blanket":"Couverture",
+ "Blanket Corner":"Coin de couverture",
+ "Blankets":"Couvertures",
+ "Block":"Bloc",
+ "Block letters, three stitches wide. Someone's name.":"Lettres bâton, trois mailles de large. Le prénom de quelqu'un.",
+ "Blush":"Rose pâle",
+ "Bone":"Os",
+ "Bookmark":"Marque-page",
+ "Border":"Bordure",
+ "Brass frames on everything in the cabinet.":"Des cadres de laiton sur tout ce qui est en vitrine.",
+ "Bring the whole chart back onto the screen.":"Ramener toute la grille à l'écran.",
+ "Broken, tumbled, better for it.":"Brisé, roulé, et meilleur pour ça.",
+ "Build":"Compilation",
+ "Butter":"Beurre",
+ "Cancel":"Annuler",
+ "Candy":"Bonbon",
+ "Cast on":"Commencer",
+ "Centre & diagonals":"Centre et diagonales",
+ "Change the gauge":"Changer les dimensions",
+ "Charcoal":"Anthracite",
+ "Charm Codes":"Mots de charme",
+ "Charmed":"Charmée",
+ "Chart":"Grille",
+ "Chartreuse":"Chartreuse",
+ "Charts and finished pieces are saved in this browser, on this device. Nothing is uploaded. To move them, copy the backup text below and paste it into the same box on the other phone.":"Les grilles et les ouvrages finis sont enregistrés dans ce navigateur, sur cet appareil. Rien n'est envoyé. Pour les déplacer, copiez le texte de sauvegarde ci-dessous et collez-le dans la même boîte sur l'autre téléphone.",
+ "Cherry":"Cerise",
+ "Chestnut":"Châtaigne",
+ "Chocolate":"Chocolat",
+ "Choose a photo":"Choisir une photo",
+ "Choose from the Pattern Book":"Choisir dans le carnet de modèles",
+ "Choose them badly on purpose.":"Choisissez-les mal exprès.",
+ "Circle":"Cercle",
+ "Clear":"Effacer",
+ "Clear the guide":"Effacer le guide",
+ "Closer":"Zoom avant",
+ "Coast, roads, a lake. No labels.":"Une côte, des routes, un lac. Sans noms.",
+ "Coaster":"Dessous de verre",
+ "Cocoa":"Cacao",
+ "Cold on one side of the glass.":"Il fait froid d'un côté de la vitre.",
+ "Colours from my basket":"Couleurs de mon panier",
+ "Colours from the photo":"Couleurs de la photo",
+ "Copy":"Copier",
+ "Copy a backup of everything":"Copier une sauvegarde de tout",
+ "Copy as a chart code":"Copier en code de grille",
+ "Copy the link":"Copier le lien",
+ "Copy the pattern":"Copier le patron",
+ "Copy this chart as a code":"Copier cette grille en code",
+ "Copy this chart down onto the guide":"Copier cette grille sur le guide",
+ "Cornflower":"Bleuet",
+ "Counts without looking":"Compte sans regarder",
+ "Cream":"Crème",
+ "Cushion":"Coussin",
+ "Denim":"Denim",
+ "Diamond":"Losange",
+ "Do it once, get it four times.":"Faites-le une fois, obtenez-le quatre fois.",
+ "Done":"Terminé",
+ "Done — next":"Fait — suivant",
+ "Dove":"Gris tourterelle",
+ "Down":"En hauteur",
+ "Drag a box, then nudge, flip, turn, copy or clear just that part.":"Tracez un cadre, puis déplacez, retournez, tournez, copiez ou effacez seulement cette partie.",
+ "Drag from one square to another for a clean line.":"Glissez d'un carré à l'autre pour une ligne nette.",
+ "Drag out a rectangle and fill it solid.":"Tracez un rectangle et remplissez-le.",
+ "Drag to lay yarn down, one square at a time.":"Glissez pour poser le fil, un carré à la fois.",
+ "Drag to take stitches back out.":"Glissez pour retirer des mailles.",
+ "Duck Egg":"Bleu œuf de cane",
+ "Dye a yarn":"Teindre un fil",
+ "Dyer":"Teinturière",
+ "Easy to tell apart":"Faciles à distinguer",
+ "Emberspun":"Fil de braise",
+ "Eucalyptus":"Eucalyptus",
+ "Every charm said":"Tous les mots dits",
+ "Everything in the game, in the language you'd rather read.":"Tout le jeu, dans la langue que vous préférez lire.",
+ "Everything that's been added, newest first.":"Tout ce qui a été ajouté, du plus récent au plus ancien.",
+ "Everything you've finished":"Tout ce que vous avez terminé",
+ "Fasten off — put it in the cabinet":"Arrêter — le mettre en vitrine",
+ "Fastened off":"Arrêté le",
+ "Fern":"Fougère",
+ "Fetch the newest version":"Chercher la dernière version",
+ "Fewer across":"Moins en largeur",
+ "Fewer down":"Moins en hauteur",
+ "Fill":"Remplir",
+ "Fill every empty space with one square":"Remplir toutes les cases avec un même carré",
+ "Fill the chart, crop the edges":"Remplir la grille, rogner les bords",
+ "Finding the rhythm":"Trouve le rythme",
+ "Finished":"Terminés",
+ "Finished size":"Taille finie",
+ "First fasten-off":"Premier arrêt",
+ "Fit":"Ajuster",
+ "Fit the whole photo":"Toute la photo",
+ "Flip across":"Retourner à l'horizontale",
+ "Flip down":"Retourner à la verticale",
+ "Flood":"Remplir",
+ "Folded":"A plié",
+ "For when the chart runs out of room.":"Pour quand la grille manque de place.",
+ "Forest":"Forêt",
+ "Four rounds of colour, corner to corner.":"Quatre tours de couleur, d'un coin à l'autre.",
+ "Free loom":"Métier libre",
+ "Friendly. Slightly embarrassed.":"Gentil. Un peu gêné.",
+ "From the pattern book":"Du carnet de modèles",
+ "Fuchsia":"Fuchsia",
+ "Full basket":"Panier plein",
+ "Further":"Zoom arrière",
+ "Gauge":"Dimensions",
+ "Go and look first.":"Allez la regarder d'abord.",
+ "Go and say it":"Aller le dire",
+ "Golden. One corner slightly too dark.":"Dorée. Un coin un peu trop grillé.",
+ "Got it":"Compris",
+ "Granny":"Grand-mère",
+ "Granny Square":"Carré grand-mère",
+ "Granny rings":"Anneaux grand-mère",
+ "Grape":"Raisin",
+ "Graphite":"Graphite",
+ "Guide layer":"Calque de guidage",
+ "Guide layer & templates":"Calque de guidage et gabarits",
+ "Half the book":"La moitié du carnet",
+ "Hand":"Main",
+ "Harder than it sounds.":"Plus dur qu'il n'y paraît.",
+ "Hearts, stars, and letters you can type. Tap the chart to press one in.":"Cœurs, étoiles et lettres à taper. Touchez la grille pour l'y poser.",
+ "Heirloom":"Héritage",
+ "How many stitches across, and how many rows down. Bigger charts hold more detail — pinch to zoom in and every square is still yours.":"Combien de mailles en largeur, combien de rangs en hauteur. Les grandes grilles tiennent plus de détail : zoomez, et chaque carré reste à vous.",
+ "How many yarns":"Combien de fils",
+ "In the basket":"Dans le panier",
+ "Ink":"Encre",
+ "Install":"Installer",
+ "It has never seen the sun.":"Ça n'a jamais vu le soleil.",
+ "Jade":"Jade",
+ "Just used":"Utilisés à l'instant",
+ "Keep":"Garder",
+ "Kitchen Window":"La fenêtre de la cuisine",
+ "Lamplight cloth — a warmer chart to work on.":"Une toile de lampe — une grille plus chaude.",
+ "Language":"Langue",
+ "Lavender":"Lavande",
+ "Lay finished squares out in rows and see the whole thing before you sew a single one together.":"Disposez les carrés finis en rangées et voyez l'ensemble avant d'en coudre un seul.",
+ "Lay out a blanket":"Composer une couverture",
+ "Layout":"Disposition",
+ "Leave the space empty":"Laisser la case vide",
+ "Lemon":"Citron",
+ "Letter band":"Bande de lettres",
+ "Lettered":"Sait ses lettres",
+ "Letters":"Lettres",
+ "Lights out, still working.":"Lumières éteintes, toujours au travail.",
+ "Lilac":"Lilas",
+ "Load":"Charger",
+ "Load one, then tap the chart to press it in — in whatever yarn is loaded.":"Chargez-en un, puis touchez la grille pour l'y poser, dans le fil chargé.",
+ "Load the whole set into the basket":"Mettre tout le jeu dans le panier",
+ "Load these into the basket":"Mettre ceux-ci dans le panier",
+ "Long and narrow. It has to survive a paperback.":"Long et étroit. Il doit survivre à un livre de poche.",
+ "Lovely":"Parfait",
+ "Made on":"Faite le",
+ "Magenta":"Magenta",
+ "Make a copy":"En faire une copie",
+ "Make it look like it feels.":"Faites-le ressembler à ce qu'on ressent.",
+ "Makes it look easy":"Donne l'impression que c'est facile",
+ "Marigold":"Souci",
+ "Match a yarn":"Prendre un fil",
+ "Meadow":"Prairie",
+ "Midnight":"Minuit",
+ "Mint":"Menthe",
+ "Mirror":"Miroir",
+ "Mirror & fold lines":"Miroir et lignes de pli",
+ "Mirror and fold lines":"Miroir et lignes de pli",
+ "Moonwool":"Laine de lune",
+ "More across":"Plus en largeur",
+ "More down":"Plus en hauteur",
+ "Moss":"Mousse",
+ "Mostly circle. Entirely contented.":"Presque un cercle. Parfaitement content.",
+ "Moth Wing":"Aile de papillon de nuit",
+ "Motifs":"Motifs",
+ "Move the whole chart at once, or change how many stitches it holds.":"Déplacez toute la grille d'un coup, ou changez le nombre de mailles.",
+ "Mug Of Something Hot":"Une tasse de quelque chose de chaud",
+ "Mushroom":"Champignon",
+ "Mustard":"Moutarde",
+ "Navy":"Marine",
+ "Never drops a stitch":"Ne perd jamais une maille",
+ "New to the hook":"Nouvelle au crochet",
+ "Newer version":"Version plus récente",
+ "Night shift":"Service de nuit",
+ "No brief. Make whatever turns up.":"Aucune consigne. Faites ce qui vient.",
+ "No hint for this one.":"Pas d'indice pour celui-là.",
+ "Not now":"Plus tard",
+ "Nudge down":"Vers le bas",
+ "Nudge left":"Vers la gauche",
+ "Nudge right":"Vers la droite",
+ "Nudge up":"Vers le haut",
+ "OK":"D'accord",
+ "Oatmeal":"Avoine",
+ "Ochre":"Ocre",
+ "Olive":"Olive",
+ "On this phone":"Sur ce téléphone",
+ "One Colour Only":"Une seule couleur",
+ "One chart at a time":"Une grille à la fois",
+ "One finger draws. A window pops up above your fingertip so your thumb never hides the square.":"Un doigt dessine. Une loupe s'ouvre au-dessus du doigt pour que le pouce ne cache jamais le carré.",
+ "One finger slides the chart instead of drawing on it.":"Un doigt fait glisser la grille au lieu de dessiner.",
+ "One repeat, four rows deep. Then again, and again.":"Un motif, quatre rangs de haut. Puis encore, et encore.",
+ "One window lit. Only one.":"Une fenêtre éclairée. Une seule.",
+ "One yarn only":"Un seul fil",
+ "Open a backup file":"Ouvrir une sauvegarde",
+ "Open a chart from the box above":"Ouvrir une grille depuis la boîte",
+ "Open it":"L'ouvrir",
+ "Opens full screen, works with no signal.":"S'ouvre en plein écran, marche sans réseau.",
+ "Pan lock":"Verrou de déplacement",
+ "Panel":"Panneau",
+ "Parchment":"Parchemin",
+ "Paste a backup here, then press Restore.":"Collez une sauvegarde ici, puis Restaurer.",
+ "Patch":"Pièce",
+ "Pattern Book":"Carnet de modèles",
+ "Pattern writer":"Écrit ses patrons",
+ "Peach":"Pêche",
+ "Periwinkle":"Pervenche",
+ "Petrol":"Pétrole",
+ "Pewter":"Étain",
+ "Phones delete site data when they run short of room. Protecting it tells the browser this one is worth keeping.":"Les téléphones effacent les données des sites quand la place manque. Protéger dit au navigateur que celles-ci valent la peine d'être gardées.",
+ "Piece":"Ouvrage",
+ "Pine":"Pin",
+ "Plum":"Prune",
+ "Point a camera at this":"Visez ceci avec un appareil photo",
+ "Posted a chart":"A envoyé une grille",
+ "Press and hold the picture to save it to your phone.":"Appuyez longuement sur l'image pour l'enregistrer.",
+ "Prompts, not rules. Pick one and it rides along with the chart; fasten off and the pattern gets a tick.":"Des idées, pas des règles. Choisissez-en une : elle suit la grille, et quand vous arrêtez, le modèle est coché.",
+ "Push apart":"Les écarter",
+ "Put it on the guide to trace":"La mettre en guide pour décalquer",
+ "Put it on your home screen":"Mettez-le sur votre écran d'accueil",
+ "Putty":"Mastic",
+ "Quarter mirror — every stitch lands in all four corners.":"Miroir en quart — chaque maille tombe dans les quatre coins.",
+ "Rain On The Window":"La pluie sur la vitre",
+ "Raspberry":"Framboise",
+ "Reads a chart at a glance":"Lit une grille d'un coup d'œil",
+ "Rename":"Renommer",
+ "Rename it":"Renommer",
+ "Repeat":"Répéter",
+ "Repeat band":"Bande répétée",
+ "Repeated":"Répété",
+ "Restore from the box":"Restaurer depuis la boîte",
+ "Ribbons":"Rubans",
+ "Rose":"Rose",
+ "Rust":"Rouille",
+ "Sage":"Sauge",
+ "Sampler":"Échantillon",
+ "Save a backup file":"Enregistrer une sauvegarde",
+ "Save the picture":"Enregistrer l'image",
+ "Save the picture to this phone":"Enregistrer l'image sur ce téléphone",
+ "Say it":"Le dire",
+ "Scarlet":"Écarlate",
+ "Seaglass":"Verre de mer",
+ "See it worked up in yarn":"Le voir en vrai fil",
+ "Select":"Sélection",
+ "Settings":"Réglages",
+ "Shape & gauge":"Forme et dimensions",
+ "Share & backup":"Partager et sauvegarder",
+ "Shift every stitch":"Décaler toutes les mailles",
+ "Show me":"Montre-moi",
+ "Show the working tips again":"Revoir les conseils",
+ "Silver":"Argent",
+ "Sixty-four rows":"Soixante-quatre rangs",
+ "Sky":"Ciel",
+ "Slate":"Ardoise",
+ "Snow":"Neige",
+ "Something From The Sea Floor":"Quelque chose du fond de la mer",
+ "Something Only You'd Make":"Quelque chose que vous seule feriez",
+ "Spun from the last of the fire.":"Filé avec les dernières braises.",
+ "Square":"Carré",
+ "Squares laid in":"Carrés posés",
+ "Stamps":"Motifs",
+ "Start a fresh chart":"Une nouvelle grille",
+ "Start a new blanket":"Commencer une couverture",
+ "Start again":"Recommencer",
+ "Static":"Neige télé",
+ "Steady hands":"Mains sûres",
+ "Steam counts as three stitches, no more.":"La vapeur vaut trois mailles, pas plus.",
+ "Steel":"Acier",
+ "Stitch":"Maille",
+ "Stitch it straight onto the chart":"La poser directement sur la grille",
+ "Stitches":"Mailles",
+ "Stitches and rows":"Mailles et rangs",
+ "Stitches so far":"Mailles jusqu'ici",
+ "Stitches to work":"Mailles à faire",
+ "Stitches worked":"Mailles faites",
+ "Stone":"Pierre",
+ "Stop":"Arrêter",
+ "Storm":"Orage",
+ "Storm Over The Hill":"Orage sur la colline",
+ "Straight run":"Ligne droite",
+ "Straw":"Paille",
+ "Sunday Morning":"Dimanche matin",
+ "Swap":"Échanger",
+ "Symmetry down the middle. Dust colours.":"Symétrie au centre. Couleurs de poussière.",
+ "TYPE A CHARM":"UN MOT DE CHARME",
+ "TYPE SOMETHING":"ÉCRIVEZ QUELQUE CHOSE",
+ "Take it out of the cabinet":"Le retirer de la vitrine",
+ "Take this blanket apart":"Défaire cette couverture",
+ "Tap a patch and the whole patch fills in one go.":"Touchez une zone et elle se remplit d'un coup.",
+ "Tap a space to fill it":"Touchez une case pour la remplir",
+ "Tap any stitch to load the colour it's worked in.":"Touchez une maille pour charger sa couleur.",
+ "Taupe":"Taupe",
+ "Teal":"Bleu canard",
+ "Ten thousand stitches":"Dix mille mailles",
+ "Terracotta":"Terre cuite",
+ "The Cabinet":"La vitrine",
+ "The Cat Who Sits On It":"Le chat qui s'assoit dessus",
+ "The Dog, Asleep":"Le chien, endormi",
+ "The Emberspun skein set — coals to ash.":"Le jeu Fil de braise — de la braise à la cendre.",
+ "The Front Door":"La porte d'entrée",
+ "The Heirloom skein set, warm and worn.":"Le jeu Héritage, chaud et patiné.",
+ "The Last Thing You Ate":"La dernière chose que vous avez mangée",
+ "The Moonwool skein set — twelve night colours.":"Le jeu Laine de lune — douze couleurs de nuit.",
+ "The Sea At Six In The Morning":"La mer à six heures du matin",
+ "The Seaglass skein set — shallows to deep.":"Le jeu Verre de mer — du bas-fond au large.",
+ "The file lands in Downloads. Keep it somewhere safe — it's the only copy of her work that isn't on this one phone.":"Le fichier va dans Téléchargements. Gardez-le en lieu sûr : c'est la seule copie de l'ouvrage qui ne soit pas sur ce téléphone.",
+ "The hand button locks panning; the crosshair opens the aim pad for one square at a time.":"Le bouton main verrouille le déplacement ; la croix ouvre le pavé de visée, un carré à la fois.",
+ "The long row":"Le long rang",
+ "The oldest motif there is. Two words, run together.":"Le plus vieux motif qui soit. Deux mots, collés.",
+ "The one people ask":"Celle à qui on demande",
+ "The one that's still alive.":"Celle qui est encore vivante.",
+ "The one you'd find in the dark.":"Celle que vous trouveriez dans le noir.",
+ "The picture gets boiled down to whole stitches at this chart's gauge. Put it on the guide and work over it, or stitch it straight in.":"L'image est réduite en mailles entières aux dimensions de la grille. Mettez-la en guide et travaillez par-dessus, ou posez-la directement.",
+ "The ring and the two hearts.":"L'anneau et les deux cœurs.",
+ "The tool you don't buy, you earn.":"L'outil qu'on n'achète pas, qu'on mérite.",
+ "The whole book":"Tout le carnet",
+ "The work stays in the middle. Going smaller crops what falls outside, and that can't be undone.":"L'ouvrage reste au centre. En réduisant, ce qui dépasse est coupé, et c'est définitif.",
+ "Things worth making":"Des choses qui valent la peine",
+ "Think you know it? Say it in Charm Codes.":"Vous croyez le savoir ? Dites-le dans les mots de charme.",
+ "Thirds":"Tiers",
+ "This chart":"Cette grille",
+ "This copy":"Cette copie",
+ "Three by three, edge to edge — the quickest way to see whether a border actually joins up.":"Trois par trois, bord à bord : le plus rapide pour voir si une bordure se raccorde vraiment.",
+ "Three greys and one that isn't grey.":"Trois gris et un qui ne l'est pas.",
+ "Throw":"Plaid",
+ "Throw it away":"La jeter",
+ "Throw this chart away":"Jeter cette grille",
+ "Toast":"Une tartine grillée",
+ "Today's pattern":"Le modèle du jour",
+ "Tonight's Moon":"La lune de ce soir",
+ "Trace a photo":"Décalquer une photo",
+ "Truly random. Make it look right anyway.":"Vraiment au hasard. Faites que ça tombe juste quand même.",
+ "Turn":"Tourner",
+ "Turn a quarter":"Tourner d'un quart",
+ "Turn half round":"Tourner d'un demi-tour",
+ "Turn it":"La tourner",
+ "Two Colours, No More":"Deux couleurs, pas plus",
+ "Two Initials, Interlocked":"Deux initiales entrelacées",
+ "Two Of Us":"Nous deux",
+ "Two fingers pinch and pan. Double-tap to jump in close.":"Deux doigts pour zoomer et déplacer. Double-touche pour s'approcher.",
+ "Two shapes. They don't have to be people.":"Deux formes. Pas forcément des gens.",
+ "Two words for who you're making it for.":"Deux mots pour celle à qui c'est destiné.",
+ "Undo is a craft":"Défaire est un art",
+ "Unpick":"Défaire",
+ "Unravel — clear every stitch":"Détricoter — tout effacer",
+ "Update":"Mettre à jour",
+ "Useful when you are trying to work out whether a phone has the newest one.":"Utile pour savoir si un téléphone a bien la dernière.",
+ "Version":"Version",
+ "Violet":"Violet",
+ "Weald-hearted":"Cœur de forêt",
+ "Weather on top, land underneath.":"Le ciel en haut, la terre en bas.",
+ "Weather you can hear.":"Un temps qu'on entend.",
+ "What the sheep wear at midnight.":"Ce que portent les moutons à minuit.",
+ "What to buy":"À acheter",
+ "What's changed":"Ce qui a changé",
+ "Whatever you can see from where you're sitting.":"Ce que vous voyez d'où vous êtes assise.",
+ "Whatever you make, it is already sitting on it.":"Quoi que vous fassiez, il est déjà assis dessus.",
+ "Which square?":"Quel carré ?",
+ "Words that unlock things":"Des mots qui ouvrent des portes",
+ "Words whispered over a chart. Type one in and something opens up — a dyed skein, a wider loom, a better mirror. The riddle is the clue.":"Des mots murmurés au-dessus d'une grille. Tapez-en un et quelque chose s'ouvre : un écheveau teint, un métier plus large, un meilleur miroir. L'énigme est l'indice.",
+ "Work a 10 cm square, count what you actually get, and put it in here. Everything below is then true to your hands.":"Crochetez un carré de 10 cm, comptez ce que vous obtenez vraiment, et notez-le ici. Tout ce qui suit sera juste pour vos mains.",
+ "Work a chart square by square. Fasten off when it's done, and it goes in the cabinet for good.":"Travaillez une grille carré par carré. Arrêtez quand c'est fini, et l'ouvrage rejoint la vitrine pour de bon.",
+ "Work it again on a fresh chart":"Le refaire sur une grille neuve",
+ "Work it with me, row by row":"Le crocheter avec moi, rang par rang",
+ "Work one half and the other follows. The crease can sit anywhere.":"Faites une moitié, l'autre suit. Le pli se place où vous voulez.",
+ "Work one half; the other half works itself. Move the crease to wherever the symmetry actually sits.":"Faites une moitié, l'autre se fait toute seule. Déplacez le pli là où la symétrie se trouve vraiment.",
+ "Worked up":"En vrai fil",
+ "Working":"En train de crocheter",
+ "Working from":"En partant de",
+ "Working the chart":"Travailler la grille",
+ "Works in progress":"En cours",
+ "Write it out as a crochet pattern":"L'écrire comme un vrai patron",
+ "Written pattern":"Patron écrit",
+ "Yarn goes missing near her":"La laine disparaît près d'elle",
+ "Yarn in total":"Fil au total",
+ "Yarn, near enough":"Fil, à peu près",
+ "Yarns in this chart":"Les fils de cette grille",
+ "Yarns used":"Fils utilisés",
+ "You get to name it afterwards.":"Vous le nommerez après.",
+ "Your Favourite Plant":"Votre plante préférée",
+ "Your Hands":"Vos mains",
+ "Your tension — per 10 cm":"Votre échantillon — pour 10 cm",
+ "Your work lives on this phone only":"Votre ouvrage ne vit que sur ce téléphone",
+ "Yours and someone's.":"Les vôtres et celles de quelqu'un.",
+ "Zoom back out.":"Revenir en arrière.",
+ "Zoom in":"Zoom avant",
+ "Zoom in on the middle of the chart.":"Zoomer au centre de la grille.",
+ "Zoom out":"Zoom arrière",
+ "charm needed":"mot de charme requis",
+ "daylight":"clair",
+ "experience":"expérience",
+ "follows your phone":"suit votre téléphone",
+ "hold to remove":"maintenir pour retirer",
+ "lamplight":"sombre",
+ "level":"niveau",
+ "locked":"verrouillé",
+ "made":"fait",
+ "newest first":"les plus récents d'abord",
+ "off":"désactivé",
+ "on":"activé",
+ "one is waiting":"une attend",
+ "tap to load":"toucher pour charger",
+ "up to date":"à jour",
+ "you have this":"vous avez celle-ci",
+ "you're here":"vous y êtes",
+ "your own size":"votre taille",
+}, es:{
+ "80×80 and 100×100 charts.":"Cuadrículas de 80×80 y 100×100.",
+ "A Bird Nobody Has Named":"Un pájaro que nadie ha nombrado",
+ "A Fair Isle Band":"Una cenefa jacquard",
+ "A House With The Light On":"Una casa con la luz encendida",
+ "A Map Of Nowhere":"Un mapa de ninguna parte",
+ "A Name In Stitches":"Un nombre en puntos",
+ "A Small Ghost":"Un fantasmita",
+ "A Window Into Winter":"Una ventana al invierno",
+ "A chart code is a short blob of text holding a single chart. Send one to a friend and they can paste it in below to get their own copy to work on — it won't touch anything else they've made.":"Un código es un texto corto que contiene una sola cuadrícula. Envíaselo a una amiga: lo pega abajo y consigue su propia copia para trabajar, sin tocar nada más suyo.",
+ "A ghost under the chart to work over. It never becomes stitches and never shows in the cabinet.":"Un fantasma bajo la cuadrícula para trabajar encima. Nunca se vuelve puntos ni aparece en la vitrina.",
+ "A letter turned up":"Ha salido una letra",
+ "A motif that would repeat forever if you let it.":"Un motivo que se repetiría siempre si le dejaras.",
+ "A new version is ready":"Hay una versión nueva lista",
+ "A new version is ready — update now":"Hay una versión nueva — actualiza ya",
+ "A pixel picture creator":"Un creador de imágenes por puntos",
+ "A shelf of five":"Un estante de cinco",
+ "A single yarn. The shape does all the work.":"Un solo hilo. La forma hace todo el trabajo.",
+ "A thousand in one":"Mil de una vez",
+ "Across":"A lo ancho",
+ "Add a note to this piece":"Añadir una nota",
+ "Aim pad":"Mando de puntería",
+ "All of this stays on this phone.":"Todo esto se queda en este teléfono.",
+ "Any":"Libre",
+ "Any colour there is. Drag the square, then the strip.":"Todos los colores. Arrastra el cuadro y luego la banda.",
+ "Anything you've fastened off can go in this space.":"Cualquier cosa que hayas rematado cabe aquí.",
+ "Apricot":"Albaricoque",
+ "Arrows move one stitch at a time; the tick works the tool. For fiddly bits.":"Las flechas mueven un punto; la marca aplica la herramienta. Para lo delicado.",
+ "Back":"Atrás",
+ "Back to work":"Volver a la labor",
+ "Be honest.":"Sé sincera.",
+ "Bedspread":"Colcha grande",
+ "Big heart":"Corazón grande",
+ "Blanket":"Manta",
+ "Blanket Corner":"Esquina de manta",
+ "Blankets":"Mantas",
+ "Block":"Bloque",
+ "Block letters, three stitches wide. Someone's name.":"Letras de palo, tres puntos de ancho. El nombre de alguien.",
+ "Blush":"Rubor",
+ "Bone":"Hueso",
+ "Bookmark":"Marcapáginas",
+ "Border":"Cenefa",
+ "Brass frames on everything in the cabinet.":"Marcos de latón en todo lo de la vitrina.",
+ "Bring the whole chart back onto the screen.":"Devolver toda la cuadrícula a la pantalla.",
+ "Broken, tumbled, better for it.":"Roto, pulido por el mar, y mejor por ello.",
+ "Build":"Compilación",
+ "Butter":"Mantequilla",
+ "Cancel":"Cancelar",
+ "Candy":"Caramelo",
+ "Cast on":"Empezar",
+ "Centre & diagonals":"Centro y diagonales",
+ "Change the gauge":"Cambiar el tamaño",
+ "Charcoal":"Carbón",
+ "Charm Codes":"Palabras de encanto",
+ "Charmed":"Encantada",
+ "Chart":"Cuadrícula",
+ "Chartreuse":"Chartreuse",
+ "Charts and finished pieces are saved in this browser, on this device. Nothing is uploaded. To move them, copy the backup text below and paste it into the same box on the other phone.":"Las cuadrículas y las piezas terminadas se guardan en este navegador, en este aparato. No se sube nada. Para moverlas, copia el texto de abajo y pégalo en el mismo cuadro del otro teléfono.",
+ "Cherry":"Cereza",
+ "Chestnut":"Castaño",
+ "Chocolate":"Chocolate",
+ "Choose a photo":"Elegir una foto",
+ "Choose from the Pattern Book":"Elegir del libro de patrones",
+ "Choose them badly on purpose.":"Elígelos mal a propósito.",
+ "Circle":"Círculo",
+ "Clear":"Borrar",
+ "Clear the guide":"Borrar la guía",
+ "Closer":"Acercar",
+ "Coast, roads, a lake. No labels.":"Costa, carreteras, un lago. Sin nombres.",
+ "Coaster":"Posavasos",
+ "Cocoa":"Cacao",
+ "Cold on one side of the glass.":"Hace frío a un lado del cristal.",
+ "Colours from my basket":"Colores de mi cesta",
+ "Colours from the photo":"Colores de la foto",
+ "Copy":"Copiar",
+ "Copy a backup of everything":"Copiar una copia de todo",
+ "Copy as a chart code":"Copiar como código",
+ "Copy the link":"Copiar el enlace",
+ "Copy the pattern":"Copiar el patrón",
+ "Copy this chart as a code":"Copiar esta cuadrícula como código",
+ "Copy this chart down onto the guide":"Copiar esta cuadrícula a la guía",
+ "Cornflower":"Aciano",
+ "Counts without looking":"Cuenta sin mirar",
+ "Cream":"Crema",
+ "Cushion":"Cojín",
+ "Denim":"Vaquero",
+ "Diamond":"Rombo",
+ "Do it once, get it four times.":"Hazlo una vez, tenlo cuatro.",
+ "Done":"Listo",
+ "Done — next":"Hecho — siguiente",
+ "Dove":"Paloma",
+ "Down":"A lo alto",
+ "Drag a box, then nudge, flip, turn, copy or clear just that part.":"Dibuja un marco y luego mueve, voltea, gira, copia o borra solo esa parte.",
+ "Drag from one square to another for a clean line.":"Arrastra de un cuadro a otro para una línea limpia.",
+ "Drag out a rectangle and fill it solid.":"Dibuja un rectángulo y rellénalo.",
+ "Drag to lay yarn down, one square at a time.":"Arrastra para poner hilo, un cuadro a la vez.",
+ "Drag to take stitches back out.":"Arrastra para quitar puntos.",
+ "Duck Egg":"Azul huevo de pato",
+ "Dye a yarn":"Teñir un hilo",
+ "Dyer":"Tintorera",
+ "Easy to tell apart":"Fáciles de distinguir",
+ "Emberspun":"Hilo de brasa",
+ "Eucalyptus":"Eucalipto",
+ "Every charm said":"Todas las palabras dichas",
+ "Everything in the game, in the language you'd rather read.":"Todo el juego, en el idioma que prefieras leer.",
+ "Everything that's been added, newest first.":"Todo lo que se ha añadido, lo más nuevo primero.",
+ "Everything you've finished":"Todo lo que has terminado",
+ "Fasten off — put it in the cabinet":"Rematar — a la vitrina",
+ "Fastened off":"Rematado el",
+ "Fern":"Helecho",
+ "Fetch the newest version":"Buscar la versión más nueva",
+ "Fewer across":"Menos a lo ancho",
+ "Fewer down":"Menos a lo alto",
+ "Fill":"Rellenar",
+ "Fill every empty space with one square":"Rellenar todos los huecos con un cuadro",
+ "Fill the chart, crop the edges":"Llenar la cuadrícula, recortar bordes",
+ "Finding the rhythm":"Cogiendo el ritmo",
+ "Finished":"Terminados",
+ "Finished size":"Tamaño final",
+ "First fasten-off":"Primer remate",
+ "Fit":"Ajustar",
+ "Fit the whole photo":"La foto entera",
+ "Flip across":"Voltear en horizontal",
+ "Flip down":"Voltear en vertical",
+ "Flood":"Rellenar",
+ "Folded":"Ha plegado",
+ "For when the chart runs out of room.":"Para cuando la cuadrícula se queda sin sitio.",
+ "Forest":"Bosque",
+ "Four rounds of colour, corner to corner.":"Cuatro vueltas de color, de esquina a esquina.",
+ "Free loom":"Telar libre",
+ "Friendly. Slightly embarrassed.":"Simpático. Algo avergonzado.",
+ "From the pattern book":"Del libro de patrones",
+ "Fuchsia":"Fucsia",
+ "Full basket":"Cesta llena",
+ "Further":"Alejar",
+ "Gauge":"Tamaño",
+ "Go and look first.":"Ve a mirarla primero.",
+ "Go and say it":"Ve a decirlo",
+ "Golden. One corner slightly too dark.":"Dorada. Una esquina algo quemada.",
+ "Got it":"Entendido",
+ "Granny":"Abuela",
+ "Granny Square":"Cuadro de la abuela",
+ "Granny rings":"Anillos de la abuela",
+ "Grape":"Uva",
+ "Graphite":"Grafito",
+ "Guide layer":"Capa guía",
+ "Guide layer & templates":"Capa guía y plantillas",
+ "Half the book":"Medio libro",
+ "Hand":"Mano",
+ "Harder than it sounds.":"Más difícil de lo que parece.",
+ "Hearts, stars, and letters you can type. Tap the chart to press one in.":"Corazones, estrellas y letras que puedes escribir. Toca la cuadrícula para estamparlo.",
+ "Heirloom":"Herencia",
+ "How many stitches across, and how many rows down. Bigger charts hold more detail — pinch to zoom in and every square is still yours.":"Cuántos puntos de ancho y cuántas vueltas de alto. Las cuadrículas grandes tienen más detalle: amplía y cada cuadro sigue siendo tuyo.",
+ "How many yarns":"Cuántos hilos",
+ "In the basket":"En la cesta",
+ "Ink":"Tinta",
+ "Install":"Instalar",
+ "It has never seen the sun.":"Nunca ha visto el sol.",
+ "Jade":"Jade",
+ "Just used":"Usados hace poco",
+ "Keep":"Guardar",
+ "Kitchen Window":"La ventana de la cocina",
+ "Lamplight cloth — a warmer chart to work on.":"Tela de lámpara: una cuadrícula más cálida.",
+ "Language":"Idioma",
+ "Lavender":"Lavanda",
+ "Lay finished squares out in rows and see the whole thing before you sew a single one together.":"Coloca los cuadros terminados en filas y ve el conjunto antes de coser ni uno.",
+ "Lay out a blanket":"Componer una manta",
+ "Layout":"Disposición",
+ "Leave the space empty":"Dejar el hueco vacío",
+ "Lemon":"Limón",
+ "Letter band":"Franja de letras",
+ "Lettered":"Con letras",
+ "Letters":"Letras",
+ "Lights out, still working.":"Luces apagadas, y sigue trabajando.",
+ "Lilac":"Lila",
+ "Load":"Cargar",
+ "Load one, then tap the chart to press it in — in whatever yarn is loaded.":"Carga uno y toca la cuadrícula para estamparlo con el hilo cargado.",
+ "Load the whole set into the basket":"Poner el juego entero en la cesta",
+ "Load these into the basket":"Poner estos en la cesta",
+ "Long and narrow. It has to survive a paperback.":"Largo y estrecho. Tiene que sobrevivir a un bolsillo.",
+ "Lovely":"Estupendo",
+ "Made on":"Hecha el",
+ "Magenta":"Magenta",
+ "Make a copy":"Hacer una copia",
+ "Make it look like it feels.":"Que se parezca a como se siente.",
+ "Makes it look easy":"Hace que parezca fácil",
+ "Marigold":"Caléndula",
+ "Match a yarn":"Tomar un hilo",
+ "Meadow":"Pradera",
+ "Midnight":"Medianoche",
+ "Mint":"Menta",
+ "Mirror":"Espejo",
+ "Mirror & fold lines":"Espejo y líneas de pliegue",
+ "Mirror and fold lines":"Espejo y líneas de pliegue",
+ "Moonwool":"Lana de luna",
+ "More across":"Más a lo ancho",
+ "More down":"Más a lo alto",
+ "Moss":"Musgo",
+ "Mostly circle. Entirely contented.":"Casi un círculo. Del todo contento.",
+ "Moth Wing":"Ala de polilla",
+ "Motifs":"Motivos",
+ "Move the whole chart at once, or change how many stitches it holds.":"Mueve toda la cuadrícula de una vez, o cambia cuántos puntos tiene.",
+ "Mug Of Something Hot":"Una taza de algo caliente",
+ "Mushroom":"Champiñón",
+ "Mustard":"Mostaza",
+ "Navy":"Marino",
+ "Never drops a stitch":"Nunca se le escapa un punto",
+ "New to the hook":"Nueva con el ganchillo",
+ "Newer version":"Versión más nueva",
+ "Night shift":"Turno de noche",
+ "No brief. Make whatever turns up.":"Sin encargo. Haz lo que salga.",
+ "No hint for this one.":"Para este no hay pista.",
+ "Not now":"Ahora no",
+ "Nudge down":"Abajo",
+ "Nudge left":"Izquierda",
+ "Nudge right":"Derecha",
+ "Nudge up":"Arriba",
+ "OK":"Vale",
+ "Oatmeal":"Avena",
+ "Ochre":"Ocre",
+ "Olive":"Oliva",
+ "On this phone":"En este teléfono",
+ "One Colour Only":"Un solo color",
+ "One chart at a time":"Una cuadrícula a la vez",
+ "One finger draws. A window pops up above your fingertip so your thumb never hides the square.":"Un dedo dibuja. Se abre una lupa encima del dedo para que el pulgar nunca tape el cuadro.",
+ "One finger slides the chart instead of drawing on it.":"Un dedo desliza la cuadrícula en vez de dibujar.",
+ "One repeat, four rows deep. Then again, and again.":"Un motivo, cuatro vueltas de alto. Y otra vez, y otra.",
+ "One window lit. Only one.":"Una ventana encendida. Solo una.",
+ "One yarn only":"Un solo hilo",
+ "Open a backup file":"Abrir una copia",
+ "Open a chart from the box above":"Abrir una cuadrícula del cuadro",
+ "Open it":"Abrirla",
+ "Opens full screen, works with no signal.":"Se abre a pantalla completa y funciona sin señal.",
+ "Pan lock":"Bloqueo de arrastre",
+ "Panel":"Panel",
+ "Parchment":"Pergamino",
+ "Paste a backup here, then press Restore.":"Pega aquí una copia y pulsa Restaurar.",
+ "Patch":"Parche",
+ "Pattern Book":"Libro de patrones",
+ "Pattern writer":"Escribe patrones",
+ "Peach":"Melocotón",
+ "Periwinkle":"Pervinca",
+ "Petrol":"Petróleo",
+ "Pewter":"Peltre",
+ "Phones delete site data when they run short of room. Protecting it tells the browser this one is worth keeping.":"Los teléfonos borran datos de las webs cuando falta espacio. Protegerlos le dice al navegador que estos merecen quedarse.",
+ "Piece":"Pieza",
+ "Pine":"Pino",
+ "Plum":"Ciruela",
+ "Point a camera at this":"Apunta una cámara a esto",
+ "Posted a chart":"Ha enviado una cuadrícula",
+ "Press and hold the picture to save it to your phone.":"Mantén pulsada la imagen para guardarla.",
+ "Prompts, not rules. Pick one and it rides along with the chart; fasten off and the pattern gets a tick.":"Ideas, no reglas. Elige una: acompaña a la cuadrícula, y al rematar el patrón queda marcado.",
+ "Push apart":"Separarlos",
+ "Put it on the guide to trace":"Ponerla de guía para calcar",
+ "Put it on your home screen":"Ponlo en tu pantalla de inicio",
+ "Putty":"Masilla",
+ "Quarter mirror — every stitch lands in all four corners.":"Espejo en cuarto: cada punto cae en las cuatro esquinas.",
+ "Rain On The Window":"Lluvia en la ventana",
+ "Raspberry":"Frambuesa",
+ "Reads a chart at a glance":"Lee una cuadrícula de un vistazo",
+ "Rename":"Cambiar el nombre",
+ "Rename it":"Cambiar el nombre",
+ "Repeat":"Repetir",
+ "Repeat band":"Franja repetida",
+ "Repeated":"Repetido",
+ "Restore from the box":"Restaurar desde el cuadro",
+ "Ribbons":"Cintas",
+ "Rose":"Rosa",
+ "Rust":"Óxido",
+ "Sage":"Salvia",
+ "Sampler":"Muestra",
+ "Save a backup file":"Guardar una copia",
+ "Save the picture":"Guardar la imagen",
+ "Save the picture to this phone":"Guardar la imagen en este teléfono",
+ "Say it":"Decirlo",
+ "Scarlet":"Escarlata",
+ "Seaglass":"Vidrio de mar",
+ "See it worked up in yarn":"Verlo en hilo de verdad",
+ "Select":"Selección",
+ "Settings":"Ajustes",
+ "Shape & gauge":"Forma y tamaño",
+ "Share & backup":"Compartir y copia",
+ "Shift every stitch":"Desplazar todos los puntos",
+ "Show me":"Enséñamelo",
+ "Show the working tips again":"Ver de nuevo los consejos",
+ "Silver":"Plata",
+ "Sixty-four rows":"Sesenta y cuatro vueltas",
+ "Sky":"Cielo",
+ "Slate":"Pizarra",
+ "Snow":"Nieve",
+ "Something From The Sea Floor":"Algo del fondo del mar",
+ "Something Only You'd Make":"Algo que solo tú harías",
+ "Spun from the last of the fire.":"Hilado con lo último del fuego.",
+ "Square":"Cuadro",
+ "Squares laid in":"Cuadros colocados",
+ "Stamps":"Sellos",
+ "Start a fresh chart":"Una cuadrícula nueva",
+ "Start a new blanket":"Empezar una manta",
+ "Start again":"Empezar de nuevo",
+ "Static":"Nieve de televisor",
+ "Steady hands":"Manos firmes",
+ "Steam counts as three stitches, no more.":"El vapor son tres puntos, no más.",
+ "Steel":"Acero",
+ "Stitch":"Punto",
+ "Stitch it straight onto the chart":"Estamparla directamente en la cuadrícula",
+ "Stitches":"Puntos",
+ "Stitches and rows":"Puntos y vueltas",
+ "Stitches so far":"Puntos hasta ahora",
+ "Stitches to work":"Puntos por hacer",
+ "Stitches worked":"Puntos hechos",
+ "Stone":"Piedra",
+ "Stop":"Parar",
+ "Storm":"Tormenta",
+ "Storm Over The Hill":"Tormenta sobre la colina",
+ "Straight run":"Línea recta",
+ "Straw":"Paja",
+ "Sunday Morning":"Domingo por la mañana",
+ "Swap":"Cambiar",
+ "Symmetry down the middle. Dust colours.":"Simetría por el medio. Colores de polvo.",
+ "TYPE A CHARM":"UNA PALABRA",
+ "TYPE SOMETHING":"ESCRIBE ALGO",
+ "Take it out of the cabinet":"Sacarlo de la vitrina",
+ "Take this blanket apart":"Deshacer esta manta",
+ "Tap a patch and the whole patch fills in one go.":"Toca una zona y se rellena de una vez.",
+ "Tap a space to fill it":"Toca un hueco para rellenarlo",
+ "Tap any stitch to load the colour it's worked in.":"Toca un punto para cargar su color.",
+ "Taupe":"Topo",
+ "Teal":"Verde azulado",
+ "Ten thousand stitches":"Diez mil puntos",
+ "Terracotta":"Terracota",
+ "The Cabinet":"La vitrina",
+ "The Cat Who Sits On It":"El gato que se sienta encima",
+ "The Dog, Asleep":"El perro, dormido",
+ "The Emberspun skein set — coals to ash.":"El juego Hilo de brasa: de brasa a ceniza.",
+ "The Front Door":"La puerta de casa",
+ "The Heirloom skein set, warm and worn.":"El juego Herencia, cálido y gastado.",
+ "The Last Thing You Ate":"Lo último que comiste",
+ "The Moonwool skein set — twelve night colours.":"El juego Lana de luna: doce colores de noche.",
+ "The Sea At Six In The Morning":"El mar a las seis de la mañana",
+ "The Seaglass skein set — shallows to deep.":"El juego Vidrio de mar: de la orilla a lo hondo.",
+ "The file lands in Downloads. Keep it somewhere safe — it's the only copy of her work that isn't on this one phone.":"El archivo va a Descargas. Guárdalo a salvo: es la única copia de la labor que no está en este teléfono.",
+ "The hand button locks panning; the crosshair opens the aim pad for one square at a time.":"El botón de la mano bloquea el arrastre; la cruz abre el mando de puntería, cuadro a cuadro.",
+ "The long row":"La vuelta larga",
+ "The oldest motif there is. Two words, run together.":"El motivo más antiguo que hay. Dos palabras, juntas.",
+ "The one people ask":"A la que todos preguntan",
+ "The one that's still alive.":"La que sigue viva.",
+ "The one you'd find in the dark.":"La que encontrarías a oscuras.",
+ "The picture gets boiled down to whole stitches at this chart's gauge. Put it on the guide and work over it, or stitch it straight in.":"La imagen se reduce a puntos enteros al tamaño de esta cuadrícula. Ponla de guía y trabaja encima, o estámpala directamente.",
+ "The ring and the two hearts.":"El anillo y los dos corazones.",
+ "The tool you don't buy, you earn.":"La herramienta que no se compra, se gana.",
+ "The whole book":"El libro entero",
+ "The work stays in the middle. Going smaller crops what falls outside, and that can't be undone.":"La labor queda en el centro. Al reducir se recorta lo que sobra, y eso no se deshace.",
+ "Things worth making":"Cosas que vale la pena hacer",
+ "Think you know it? Say it in Charm Codes.":"¿Crees que lo sabes? Dilo en Palabras de encanto.",
+ "Thirds":"Tercios",
+ "This chart":"Esta cuadrícula",
+ "This copy":"Esta copia",
+ "Three by three, edge to edge — the quickest way to see whether a border actually joins up.":"Tres por tres, borde con borde: lo más rápido para ver si una cenefa encaja de verdad.",
+ "Three greys and one that isn't grey.":"Tres grises y uno que no lo es.",
+ "Throw":"Colcha",
+ "Throw it away":"Tirarla",
+ "Throw this chart away":"Tirar esta cuadrícula",
+ "Toast":"Una tostada",
+ "Today's pattern":"El patrón de hoy",
+ "Tonight's Moon":"La luna de esta noche",
+ "Trace a photo":"Calcar una foto",
+ "Truly random. Make it look right anyway.":"Del todo al azar. Que quede bien igualmente.",
+ "Turn":"Girar",
+ "Turn a quarter":"Girar un cuarto",
+ "Turn half round":"Girar media vuelta",
+ "Turn it":"Girarla",
+ "Two Colours, No More":"Dos colores, no más",
+ "Two Initials, Interlocked":"Dos iniciales entrelazadas",
+ "Two Of Us":"Nosotros dos",
+ "Two fingers pinch and pan. Double-tap to jump in close.":"Dos dedos para ampliar y mover. Doble toque para acercarte.",
+ "Two shapes. They don't have to be people.":"Dos formas. No tienen que ser personas.",
+ "Two words for who you're making it for.":"Dos palabras para quien lo estás haciendo.",
+ "Undo is a craft":"Deshacer es un arte",
+ "Unpick":"Deshacer",
+ "Unravel — clear every stitch":"Deshacer — borrar cada punto",
+ "Update":"Actualizar",
+ "Useful when you are trying to work out whether a phone has the newest one.":"Útil para saber si un teléfono tiene la más nueva.",
+ "Version":"Versión",
+ "Violet":"Violeta",
+ "Weald-hearted":"Corazón de bosque",
+ "Weather on top, land underneath.":"El tiempo arriba, la tierra abajo.",
+ "Weather you can hear.":"Tiempo que se oye.",
+ "What the sheep wear at midnight.":"Lo que llevan las ovejas a medianoche.",
+ "What to buy":"Qué comprar",
+ "What's changed":"Qué ha cambiado",
+ "Whatever you can see from where you're sitting.":"Lo que veas desde donde estás sentada.",
+ "Whatever you make, it is already sitting on it.":"Hagas lo que hagas, ya está sentado encima.",
+ "Which square?":"¿Qué cuadro?",
+ "Words that unlock things":"Palabras que abren cosas",
+ "Words whispered over a chart. Type one in and something opens up — a dyed skein, a wider loom, a better mirror. The riddle is the clue.":"Palabras susurradas sobre una cuadrícula. Escribe una y algo se abre: una madeja teñida, un telar más ancho, un espejo mejor. El acertijo es la pista.",
+ "Work a 10 cm square, count what you actually get, and put it in here. Everything below is then true to your hands.":"Teje un cuadrado de 10 cm, cuenta lo que de verdad te sale y ponlo aquí. Todo lo de abajo será fiel a tus manos.",
+ "Work a chart square by square. Fasten off when it's done, and it goes in the cabinet for good.":"Trabaja una cuadrícula cuadro a cuadro. Remata cuando esté listo y pasa a la vitrina para siempre.",
+ "Work it again on a fresh chart":"Hacerlo otra vez en una cuadrícula nueva",
+ "Work it with me, row by row":"Tejerlo conmigo, vuelta a vuelta",
+ "Work one half and the other follows. The crease can sit anywhere.":"Haz una mitad y la otra sigue. El pliegue va donde quieras.",
+ "Work one half; the other half works itself. Move the crease to wherever the symmetry actually sits.":"Haz una mitad y la otra se hace sola. Mueve el pliegue a donde esté de verdad la simetría.",
+ "Worked up":"En hilo real",
+ "Working":"Trabajando",
+ "Working from":"Partiendo de",
+ "Working the chart":"Trabajar la cuadrícula",
+ "Works in progress":"En curso",
+ "Write it out as a crochet pattern":"Escribirlo como un patrón de ganchillo",
+ "Written pattern":"Patrón escrito",
+ "Yarn goes missing near her":"La lana desaparece cerca de ella",
+ "Yarn in total":"Hilo en total",
+ "Yarn, near enough":"Hilo, más o menos",
+ "Yarns in this chart":"Los hilos de esta cuadrícula",
+ "Yarns used":"Hilos usados",
+ "You get to name it afterwards.":"Tú le pones nombre después.",
+ "Your Favourite Plant":"Tu planta favorita",
+ "Your Hands":"Tus manos",
+ "Your tension — per 10 cm":"Tu muestra — por 10 cm",
+ "Your work lives on this phone only":"Tu labor vive solo en este teléfono",
+ "Yours and someone's.":"Las tuyas y las de alguien.",
+ "Zoom back out.":"Volver a alejar.",
+ "Zoom in":"Acercar",
+ "Zoom in on the middle of the chart.":"Acercar el centro de la cuadrícula.",
+ "Zoom out":"Alejar",
+ "charm needed":"hace falta una palabra",
+ "daylight":"claro",
+ "experience":"experiencia",
+ "follows your phone":"sigue tu teléfono",
+ "hold to remove":"mantén para quitar",
+ "lamplight":"oscuro",
+ "level":"nivel",
+ "locked":"bloqueado",
+ "made":"hecho",
+ "newest first":"los más nuevos primero",
+ "off":"desactivado",
+ "on":"activado",
+ "one is waiting":"hay una esperando",
+ "tap to load":"toca para cargar",
+ "up to date":"al día",
+ "you have this":"tienes esta",
+ "you're here":"estás aquí",
+ "your own size":"tu tamaño",
+}, de:{
+ "80×80 and 100×100 charts.":"Zählmuster in 80×80 und 100×100.",
+ "A Bird Nobody Has Named":"Ein Vogel, den niemand benannt hat",
+ "A Fair Isle Band":"Ein Fair-Isle-Band",
+ "A House With The Light On":"Ein Haus mit Licht an",
+ "A Map Of Nowhere":"Eine Karte von Nirgendwo",
+ "A Name In Stitches":"Ein Name in Maschen",
+ "A Small Ghost":"Ein kleines Gespenst",
+ "A Window Into Winter":"Ein Fenster in den Winter",
+ "A chart code is a short blob of text holding a single chart. Send one to a friend and they can paste it in below to get their own copy to work on — it won't touch anything else they've made.":"Ein Zählmuster-Code ist ein kurzer Text mit genau einem Zählmuster. Schick ihn jemandem: unten eingefügt, ergibt er eine eigene Kopie zum Arbeiten und rührt nichts anderes an.",
+ "A ghost under the chart to work over. It never becomes stitches and never shows in the cabinet.":"Ein Schatten unter dem Zählmuster zum Darüberarbeiten. Er wird nie zu Maschen und taucht nie in der Vitrine auf.",
+ "A letter turned up":"Ein Buchstabe ist aufgedeckt",
+ "A motif that would repeat forever if you let it.":"Ein Motiv, das sich ewig wiederholen würde, ließe man es.",
+ "A new version is ready":"Eine neue Version ist bereit",
+ "A new version is ready — update now":"Neue Version bereit — jetzt aktualisieren",
+ "A pixel picture creator":"Ein Bildermacher Masche für Masche",
+ "A shelf of five":"Ein Regal voll fünf",
+ "A single yarn. The shape does all the work.":"Ein einziges Garn. Die Form macht die ganze Arbeit.",
+ "A thousand in one":"Tausend in einem",
+ "Across":"Quer",
+ "Add a note to this piece":"Eine Notiz hinzufügen",
+ "Aim pad":"Zielkreuz",
+ "All of this stays on this phone.":"All das bleibt auf diesem Handy.",
+ "Any":"Frei",
+ "Any colour there is. Drag the square, then the strip.":"Jede Farbe, die es gibt. Zieh im Quadrat, dann auf dem Streifen.",
+ "Anything you've fastened off can go in this space.":"Alles, was du abgeschlossen hast, kann hierher.",
+ "Apricot":"Aprikose",
+ "Arrows move one stitch at a time; the tick works the tool. For fiddly bits.":"Die Pfeile bewegen eine Masche, der Haken setzt das Werkzeug. Für Kniffliges.",
+ "Back":"Zurück",
+ "Back to work":"Zurück an die Arbeit",
+ "Be honest.":"Sei ehrlich.",
+ "Bedspread":"Tagesdecke",
+ "Big heart":"Großes Herz",
+ "Blanket":"Decke",
+ "Blanket Corner":"Deckenecke",
+ "Blankets":"Decken",
+ "Block":"Block",
+ "Block letters, three stitches wide. Someone's name.":"Blockbuchstaben, drei Maschen breit. Jemandes Name.",
+ "Blush":"Zartrosa",
+ "Bone":"Bein",
+ "Bookmark":"Lesezeichen",
+ "Border":"Bordüre",
+ "Brass frames on everything in the cabinet.":"Messingrahmen auf allem in der Vitrine.",
+ "Bring the whole chart back onto the screen.":"Das ganze Zählmuster zurück auf den Bildschirm holen.",
+ "Broken, tumbled, better for it.":"Zerbrochen, rundgeschliffen, und besser dafür.",
+ "Build":"Build",
+ "Butter":"Butter",
+ "Cancel":"Abbrechen",
+ "Candy":"Bonbon",
+ "Cast on":"Anfangen",
+ "Centre & diagonals":"Mitte & Diagonalen",
+ "Change the gauge":"Größe ändern",
+ "Charcoal":"Anthrazit",
+ "Charm Codes":"Zauberworte",
+ "Charmed":"Verzaubert",
+ "Chart":"Zählmuster",
+ "Chartreuse":"Chartreuse",
+ "Charts and finished pieces are saved in this browser, on this device. Nothing is uploaded. To move them, copy the backup text below and paste it into the same box on the other phone.":"Zählmuster und fertige Stücke werden in diesem Browser auf diesem Gerät gespeichert. Nichts wird hochgeladen. Zum Umziehen den Sicherungstext unten kopieren und auf dem anderen Handy in dasselbe Feld einfügen.",
+ "Cherry":"Kirsche",
+ "Chestnut":"Kastanie",
+ "Chocolate":"Schokolade",
+ "Choose a photo":"Ein Foto wählen",
+ "Choose from the Pattern Book":"Aus dem Musterbuch wählen",
+ "Choose them badly on purpose.":"Wähle sie absichtlich schlecht.",
+ "Circle":"Kreis",
+ "Clear":"Löschen",
+ "Clear the guide":"Hilfsebene löschen",
+ "Closer":"Näher",
+ "Coast, roads, a lake. No labels.":"Küste, Straßen, ein See. Ohne Beschriftung.",
+ "Coaster":"Untersetzer",
+ "Cocoa":"Kakao",
+ "Cold on one side of the glass.":"Kalt auf einer Seite des Glases.",
+ "Colours from my basket":"Farben aus meinem Korb",
+ "Colours from the photo":"Farben aus dem Foto",
+ "Copy":"Kopieren",
+ "Copy a backup of everything":"Sicherung von allem kopieren",
+ "Copy as a chart code":"Als Zählmuster-Code kopieren",
+ "Copy the link":"Link kopieren",
+ "Copy the pattern":"Anleitung kopieren",
+ "Copy this chart as a code":"Dieses Zählmuster als Code kopieren",
+ "Copy this chart down onto the guide":"Dieses Zählmuster auf die Hilfsebene kopieren",
+ "Cornflower":"Kornblume",
+ "Counts without looking":"Zählt, ohne hinzusehen",
+ "Cream":"Creme",
+ "Cushion":"Kissen",
+ "Denim":"Denim",
+ "Diamond":"Raute",
+ "Do it once, get it four times.":"Einmal machen, viermal bekommen.",
+ "Done":"Fertig",
+ "Done — next":"Fertig — weiter",
+ "Dove":"Taube",
+ "Down":"Längs",
+ "Drag a box, then nudge, flip, turn, copy or clear just that part.":"Einen Rahmen ziehen und nur diesen Teil verschieben, spiegeln, drehen, kopieren oder löschen.",
+ "Drag from one square to another for a clean line.":"Von Kästchen zu Kästchen ziehen für eine saubere Linie.",
+ "Drag out a rectangle and fill it solid.":"Ein Rechteck aufziehen und ausfüllen.",
+ "Drag to lay yarn down, one square at a time.":"Ziehen, um Garn zu legen — ein Kästchen nach dem anderen.",
+ "Drag to take stitches back out.":"Ziehen, um Maschen wieder zu entfernen.",
+ "Duck Egg":"Entenei",
+ "Dye a yarn":"Ein Garn färben",
+ "Dyer":"Färberin",
+ "Easy to tell apart":"Leicht zu unterscheiden",
+ "Emberspun":"Glutgarn",
+ "Eucalyptus":"Eukalyptus",
+ "Every charm said":"Alle Zauberworte gesagt",
+ "Everything in the game, in the language you'd rather read.":"Das ganze Spiel, in der Sprache, die du lieber liest.",
+ "Everything that's been added, newest first.":"Alles Neue, das Neueste zuerst.",
+ "Everything you've finished":"Alles, was du fertig hast",
+ "Fasten off — put it in the cabinet":"Abschließen — in die Vitrine",
+ "Fastened off":"Abgeschlossen am",
+ "Fern":"Farn",
+ "Fetch the newest version":"Neueste Version holen",
+ "Fewer across":"Weniger in der Breite",
+ "Fewer down":"Weniger in der Höhe",
+ "Fill":"Füllen",
+ "Fill every empty space with one square":"Alle leeren Plätze mit einem Quadrat füllen",
+ "Fill the chart, crop the edges":"Zählmuster füllen, Ränder beschneiden",
+ "Finding the rhythm":"Findet den Rhythmus",
+ "Finished":"Fertig",
+ "Finished size":"Fertige Größe",
+ "First fasten-off":"Erster Abschluss",
+ "Fit":"Einpassen",
+ "Fit the whole photo":"Ganzes Foto einpassen",
+ "Flip across":"Waagerecht spiegeln",
+ "Flip down":"Senkrecht spiegeln",
+ "Flood":"Füllen",
+ "Folded":"Gefaltet",
+ "For when the chart runs out of room.":"Für wenn das Zählmuster keinen Platz mehr hat.",
+ "Forest":"Wald",
+ "Four rounds of colour, corner to corner.":"Vier Runden Farbe, Ecke zu Ecke.",
+ "Free loom":"Freier Rahmen",
+ "Friendly. Slightly embarrassed.":"Freundlich. Ein bisschen verlegen.",
+ "From the pattern book":"Aus dem Musterbuch",
+ "Fuchsia":"Fuchsie",
+ "Full basket":"Voller Korb",
+ "Further":"Weiter weg",
+ "Gauge":"Größe",
+ "Go and look first.":"Schau erst nach.",
+ "Go and say it":"Geh und sag es",
+ "Golden. One corner slightly too dark.":"Goldbraun. Eine Ecke etwas zu dunkel.",
+ "Got it":"Verstanden",
+ "Granny":"Granny",
+ "Granny Square":"Granny Square",
+ "Granny rings":"Granny-Ringe",
+ "Grape":"Traube",
+ "Graphite":"Graphit",
+ "Guide layer":"Hilfsebene",
+ "Guide layer & templates":"Hilfsebene & Vorlagen",
+ "Half the book":"Das halbe Buch",
+ "Hand":"Hand",
+ "Harder than it sounds.":"Schwerer, als es klingt.",
+ "Hearts, stars, and letters you can type. Tap the chart to press one in.":"Herzen, Sterne und Buchstaben zum Tippen. Auf das Zählmuster tippen, um es zu setzen.",
+ "Heirloom":"Erbstück",
+ "How many stitches across, and how many rows down. Bigger charts hold more detail — pinch to zoom in and every square is still yours.":"Wie viele Maschen breit und wie viele Reihen hoch. Größere Zählmuster fassen mehr Details — zoome hinein, und jedes Kästchen gehört weiter dir.",
+ "How many yarns":"Wie viele Garne",
+ "In the basket":"Im Korb",
+ "Ink":"Tinte",
+ "Install":"Installieren",
+ "It has never seen the sun.":"Es hat nie die Sonne gesehen.",
+ "Jade":"Jade",
+ "Just used":"Gerade benutzt",
+ "Keep":"Behalten",
+ "Kitchen Window":"Küchenfenster",
+ "Lamplight cloth — a warmer chart to work on.":"Lampenlicht-Stoff — ein wärmeres Zählmuster.",
+ "Language":"Sprache",
+ "Lavender":"Lavendel",
+ "Lay finished squares out in rows and see the whole thing before you sew a single one together.":"Lege fertige Quadrate in Reihen und sieh das Ganze, bevor du ein einziges zusammennähst.",
+ "Lay out a blanket":"Eine Decke auslegen",
+ "Layout":"Anordnung",
+ "Leave the space empty":"Den Platz leer lassen",
+ "Lemon":"Zitrone",
+ "Letter band":"Buchstabenband",
+ "Lettered":"Mit Buchstaben",
+ "Letters":"Buchstaben",
+ "Lights out, still working.":"Licht aus, und immer noch am Werk.",
+ "Lilac":"Flieder",
+ "Load":"Laden",
+ "Load one, then tap the chart to press it in — in whatever yarn is loaded.":"Eines laden, dann auf das Zählmuster tippen — im gerade geladenen Garn.",
+ "Load the whole set into the basket":"Das ganze Set in den Korb legen",
+ "Load these into the basket":"Diese in den Korb legen",
+ "Long and narrow. It has to survive a paperback.":"Lang und schmal. Es muss ein Taschenbuch überstehen.",
+ "Lovely":"Wunderbar",
+ "Made on":"Erstellt am",
+ "Magenta":"Magenta",
+ "Make a copy":"Eine Kopie machen",
+ "Make it look like it feels.":"Lass es aussehen, wie es sich anfühlt.",
+ "Makes it look easy":"Lässt es leicht aussehen",
+ "Marigold":"Ringelblume",
+ "Match a yarn":"Garn aufnehmen",
+ "Meadow":"Wiese",
+ "Midnight":"Mitternacht",
+ "Mint":"Minze",
+ "Mirror":"Spiegel",
+ "Mirror & fold lines":"Spiegel & Faltlinien",
+ "Mirror and fold lines":"Spiegel & Faltlinien",
+ "Moonwool":"Mondwolle",
+ "More across":"Mehr in der Breite",
+ "More down":"Mehr in der Höhe",
+ "Moss":"Moos",
+ "Mostly circle. Entirely contented.":"Fast ein Kreis. Vollkommen zufrieden.",
+ "Moth Wing":"Mottenflügel",
+ "Motifs":"Motive",
+ "Move the whole chart at once, or change how many stitches it holds.":"Das ganze Zählmuster auf einmal bewegen oder ändern, wie viele Maschen es fasst.",
+ "Mug Of Something Hot":"Eine Tasse von etwas Heißem",
+ "Mushroom":"Pilz",
+ "Mustard":"Senf",
+ "Navy":"Marine",
+ "Never drops a stitch":"Verliert nie eine Masche",
+ "New to the hook":"Neu an der Nadel",
+ "Newer version":"Neuere Version",
+ "Night shift":"Nachtschicht",
+ "No brief. Make whatever turns up.":"Kein Auftrag. Mach, was kommt.",
+ "No hint for this one.":"Für dieses gibt es keinen Hinweis.",
+ "Not now":"Später",
+ "Nudge down":"Nach unten",
+ "Nudge left":"Nach links",
+ "Nudge right":"Nach rechts",
+ "Nudge up":"Nach oben",
+ "OK":"OK",
+ "Oatmeal":"Hafer",
+ "Ochre":"Ocker",
+ "Olive":"Oliv",
+ "On this phone":"Auf diesem Handy",
+ "One Colour Only":"Nur eine Farbe",
+ "One chart at a time":"Ein Zählmuster auf einmal",
+ "One finger draws. A window pops up above your fingertip so your thumb never hides the square.":"Ein Finger zeichnet. Über der Fingerspitze erscheint ein Fenster, damit der Daumen das Kästchen nie verdeckt.",
+ "One finger slides the chart instead of drawing on it.":"Ein Finger schiebt das Zählmuster, statt zu zeichnen.",
+ "One repeat, four rows deep. Then again, and again.":"Ein Rapport, vier Reihen hoch. Und wieder, und wieder.",
+ "One window lit. Only one.":"Ein erleuchtetes Fenster. Nur eines.",
+ "One yarn only":"Nur ein Garn",
+ "Open a backup file":"Sicherung öffnen",
+ "Open a chart from the box above":"Ein Zählmuster aus dem Feld öffnen",
+ "Open it":"Öffnen",
+ "Opens full screen, works with no signal.":"Öffnet sich im Vollbild und läuft ohne Empfang.",
+ "Pan lock":"Verschieben sperren",
+ "Panel":"Bahn",
+ "Parchment":"Pergament",
+ "Paste a backup here, then press Restore.":"Eine Sicherung hier einfügen, dann Wiederherstellen.",
+ "Patch":"Flicken",
+ "Pattern Book":"Musterbuch",
+ "Pattern writer":"Anleitungsschreiberin",
+ "Peach":"Pfirsich",
+ "Periwinkle":"Immergrün",
+ "Petrol":"Tiefpetrol",
+ "Pewter":"Zinn",
+ "Phones delete site data when they run short of room. Protecting it tells the browser this one is worth keeping.":"Handys löschen Website-Daten, wenn der Platz knapp wird. Schützen sagt dem Browser, dass diese es wert sind.",
+ "Piece":"Stück",
+ "Pine":"Kiefer",
+ "Plum":"Pflaume",
+ "Point a camera at this":"Richte eine Kamera hierauf",
+ "Posted a chart":"Ein Zählmuster verschickt",
+ "Press and hold the picture to save it to your phone.":"Bild lange gedrückt halten, um es zu speichern.",
+ "Prompts, not rules. Pick one and it rides along with the chart; fasten off and the pattern gets a tick.":"Anregungen, keine Regeln. Wähle eine — sie begleitet das Zählmuster, und beim Abschließen wird sie abgehakt.",
+ "Push apart":"Auseinander schieben",
+ "Put it on the guide to trace":"Als Hilfsebene zum Nachzeichnen",
+ "Put it on your home screen":"Leg es auf deinen Startbildschirm",
+ "Putty":"Kitt",
+ "Quarter mirror — every stitch lands in all four corners.":"Viertelspiegel — jede Masche landet in allen vier Ecken.",
+ "Rain On The Window":"Regen am Fenster",
+ "Raspberry":"Himbeere",
+ "Reads a chart at a glance":"Liest ein Zählmuster auf einen Blick",
+ "Rename":"Umbenennen",
+ "Rename it":"Umbenennen",
+ "Repeat":"Wiederholen",
+ "Repeat band":"Wiederholband",
+ "Repeated":"Wiederholt",
+ "Restore from the box":"Aus dem Feld wiederherstellen",
+ "Ribbons":"Bänder",
+ "Rose":"Rosé",
+ "Rust":"Rost",
+ "Sage":"Salbei",
+ "Sampler":"Mustertuch",
+ "Save a backup file":"Sicherung speichern",
+ "Save the picture":"Bild speichern",
+ "Save the picture to this phone":"Bild auf diesem Handy speichern",
+ "Say it":"Sagen",
+ "Scarlet":"Scharlach",
+ "Seaglass":"Meerglas",
+ "See it worked up in yarn":"In echter Wolle ansehen",
+ "Select":"Auswahl",
+ "Settings":"Einstellungen",
+ "Shape & gauge":"Form & Größe",
+ "Share & backup":"Teilen & Sichern",
+ "Shift every stitch":"Alle Maschen verschieben",
+ "Show me":"Zeig es mir",
+ "Show the working tips again":"Die Tipps wieder anzeigen",
+ "Silver":"Silber",
+ "Sixty-four rows":"Vierundsechzig Reihen",
+ "Sky":"Himmel",
+ "Slate":"Schiefer",
+ "Snow":"Schnee",
+ "Something From The Sea Floor":"Etwas vom Meeresboden",
+ "Something Only You'd Make":"Etwas, das nur du machen würdest",
+ "Spun from the last of the fire.":"Aus dem letzten Rest des Feuers gesponnen.",
+ "Square":"Quadrat",
+ "Squares laid in":"Eingelegte Quadrate",
+ "Stamps":"Stempel",
+ "Start a fresh chart":"Ein neues Zählmuster",
+ "Start a new blanket":"Eine neue Decke anfangen",
+ "Start again":"Neu anfangen",
+ "Static":"Bildrauschen",
+ "Steady hands":"Ruhige Hände",
+ "Steam counts as three stitches, no more.":"Dampf zählt drei Maschen, nicht mehr.",
+ "Steel":"Stahl",
+ "Stitch":"Masche",
+ "Stitch it straight onto the chart":"Direkt ins Zählmuster setzen",
+ "Stitches":"Maschen",
+ "Stitches and rows":"Maschen und Reihen",
+ "Stitches so far":"Maschen bisher",
+ "Stitches to work":"Zu häkelnde Maschen",
+ "Stitches worked":"Gehäkelte Maschen",
+ "Stone":"Stein",
+ "Stop":"Stopp",
+ "Storm":"Sturm",
+ "Storm Over The Hill":"Sturm überm Hügel",
+ "Straight run":"Gerade Linie",
+ "Straw":"Stroh",
+ "Sunday Morning":"Sonntagmorgen",
+ "Swap":"Tauschen",
+ "Symmetry down the middle. Dust colours.":"Symmetrie in der Mitte. Staubfarben.",
+ "TYPE A CHARM":"EIN ZAUBERWORT",
+ "TYPE SOMETHING":"SCHREIB ETWAS",
+ "Take it out of the cabinet":"Aus der Vitrine nehmen",
+ "Take this blanket apart":"Diese Decke auflösen",
+ "Tap a patch and the whole patch fills in one go.":"Tippe auf eine Fläche, und sie füllt sich auf einmal.",
+ "Tap a space to fill it":"Auf einen Platz tippen, um ihn zu füllen",
+ "Tap any stitch to load the colour it's worked in.":"Tippe auf eine Masche, um ihre Farbe zu laden.",
+ "Taupe":"Taupe",
+ "Teal":"Petrol",
+ "Ten thousand stitches":"Zehntausend Maschen",
+ "Terracotta":"Terrakotta",
+ "The Cabinet":"Die Vitrine",
+ "The Cat Who Sits On It":"Die Katze, die sich draufsetzt",
+ "The Dog, Asleep":"Der Hund, schlafend",
+ "The Emberspun skein set — coals to ash.":"Das Glutgarn-Set — von Glut zu Asche.",
+ "The Front Door":"Die Haustür",
+ "The Heirloom skein set, warm and worn.":"Das Erbstück-Set, warm und getragen.",
+ "The Last Thing You Ate":"Das Letzte, was du gegessen hast",
+ "The Moonwool skein set — twelve night colours.":"Das Mondwolle-Set — zwölf Nachtfarben.",
+ "The Sea At Six In The Morning":"Das Meer um sechs Uhr morgens",
+ "The Seaglass skein set — shallows to deep.":"Das Meerglas-Set — vom Flachen ins Tiefe.",
+ "The file lands in Downloads. Keep it somewhere safe — it's the only copy of her work that isn't on this one phone.":"Die Datei landet in Downloads. Bewahre sie gut auf — sie ist die einzige Kopie, die nicht auf diesem Handy liegt.",
+ "The hand button locks panning; the crosshair opens the aim pad for one square at a time.":"Die Hand sperrt das Schieben, das Fadenkreuz öffnet das Zielkreuz für ein Kästchen nach dem anderen.",
+ "The long row":"Die lange Reihe",
+ "The oldest motif there is. Two words, run together.":"Das älteste Motiv überhaupt. Zwei Wörter, zusammengeschrieben.",
+ "The one people ask":"Die, die man fragt",
+ "The one that's still alive.":"Die, die noch lebt.",
+ "The one you'd find in the dark.":"Die, die du im Dunkeln findest.",
+ "The picture gets boiled down to whole stitches at this chart's gauge. Put it on the guide and work over it, or stitch it straight in.":"Das Bild wird auf ganze Maschen in der Größe dieses Zählmusters heruntergerechnet. Als Hilfsebene darüberarbeiten oder direkt einsetzen.",
+ "The ring and the two hearts.":"Der Ring und die zwei Herzen.",
+ "The tool you don't buy, you earn.":"Das Werkzeug, das man nicht kauft, sondern verdient.",
+ "The whole book":"Das ganze Buch",
+ "The work stays in the middle. Going smaller crops what falls outside, and that can't be undone.":"Die Arbeit bleibt in der Mitte. Wird es kleiner, fällt weg, was außen liegt — endgültig.",
+ "Things worth making":"Dinge, die sich lohnen",
+ "Think you know it? Say it in Charm Codes.":"Glaubst du, du weißt es? Sag es bei den Zauberworten.",
+ "Thirds":"Drittel",
+ "This chart":"Dieses Zählmuster",
+ "This copy":"Diese Kopie",
+ "Three by three, edge to edge — the quickest way to see whether a border actually joins up.":"Drei mal drei, Kante an Kante — am schnellsten zu sehen, ob eine Bordüre wirklich aufgeht.",
+ "Three greys and one that isn't grey.":"Drei Grautöne und einer, der keiner ist.",
+ "Throw":"Plaid",
+ "Throw it away":"Wegwerfen",
+ "Throw this chart away":"Dieses Zählmuster wegwerfen",
+ "Toast":"Toast",
+ "Today's pattern":"Muster des Tages",
+ "Tonight's Moon":"Der Mond von heute Nacht",
+ "Trace a photo":"Ein Foto nachzeichnen",
+ "Truly random. Make it look right anyway.":"Wirklich zufällig. Und trotzdem soll es stimmen.",
+ "Turn":"Drehen",
+ "Turn a quarter":"Um eine Vierteldrehung drehen",
+ "Turn half round":"Um eine halbe Drehung drehen",
+ "Turn it":"Drehen",
+ "Two Colours, No More":"Zwei Farben, nicht mehr",
+ "Two Initials, Interlocked":"Zwei verschlungene Initialen",
+ "Two Of Us":"Wir zwei",
+ "Two fingers pinch and pan. Double-tap to jump in close.":"Zwei Finger zum Zoomen und Schieben. Doppeltippen, um nah heranzugehen.",
+ "Two shapes. They don't have to be people.":"Zwei Formen. Es müssen keine Menschen sein.",
+ "Two words for who you're making it for.":"Zwei Worte für die Person, für die du es machst.",
+ "Undo is a craft":"Auftrennen ist eine Kunst",
+ "Unpick":"Auftrennen",
+ "Unravel — clear every stitch":"Auftrennen — alle Maschen löschen",
+ "Update":"Aktualisieren",
+ "Useful when you are trying to work out whether a phone has the newest one.":"Nützlich, um herauszufinden, ob ein Handy die neueste hat.",
+ "Version":"Version",
+ "Violet":"Violett",
+ "Weald-hearted":"Waldherz",
+ "Weather on top, land underneath.":"Wetter oben, Land darunter.",
+ "Weather you can hear.":"Wetter, das man hört.",
+ "What the sheep wear at midnight.":"Was die Schafe um Mitternacht tragen.",
+ "What to buy":"Was zu kaufen ist",
+ "What's changed":"Was sich geändert hat",
+ "Whatever you can see from where you're sitting.":"Was du von deinem Platz aus siehst.",
+ "Whatever you make, it is already sitting on it.":"Was du auch machst, sie sitzt schon darauf.",
+ "Which square?":"Welches Quadrat?",
+ "Words that unlock things":"Worte, die etwas öffnen",
+ "Words whispered over a chart. Type one in and something opens up — a dyed skein, a wider loom, a better mirror. The riddle is the clue.":"Worte, über ein Zählmuster geflüstert. Tippe eines ein, und etwas öffnet sich: ein gefärbter Strang, ein breiterer Rahmen, ein besserer Spiegel. Das Rätsel ist der Hinweis.",
+ "Work a 10 cm square, count what you actually get, and put it in here. Everything below is then true to your hands.":"Häkle ein 10-cm-Quadrat, zähle, was wirklich herauskommt, und trage es hier ein. Alles Weitere stimmt dann für deine Hände.",
+ "Work a chart square by square. Fasten off when it's done, and it goes in the cabinet for good.":"Arbeite ein Zählmuster Kästchen für Kästchen. Schließe es ab, und es kommt für immer in die Vitrine.",
+ "Work it again on a fresh chart":"Auf einem neuen Zählmuster wiederholen",
+ "Work it with me, row by row":"Mit mir häkeln, Reihe für Reihe",
+ "Work one half and the other follows. The crease can sit anywhere.":"Arbeite die eine Hälfte, die andere folgt. Die Falte sitzt, wo du willst.",
+ "Work one half; the other half works itself. Move the crease to wherever the symmetry actually sits.":"Arbeite die eine Hälfte, die andere macht sich selbst. Schiebe die Falte dorthin, wo die Symmetrie wirklich liegt.",
+ "Worked up":"In echter Wolle",
+ "Working":"Am Häkeln",
+ "Working from":"Ausgehend von",
+ "Working the chart":"Am Zählmuster arbeiten",
+ "Works in progress":"In Arbeit",
+ "Write it out as a crochet pattern":"Als echte Häkelanleitung aufschreiben",
+ "Written pattern":"Geschriebene Anleitung",
+ "Yarn goes missing near her":"In ihrer Nähe verschwindet Wolle",
+ "Yarn in total":"Garn insgesamt",
+ "Yarn, near enough":"Garn, ungefähr",
+ "Yarns in this chart":"Die Garne in diesem Zählmuster",
+ "Yarns used":"Verwendete Garne",
+ "You get to name it afterwards.":"Du darfst ihn danach benennen.",
+ "Your Favourite Plant":"Deine Lieblingspflanze",
+ "Your Hands":"Deine Hände",
+ "Your tension — per 10 cm":"Deine Maschenprobe — auf 10 cm",
+ "Your work lives on this phone only":"Deine Arbeit lebt nur auf diesem Handy",
+ "Yours and someone's.":"Deine und die von jemandem.",
+ "Zoom back out.":"Wieder herauszoomen.",
+ "Zoom in":"Vergrößern",
+ "Zoom in on the middle of the chart.":"In die Mitte des Zählmusters zoomen.",
+ "Zoom out":"Verkleinern",
+ "charm needed":"Zauberwort nötig",
+ "daylight":"hell",
+ "experience":"Erfahrung",
+ "follows your phone":"folgt deinem Handy",
+ "hold to remove":"halten zum Entfernen",
+ "lamplight":"dunkel",
+ "level":"Stufe",
+ "locked":"gesperrt",
+ "made":"gemacht",
+ "newest first":"die neuesten zuerst",
+ "off":"aus",
+ "on":"an",
+ "one is waiting":"eine wartet",
+ "tap to load":"tippen zum Laden",
+ "up to date":"aktuell",
+ "you have this":"du hast diese",
+ "you're here":"du bist hier",
+ "your own size":"deine Größe",
+} };
+function t(k){
+  if(LANG === "en") return k;
+  var d = I18N[LANG];
+  return (d && d[k] !== undefined) ? d[k] : k;
+}
+function langLookup(k){
+  if(LANG === "en") return k;
+  var d = I18N[LANG];
+  return (d && d[k] !== undefined) ? d[k] : null;
+}
+/* Strings the app builds by hand rather than lifting straight from the
+   markup; {braces} are filled in after the lookup. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+function tf(key, vals){
+  return t(key).replace(/\{(\w+)\}/g, function(_, k){
+    return vals[k] !== undefined ? vals[k] : "";
+  });
+}
+var TW_ATTRS = ["placeholder", "aria-label", "title"];
+function translateTree(root){
+  var walker = document.createTreeWalker(root || document.body,
+    NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, null);
+  var node, i;
+  while((node = walker.nextNode())){
+    if(node.nodeType === 3){
+      var pn = node.parentNode && node.parentNode.nodeName;
+      if(pn === "SCRIPT" || pn === "STYLE") continue;
+      var orig = node.__tw;
+      if(orig === undefined){ orig = node.nodeValue; node.__tw = orig; }
+      var key = orig.trim();
+      if(!key) continue;
+      var got = langLookup(key);
+      if(got === null) continue;
+      var next = orig.replace(key, got);
+      if(node.nodeValue !== next) node.nodeValue = next;   /* idempotent: no loop */
+    } else {
+      for(i = 0; i < TW_ATTRS.length; i++){
+        var an = TW_ATTRS[i];
+        if(!node.hasAttribute || !node.hasAttribute(an)) continue;
+        var slot = "__tw_" + an, o = node[slot];
+        if(o === undefined){ o = node.getAttribute(an); node[slot] = o; }
+        var k2 = (o || "").trim();
+        if(!k2) continue;
+        var g2 = langLookup(k2);
+        if(g2 === null) continue;
+        if(node.getAttribute(an) !== g2) node.setAttribute(an, g2);
+      }
+    }
+  }
+}
+var twPending = false;
+function scheduleTranslate(){
+  if(twPending) return;
+  twPending = true;
+  requestAnimationFrame(function(){ twPending = false; translateTree(document.body); });
+}
+function langName(id){
+  for(var i=0;i<LANGS.length;i++) if(LANGS[i].id === id) return LANGS[i].name;
+  return "English";
+}
+function setLanguage(id, quiet){
+  LANG = id;
+  SET.lang = id;
+  saveSettings();
+  try{ document.documentElement.setAttribute("lang", id); }catch(e){}
+  translateTree(document.body);
+  var chip = $("lang-now"), st = $("set-lang-state");
+  if(chip) chip.textContent = langName(id);
+  if(st) st.textContent = langName(id);
+  if(!quiet && S.screen) show(S.screen, true);
+}
+function renderLangList(){
+  var box = $("lang-list"); box.innerHTML = "";
+  LANGS.forEach(function(L){
+    var b = el("button", "langrow" + (L.id === LANG ? " on" : ""));
+    var n2 = el("span","ln");
+    n2.appendChild(el("b", null, L.name));
+    n2.appendChild(el("span", null, L.sub));
+    b.appendChild(n2);
+    var tick = el("span","tick");
+    tick.innerHTML = icon("check", 20);
+    b.appendChild(tick);
+    b.onclick = function(){
+      setLanguage(L.id);
+      renderLangList();
+      closeSheet("sheet-lang");
+    };
+    box.appendChild(b);
+  });
+}
+/* First run only: if the phone is set to one of these, start there. */
+function detectLanguage(){
+  var want = (navigator.language || "en").slice(0,2).toLowerCase();
+  for(var i=0;i<LANGS.length;i++) if(LANGS[i].id === want) return want;
+  return "en";
+}
+
 /* ---------------- tiny helpers ---------------- */
 function $(id){ return document.getElementById(id); }
 function el(tag, cls, txt){ var n=document.createElement(tag); if(cls) n.className=cls; if(txt!=null) n.textContent=txt; return n; }
 function icon(name, size){ return '<svg width="'+(size||22)+'" height="'+(size||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-'+name+'"/></svg>'; }
 var toastTimer;
-function toast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("on"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("on"); }, 2200); }
+function toast(msg){ var t=$("toast"); t.textContent=langLookup(msg) || msg; t.classList.add("on"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("on"); }, 2200); }
 function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
 /* ---------------- run-length storage ---------------- */
@@ -2350,6 +3828,7 @@ function show(name, replace){
   if(name === "fabric")   renderFabricScreen();
   if(name !== "work" && name !== "loom") keepAwake(false);
   if(name === "loom")    enterLoom();
+  if(LANG !== "en") scheduleTranslate();
 }
 /* A link can carry a screen name: .../#install goes straight to Share & backup.
    Handy for sending someone "here is where the install button is". */
@@ -2373,7 +3852,8 @@ function renderHearth(){
     r.hidden = false;
     $("resume-name").textContent = last.name;
     var stitched = last.cells.filter(Boolean).length;
-    $("resume-sub").textContent = last.w + "×" + last.h + " · " + stitched.toLocaleString() + " stitches worked";
+    $("resume-sub").textContent = tf("{w}×{h} · {n} stitches worked",
+      { w:last.w, h:last.h, n:stitched.toLocaleString() });
     paintInto($("resume-thumb"), last.w, last.h, last.cells);
     r.onclick = function(){ openProject(last.id); };
   } else r.hidden = true;
@@ -2390,14 +3870,17 @@ function renderHearth(){
     };
   }
 
-  $("wip-count").textContent = idx.length ? (idx.length + (idx.length===1?" chart on the go":" charts on the go")) : "Nothing on the hooks yet";
+  $("wip-count").textContent = idx.length
+    ? (idx.length === 1 ? t("one chart on the go") : tf("{n} charts on the go", { n:idx.length }))
+    : t("Nothing on the hooks yet");
   $("t-stitch").textContent = SET.stats.stitches.toLocaleString();
   $("t-done").textContent   = cabinet().filter(function(x){ return !x.example; }).length;
   $("t-ribbon").textContent = earnedRibbons().length;
   var L = levelFor(SET.xp);
   $("xp-lv").textContent = String(L.level);
   $("xp-title").textContent = L.title;
-  $("xp-sub").textContent = L.into.toLocaleString() + " / " + L.need.toLocaleString() + " to level " + (L.level + 1);
+  $("xp-sub").textContent = tf("{a} / {b} to level {c}",
+    { a:L.into.toLocaleString(), b:L.need.toLocaleString(), c:L.level + 1 });
   requestAnimationFrame(function(){ $("xp-fill").style.width = Math.round(L.into / L.need * 100) + "%"; });
 
   var bp = buildParts();
@@ -2550,9 +4033,9 @@ function openChartActions(id){
 }
 function when(ts){
   var d = Math.floor((Date.now()-ts)/86400000);
-  if(d <= 0) return "today";
-  if(d === 1) return "yesterday";
-  if(d < 30) return d + " days ago";
+  if(d <= 0) return t("today");
+  if(d === 1) return t("yesterday");
+  if(d < 30) return tf("{n} days ago", { n:d });
   return new Date(ts).toLocaleDateString();
 }
 function openProject(id){
@@ -2587,7 +4070,7 @@ function setYarn(hex, quiet){
   S.yarn = next;
   if(!quiet && $("toolhint")){
     var sh2 = nearestShade(next), box2 = $("toolhint");
-    box2.innerHTML = "<b>" + sh2.name + (sh2.close ? "" : "-ish") + "</b> — " + next;
+    box2.innerHTML = "<b>" + (sh2.close ? "" : "~") + t(sh2.name) + "</b> — " + next;
     box2.classList.add("on");
     clearTimeout(hintTimer);
     hintTimer = setTimeout(function(){ box2.classList.remove("on"); }, 1800);
@@ -2618,7 +4101,7 @@ function updateMirrorBadge(){
 
 /* ---------------- dyeing yarn ---------------- */
 var pk = {h:335, s:.77, v:.71};
-function openSheet(id){ $(id).classList.add("on"); }
+function openSheet(id){ $(id).classList.add("on"); if(LANG !== "en") scheduleTranslate(); }
 /* Closing has to go through here: the ask sheet owes a promise an answer, and
    a sheet dismissed by a swipe would otherwise leave it hanging for ever. */
 function dismissSheet(sheet){
@@ -3087,7 +4570,7 @@ function renderCharms(){
       var tiles = el("div","wordtiles");
       paintTiles(tiles, c.code);
       body.appendChild(tiles);
-      body.appendChild(el("span","r", "\u201C" + c.riddle + "\u201D"));
+      body.appendChild(el("span","r", "\u201C" + t(c.riddle) + "\u201D"));
       if(active && active.code === c.code){
         var tag = el("span","next", shown
           ? shown + " of " + c.code.length + " turned over — the next thing you fasten off turns another."
@@ -3928,7 +5411,8 @@ function showReward(name, gained, wasLevel, turned){
   $("rw-xp").textContent = "+" + gained.toLocaleString();
   $("rw-lv").textContent = String(L.level);
   $("rw-title").textContent = L.title;
-  $("rw-sub2").textContent = L.into.toLocaleString() + " / " + L.need.toLocaleString() + " to level " + (L.level + 1);
+  $("rw-sub2").textContent = tf("{a} / {b} to level {c}",
+    { a:L.into.toLocaleString(), b:L.need.toLocaleString(), c:L.level + 1 });
   $("rw-fill").style.width = "0%";
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){ $("rw-fill").style.width = Math.round(L.into / L.need * 100) + "%"; });
@@ -3936,7 +5420,7 @@ function showReward(name, gained, wasLevel, turned){
   var box = $("rw-letter");
   if(turned && turned.charm){
     box.hidden = false;
-    $("rw-riddle").textContent = "\u201C" + turned.charm.riddle + "\u201D";
+    $("rw-riddle").textContent = "\u201C" + t(turned.charm.riddle) + "\u201D";
     paintTiles($("rw-tiles"), turned.charm.code);
     $("rw-hint").textContent = turned.full
       ? "That's the whole word. Go and say it."
@@ -4008,7 +5492,7 @@ function renderFabricScreen(){
     var row = el("div","shaderow");
     var dot = el("i"); dot.style.background = hex;
     var mid = el("span","nm2");
-    mid.appendChild(el("b", null, sh.name + (sh.close ? "" : "-ish")));
+    mid.appendChild(el("b", null, (sh.close ? "" : "~") + t(sh.name)));
     mid.appendChild(el("span", null, hex));
     var amt = el("span","amt");
     amt.innerHTML = cen.counts[hex].toLocaleString() + " sts<br>~" + metresFor(cen.counts[hex]) + " m";
@@ -4471,6 +5955,8 @@ function wire(){
     openSheet("sheet-changes");
   };
   $("isochip").onclick = function(){ setIsolate(null); };
+  $("langchip").onclick = function(){ renderLangList(); openSheet("sheet-lang"); };
+  $("set-lang").onclick = function(){ closeSheet("sheet-settings"); renderLangList(); openSheet("sheet-lang"); };
   $("xpcard").onclick = function(){ show("charms"); };
   $("rw-charms").onclick = function(){ closeSheet("sheet-reward"); S.stack = ["hearth"]; show("charms", true); };
   $("ver").onclick = function(){
@@ -4829,7 +6315,7 @@ function showToolHint(key){
   var h = TOOL_HELP[key], box = $("toolhint");
   if(!box) return;
   if(!h){ box.classList.remove("on"); return; }
-  box.innerHTML = "<b>" + h.n + "</b> — " + h.d;
+  box.innerHTML = "<b>" + t(h.n) + "</b> — " + t(h.d);
   box.classList.add("on");
   clearTimeout(hintTimer);
   hintTimer = setTimeout(function(){ box.classList.remove("on"); }, 2800);
@@ -5002,9 +6488,17 @@ function registerWorker(){
 function start(hot){
   cv = $("cv"); stage = $("stage");
   loupeEl = $("loupe"); loupeCv = $("loupe-cv"); loupeCtx = loupeCv.getContext("2d");
+  LANG = SET.lang || detectLanguage();
+  SET.lang = LANG;
+  try{ document.documentElement.setAttribute("lang", LANG); }catch(e){}
   applyTheme();
   seedFirstRun();
   wire();
+  setLanguage(LANG, true);
+  try{
+    new MutationObserver(function(){ if(LANG !== "en") scheduleTranslate(); })
+      .observe(document.body, { childList:true, subtree:true });
+  }catch(e){}
   registerWorker();
   try{
     if(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) askPersist(true);

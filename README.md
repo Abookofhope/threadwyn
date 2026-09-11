@@ -62,6 +62,21 @@ Anyone updating from an earlier version keeps their credit: on first run the
 app walks the cabinet, awards the experience those pieces would have earned,
 and turns over a letter for each of them.
 
+## Languages
+
+English, French, Spanish and German — every screen, the pattern prompts, the
+charm riddles, the level titles and the colour names. The switcher is a chip at
+the top of the home screen, and on a first run it starts in the phone's own
+language if it is one of the four.
+
+There is no markup to maintain for it: the dictionary is keyed on the English
+string itself, and a tree walk translates what is on screen, remembering the
+original English on each node — which is what lets it switch back and forth
+rather than only forwards. A `MutationObserver` catches anything rendered
+afterwards. Strings the app builds by hand use `tf()` with `{braces}`.
+
+To add a language: add its pack to `I18N`, add it to `LANGS`, done.
+
 ## Telling colours apart
 
 The starting basket is chosen so every pair of yarns is far apart to the eye,

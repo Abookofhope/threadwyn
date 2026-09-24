@@ -33,6 +33,55 @@ uploaded anywhere.
   blankets before sewing a seam.
 - **Charm codes** — words that unlock skein sets, bigger looms and extra tools.
 
+## Reading the chart
+
+A chart you cannot read square by square is a picture, not a pattern, so the
+lines are drawn to be seen rather than to be tasteful.
+
+- **They never turn themselves off.** Every stitch carries a line at every
+  zoom. When the stitches get too small to carry one apiece — under about
+  three device pixels — the lines thin out to every second, fifth or tenth
+  rather than disappearing, which is what the old version did below 4.5x and
+  it made the biggest charts unusable.
+- **They are snapped to whole device pixels.** A hairline landing across two
+  pixels is drawn at half strength into each, and at the alpha the first
+  version used that came out invisible. Each line is rounded to a device pixel
+  boundary and given a width of exactly one or two of them.
+- **Each line carries a halo** of the opposite colour a pixel out, so it reads
+  over midnight navy as well as over cream. The halo is dropped when the
+  stitches are too small to give it room, and the fine lines give way a little
+  as the stitches shrink, so a 100x100 at fit reads as graph paper rather than
+  as a wash of grey.
+- **Dark grey on a pale chart, pale grey on a dark one**, decided from the
+  luminance of the paper token rather than from the theme setting, so it is
+  right whichever way the phone's own dark mode is pointing.
+- **Three settings** — bold, soft, off — on the *Lines* tile in the chart menu
+  and in Settings, remembered between sessions.
+- **Rows count from the bottom**, the way crochet does, and the way the written
+  pattern and the row-by-row helper always did. The chart used to number them
+  from the top, which meant the number under your finger was not the number in
+  the pattern.
+
+### Symbols
+
+Every yarn can carry its own mark — twenty of them, the way a printed chart
+does. A yarn is given its mark the first time it is worked into a chart, and
+the mark is stored with that chart, so it never shuffles under you while you
+work. The ink is white or near-black depending on the luminance of the yarn
+underneath, so it is legible on any colour.
+
+They are drawn only for the stitches actually on screen, and only above 13x
+zoom and under 1400 visible stitches, so turning them on never costs a smooth
+pan.
+
+### A sheet to print
+
+**Save a chart sheet to print** draws the whole thing as one page: the grid
+heavy enough to follow from a sofa, stitch and row numbers, a mark in every
+square so it survives being photocopied in grey, and a legend naming every
+yarn with its stitch count and metres. It is a PNG, so it prints, sends and
+keeps like any other picture.
+
 ## Worked up
 
 Any chart can be seen as **actual fabric**. Every square is drawn as a
@@ -92,7 +141,11 @@ Three tools back that up:
   because that is the difference that survives a small square on a phone, then
   hue.
 - Picking a yarn names it, so *Marigold* and *Ochre* are told apart by word as
-  well as by eye.
+  well as by eye — and the yarn list, the written pattern, the printed sheet
+  and the row-by-row helper all name them too, rather than printing a hex code
+  and leaving you to guess.
+- **Symbols** settle it for good: two yarns that read alike still carry
+  different marks.
 
 ## Version
 
@@ -130,6 +183,7 @@ Saved in your browser's local storage, on that device only. Nothing leaves it.
 - **Save a backup file** writes every chart, piece and blanket to a `.json`
   you can keep or move to another phone.
 - **Save the picture** exports a finished piece as a PNG.
+- **Save a chart sheet to print** exports the printable chart described above.
 - **Chart codes** share a single chart as a short line of text.
 - **Settings → Protect my work from cleanup** asks the browser to keep the data
   when the phone is short of space.

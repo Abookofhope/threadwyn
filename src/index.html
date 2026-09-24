@@ -354,12 +354,13 @@ body.has-update .bar{padding-top:8px}
 .axis .stepper button{width:44px;height:40px;border:1px solid var(--line);border-radius:11px;display:grid;place-items:center;background:var(--paper)}
 .axis .mini{display:flex;gap:6px}
 .axis .mini button{flex:1;min-height:38px;border:1px solid var(--line);border-radius:11px;font-size:12.5px;background:var(--paper);padding:0 6px}
-.yarnrow{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
+.yarnrow{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
 .yarnrow .sw{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);flex:none}
-.yarnrow .m{flex:1;min-width:0}
-.yarnrow .hx{font-size:12.5px;font-variant-numeric:tabular-nums;letter-spacing:.04em}
-.yarnrow .ct{font-size:11px;color:var(--ink-3)}
-.yarnrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 10px;font-size:12px;background:var(--paper);flex:none}
+.yarnrow .m{flex:1 1 90px;min-width:0;display:flex;flex-direction:column;gap:1px}
+.yarnrow .hx{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yarnrow .ct{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yarnrow .acts{flex:0 0 100%;display:flex;gap:6px}
+.yarnrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 8px;font-size:12px;background:var(--paper);flex:1 1 0;min-width:0}
 .tipcard{position:absolute;left:12px;right:12px;bottom:12px;background:var(--paper);border:1px solid var(--accent);border-radius:16px;
   padding:14px;box-shadow:var(--shadow-2);z-index:6}
 .tipcard h3{font-size:16px;margin-bottom:6px}
@@ -497,6 +498,7 @@ body.has-update .bar{padding-top:8px}
 <g id="i-select"><rect x="4.5" y="4.5" width="15" height="15" rx="1.5" stroke-dasharray="3.2 2.6"/></g>
 <g id="i-photo"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M4 16.5l4.5-4 3 2.5 3.5-3.5 5 5"/></g>
 <g id="i-grid4"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1"/><rect x="13" y="13" width="7.5" height="7.5" rx="1"/></g>
+<g id="i-marks"><circle cx="7" cy="7" r="3"/><path d="M14 4.2l3.3 5.6h-6.6z"/><path d="M4.6 14.6l4.8 4.8M9.4 14.6l-4.8 4.8"/><rect x="14" y="14.5" width="5.5" height="5.5" rx=".8"/></g>
 <g id="i-play"><path d="M7 4.5l12 7.5-12 7.5z"/></g>
 <g id="i-copy"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5h-11v11"/></g>
 <g id="i-fit"><path d="M4.5 9V4.5H9M15 4.5h4.5V9M19.5 15v4.5H15M9 19.5H4.5V15"/></g>
@@ -741,6 +743,7 @@ body.has-update .bar{padding-top:8px}
    <div class="plate" id="piece-plate"><div class="frame"><img id="piece-img" alt=""></div></div>
    <p class="note" style="text-align:center;margin:0">Press and hold the picture to save it to your phone.</p>
    <button class="btn" id="piece-png" hidden>Save the picture to this phone</button>
+   <button class="btn" id="piece-sheet" hidden>Save a chart sheet to print</button>
    <p class="note-line" id="piece-note" hidden>—</p>
    <div class="facts" id="piece-facts"></div>
    <button class="btn" id="piece-note-btn">Add a note to this piece</button>
@@ -939,10 +942,12 @@ body.has-update .bar{padding-top:8px}
      <button class="tile" id="m-fabric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-yarn"/></svg><span>Worked up</span></button>
      <button class="tile" id="m-repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid4"/></svg><span>Repeat</span></button>
      <button class="tile" id="m-fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg><span>Fit</span></button>
-     <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span>Lines <b id="m-grid-state">on</b></span></button>
+     <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span>Lines <b id="m-grid-state">bold</b></span></button>
+     <button class="tile" id="m-symbols"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-marks"/></svg><span>Symbols <b id="m-sym-state">off</b></span></button>
    </div>
    <div class="stack" style="gap:8px;margin-top:14px">
      <button class="btn" id="m-write">Write it out as a crochet pattern</button>
+     <button class="btn" id="m-sheet" hidden>Save a chart sheet to print</button>
      <button class="btn" id="m-rename">Rename it</button>
      <button class="btn" id="m-code">Copy this chart as a code</button>
    </div>
@@ -1175,6 +1180,8 @@ body.has-update .bar{padding-top:8px}
      <button class="btn" id="set-theme">Look: <b id="set-theme-state">follows your phone</b></button>
      <button class="btn" id="set-buzz">Buzz when a stitch lands: <b id="set-buzz-state">on</b></button>
      <button class="btn" id="set-awake">Keep the screen awake: <b id="set-awake-state">on</b></button>
+     <button class="btn" id="set-grid">Chart lines: <b id="set-grid-state">bold</b></button>
+     <button class="btn" id="set-sym">Stitch symbols: <b id="set-sym-state">off</b></button>
      <button class="btn" id="set-rule">Heavy chart line every: <b id="set-rule-state">10</b></button>
      <button class="btn" id="set-yarn">Yarn per stitch: <b id="set-yarn-state">5.5 cm</b></button>
      <button class="btn" id="set-store">Protect my work from cleanup: <b id="set-store-state">checking…</b></button>
@@ -1496,7 +1503,6 @@ var S = {
   panLock: false,
   aim: false,
   motif: "heart",
-  showGrid: true,
   showGuide: true,
   stampKind: "motif",
   textArt: null,
@@ -1513,7 +1519,7 @@ var S = {
 };
 var SET = lsGet("settings", null) || {
   theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
-  buzz:true, awake:true, rule:10, tipsSeen:false, cmPerStitch:5.5, recent:[],
+  buzz:true, awake:true, rule:10, grid:2, symbols:false, tipsSeen:false, cmPerStitch:5.5, recent:[],
   gaugeSts:16, gaugeRows:18, xp:null, letters:null, lang:null,
   stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
          bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
@@ -1528,6 +1534,9 @@ if(!SET.charms) SET.charms = [];
 if(SET.buzz === undefined) SET.buzz = true;
 if(SET.awake === undefined) SET.awake = true;
 if(!SET.rule) SET.rule = 10;
+if(SET.grid === undefined || SET.grid === true) SET.grid = 2;
+if(SET.grid === false) SET.grid = 0;
+if(SET.symbols === undefined) SET.symbols = false;
 if(!SET.cmPerStitch) SET.cmPerStitch = 5.5;
 if(!SET.recent) SET.recent = [];
 if(!SET.gaugeSts) SET.gaugeSts = 16;
@@ -1559,6 +1568,16 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.10", d:"24 Sep", items:[
+   "Chart lines you can always see: dark grey, on every square, at every zoom, and light grey when the chart is dark.",
+   "They no longer vanish when you zoom out — they thin out to every second, fifth or tenth line instead.",
+   "Lines has three settings now — bold, soft, off — and it remembers which one you chose.",
+   "Symbols: every yarn can carry its own mark, the way a printed chart does, so two close colours are never a guess.",
+   "The yarn list names each colour and shows its mark, instead of just a hex code.",
+   "Save a chart sheet to print — the grid, the numbers, the marks and a legend with metres, on one page.",
+   "Rows now count from the bottom on the chart, matching the written pattern and the row-by-row helper.",
+   "The written pattern names its yarns and prints their marks."
+ ]},
  { v:"1.9", d:"11 Sep", items:[
    "The whole game in English, French, Spanish or German — every screen, every prompt, every riddle, and the colour names too.",
    "The language button sits at the top of the home screen, where you can't miss it.",
@@ -2969,6 +2988,14 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Added with the lines-and-symbols release; same shape as the block above. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Chart lines you can always see: dark grey, on every square, at every zoom, and light grey when the chart is dark.": "Des lignes toujours visibles : gris foncé, sur chaque carré, à tous les zooms — et gris clair quand la grille est sombre.", "Chart lines:": "Lignes de la grille :", "Guide": "Guide", "Lines": "Lignes", "Lines has three settings now — bold, soft, off — and it remembers which one you chose.": "Lignes a trois réglages — marqué, léger, aucun — et retient celui que vous avez choisi.", "Photo": "Photo", "Rows now count from the bottom on the chart, matching the written pattern and the row-by-row helper.": "Les rangs se comptent désormais depuis le bas de la grille, comme dans le patron écrit et le guide rang par rang.", "Save a chart sheet to print": "Enregistrer une fiche à imprimer", "Save a chart sheet to print — the grid, the numbers, the marks and a legend with metres, on one page.": "Enregistrer une fiche à imprimer : la grille, les numéros, les marques et une légende avec les métrages, sur une page.", "Saved to Downloads — print it or send it on.": "Enregistré dans Téléchargements — à imprimer ou à envoyer.", "Shape": "Forme", "Stitch symbols:": "Symboles de mailles :", "Symbols": "Symboles", "Symbols: every yarn can carry its own mark, the way a printed chart does, so two close colours are never a guess.": "Symboles : chaque fil peut porter sa propre marque, comme sur une grille imprimée, pour ne plus jamais deviner entre deux couleurs proches.", "The written pattern names its yarns and prints their marks.": "Le patron écrit nomme ses fils et imprime leurs marques.", "The yarn list names each colour and shows its mark, instead of just a hex code.": "La liste des fils nomme chaque couleur et montre sa marque, au lieu d'un simple code.", "They no longer vanish when you zoom out — they thin out to every second, fifth or tenth line instead.": "Elles ne disparaissent plus quand on dézoome : elles s'espacent, une ligne sur deux, sur cinq, puis sur dix.", "This browser wouldn't save it.": "Ce navigateur n'a pas voulu l'enregistrer.", "This chart was too big to draw out.": "Cette grille était trop grande à dessiner.", "Yarns": "Fils", "Zoom in and every yarn shows its own mark.": "Zoomez : chaque fil porte alors sa propre marque.", "bold": "marquées", "soft": "légères"},{"Chart lines you can always see: dark grey, on every square, at every zoom, and light grey when the chart is dark.": "Líneas siempre visibles: gris oscuro, en cada cuadro, con cualquier zoom, y gris claro cuando la cuadrícula está oscura.", "Chart lines:": "Líneas de la cuadrícula:", "Guide": "Guía", "Lines": "Líneas", "Lines has three settings now — bold, soft, off — and it remembers which one you chose.": "Líneas tiene tres ajustes —marcado, suave, ninguno— y recuerda el que elijas.", "Photo": "Foto", "Rows now count from the bottom on the chart, matching the written pattern and the row-by-row helper.": "Las vueltas se cuentan ahora desde abajo, igual que en el patrón escrito y en la guía vuelta a vuelta.", "Save a chart sheet to print": "Guardar una hoja para imprimir", "Save a chart sheet to print — the grid, the numbers, the marks and a legend with metres, on one page.": "Guardar una hoja para imprimir: la cuadrícula, los números, las marcas y una leyenda con los metros, en una página.", "Saved to Downloads — print it or send it on.": "Guardado en Descargas: imprímelo o envíalo.", "Shape": "Forma", "Stitch symbols:": "Símbolos de puntos:", "Symbols": "Símbolos", "Symbols: every yarn can carry its own mark, the way a printed chart does, so two close colours are never a guess.": "Símbolos: cada hilo puede llevar su propia marca, como en una cuadrícula impresa, para no adivinar nunca entre dos colores parecidos.", "The written pattern names its yarns and prints their marks.": "El patrón escrito nombra sus hilos e imprime sus marcas.", "The yarn list names each colour and shows its mark, instead of just a hex code.": "La lista de hilos nombra cada color y muestra su marca, en vez de solo un código.", "They no longer vanish when you zoom out — they thin out to every second, fifth or tenth line instead.": "Ya no desaparecen al alejar: se espacian a cada segunda, quinta o décima línea.", "This browser wouldn't save it.": "Este navegador no lo ha guardado.", "This chart was too big to draw out.": "Esta cuadrícula era demasiado grande para dibujarla.", "Yarns": "Hilos", "Zoom in and every yarn shows its own mark.": "Acerca la imagen: cada hilo lleva su propia marca.", "bold": "marcadas", "soft": "suaves"},{"Chart lines you can always see: dark grey, on every square, at every zoom, and light grey when the chart is dark.": "Linien, die immer zu sehen sind: dunkelgrau, auf jedem Kästchen, bei jedem Zoom — und hellgrau, wenn das Zählmuster dunkel ist.", "Chart lines:": "Zählmuster-Linien:", "Guide": "Hilfsebene", "Lines": "Linien", "Lines has three settings now — bold, soft, off — and it remembers which one you chose.": "Linien hat jetzt drei Stufen — kräftig, fein, aus — und merkt sich die gewählte.", "Photo": "Foto", "Rows now count from the bottom on the chart, matching the written pattern and the row-by-row helper.": "Reihen werden jetzt von unten gezählt — wie in der geschriebenen Anleitung und im Reihe-für-Reihe-Helfer.", "Save a chart sheet to print": "Ein Zählmuster-Blatt zum Ausdrucken sichern", "Save a chart sheet to print — the grid, the numbers, the marks and a legend with metres, on one page.": "Ein Zählmuster-Blatt zum Ausdrucken: Raster, Zahlen, Zeichen und eine Legende mit Metern, auf einer Seite.", "Saved to Downloads — print it or send it on.": "In Downloads gesichert — ausdrucken oder weiterschicken.", "Shape": "Form", "Stitch symbols:": "Maschensymbole:", "Symbols": "Symbole", "Symbols: every yarn can carry its own mark, the way a printed chart does, so two close colours are never a guess.": "Symbole: Jedes Garn kann sein eigenes Zeichen tragen, wie auf einem gedruckten Zählmuster — zwei ähnliche Farben bleiben nie mehr Ratesache.", "The written pattern names its yarns and prints their marks.": "Die geschriebene Anleitung nennt ihre Garne und druckt deren Zeichen.", "The yarn list names each colour and shows its mark, instead of just a hex code.": "Die Garnliste nennt jede Farbe beim Namen und zeigt ihr Zeichen statt nur eines Hex-Codes.", "They no longer vanish when you zoom out — they thin out to every second, fifth or tenth line instead.": "Beim Herauszoomen verschwinden sie nicht mehr, sondern werden auf jede zweite, fünfte oder zehnte Linie ausgedünnt.", "This browser wouldn't save it.": "Dieser Browser wollte es nicht sichern.", "This chart was too big to draw out.": "Dieses Zählmuster war zu groß zum Zeichnen.", "Yarns": "Garne", "Zoom in and every yarn shows its own mark.": "Zoom hinein — dann trägt jedes Garn sein eigenes Zeichen.", "bold": "kräftig", "soft": "fein"}]);
 function tf(key, vals){
   return t(key).replace(/\{(\w+)\}/g, function(_, k){
     return vals[k] !== undefined ? vals[k] : "";
@@ -3059,7 +3086,17 @@ function el(tag, cls, txt){ var n=document.createElement(tag); if(cls) n.classNa
 function icon(name, size){ return '<svg width="'+(size||22)+'" height="'+(size||22)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-'+name+'"/></svg>'; }
 var toastTimer;
 function toast(msg){ var t=$("toast"); t.textContent=langLookup(msg) || msg; t.classList.add("on"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("on"); }, 2200); }
-function css(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+/* The theme tokens are read several times a frame while you pan, so they are
+   remembered until the theme actually changes. */
+var cssMemo = {};
+function css(name){
+  var hit = cssMemo[name];
+  if(hit !== undefined) return hit;
+  var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  cssMemo[name] = v;
+  return v;
+}
+function cssForget(){ cssMemo = {}; }
 
 /* ---------------- run-length storage ---------------- */
 function encodeRLE(cells){
@@ -3080,7 +3117,7 @@ function setProjIndex(a){ lsSet("index", a); }
 function saveProject(p){
   if(!p) return;
   p.updated = Date.now();
-  lsSet("p:"+p.id, {rle:encodeRLE(p.cells), g:(p.guide ? encodeRLE(p.guide) : null)});
+  lsSet("p:"+p.id, {rle:encodeRLE(p.cells), g:(p.guide ? encodeRLE(p.guide) : null), s:p.sym || null});
   var idx = projIndex(), found=false, i;
   for(i=0;i<idx.length;i++) if(idx[i].id===p.id){ idx[i]={id:p.id,name:p.name,w:p.w,h:p.h,pattern:p.pattern,created:p.created,updated:p.updated,fx:p.fx,fy:p.fy}; found=true; }
   if(!found) idx.unshift({id:p.id,name:p.name,w:p.w,h:p.h,pattern:p.pattern,created:p.created,updated:p.updated,fx:p.fx,fy:p.fy});
@@ -3096,6 +3133,7 @@ function loadProject(id){
   var p = {id:meta.id,name:meta.name,w:meta.w,h:meta.h,pattern:meta.pattern,created:meta.created,updated:meta.updated,
            cells: body && body.rle ? decodeRLE(body.rle, meta.w*meta.h) : new Array(meta.w*meta.h).fill(null),
            guide: body && body.g ? decodeRLE(body.g, meta.w*meta.h) : null,
+           sym: (body && body.s) || {},
            fx: (meta.fx == null ? meta.w : meta.fx), fy: (meta.fy == null ? meta.h : meta.fy)};
   return p;
 }
@@ -3106,7 +3144,7 @@ function deleteProject(id){
 }
 function newProject(w,h,name,pattern){
   return {id:uid(), name:name||"Chart", w:w, h:h, pattern:pattern||null,
-          created:Date.now(), updated:Date.now(), cells:new Array(w*h).fill(null), guide:null, fx:w, fy:h};
+          created:Date.now(), updated:Date.now(), cells:new Array(w*h).fill(null), guide:null, sym:{}, fx:w, fy:h};
 }
 var saveTimer;
 var savedTimer;
@@ -3237,7 +3275,169 @@ function sizeCanvas(){
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
+var GRIDWORDS = ["off", "soft", "bold"];
 var previewCells = null;   /* {list:[[x,y]...], color:"#.."} while dragging a run or block */
+
+/* --- chart lines ---------------------------------------------------------
+   You need to see where one stitch stops and the next starts, at every zoom.
+   Two things make that work on a phone. Lines are snapped to whole device
+   pixels, because a line smeared across two of them at a tenth of an inking
+   is a line nobody can see. And each one carries a pale halo, so it reads
+   over midnight yarn as well as over cream. When the stitches get too small
+   to carry a line apiece, the lines thin out to every second, fifth or tenth
+   rather than vanishing. */
+function ruleSteps(rule){
+  var out = [], k;
+  for(k = 1; k <= rule; k++) if(rule % k === 0) out.push(k);
+  return out;
+}
+function paperIsDark(){
+  var rgb = hexToRGB(css("--paper") || "#F7F5FA");
+  return (rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114) < 128;
+}
+function drawRules(ox, oy, gw, gh, p, v){
+  var mode = SET.grid | 0;
+  if(!mode) return;
+  var dpr  = Math.min(window.devicePixelRatio || 1, 2.5);
+  var RULE = SET.rule || 10;
+  var cell = v.scale * dpr;                       /* device pixels to a stitch */
+  var steps = ruleSteps(RULE), step = RULE, i;
+  for(i = 0; i < steps.length; i++) if(cell * steps[i] >= 3.1){ step = steps[i]; break; }
+  var bold = mode === 2, dark = paperIsDark();
+  var ink   = dark ? "236,231,247" : "34,30,44";  /* dark grey on a pale chart */
+  var halo  = dark ? "10,8,16"     : "255,255,255";
+  var aFine = bold ? .62 : .34, aRule = bold ? .92 : .58, aHalo = bold ? .40 : .22;
+  if(dark){ aRule *= 0.82; aFine *= 0.92; }              /* white shouts louder than black */
+  /* The smaller the stitches, the more of the chart the lines cover, so they
+     give way a little — legible at a glance, never a wash of grey. */
+  var tight = Math.max(0.62, Math.min(1, (cell * step - 3) / 12));
+  aFine *= tight;
+  if(cell * step < 12) aHalo *= 0.7;
+  var room  = cell * step >= 7;                   /* no halo when it would smother */
+
+  function pass(colour, wDev, ruled){
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = wDev / dpr;
+    var edge = (wDev % 2) ? 0.5 : 0, n, q;
+    ctx.beginPath();
+    for(n = 0; n <= p.w; n += step){
+      if((n % RULE === 0) !== ruled) continue;
+      q = (Math.round((ox + n*v.scale) * dpr) + edge) / dpr;
+      ctx.moveTo(q, oy); ctx.lineTo(q, oy + gh);
+    }
+    for(n = 0; n <= p.h; n += step){
+      if((n % RULE === 0) !== ruled) continue;
+      q = (Math.round((oy + n*v.scale) * dpr) + edge) / dpr;
+      ctx.moveTo(ox, q); ctx.lineTo(ox + gw, q);
+    }
+    ctx.stroke();
+  }
+  ctx.save();
+  ctx.lineCap = "butt";
+  if(room){
+    pass("rgba(" + halo + "," + (aHalo * 0.8).toFixed(3) + ")", 3, false);
+    pass("rgba(" + halo + "," + aHalo.toFixed(3) + ")", 4, true);
+  }
+  pass("rgba(" + ink + "," + aFine.toFixed(3) + ")", 1, false);
+  pass("rgba(" + ink + "," + aRule.toFixed(3) + ")", 2, true);
+  ctx.restore();
+}
+
+/* --- stitch symbols ------------------------------------------------------
+   A printed chart never asks you to tell two greys apart by eye: every yarn
+   carries its own mark. Twenty of them here, handed to a yarn the first time
+   it is used in a chart and then kept with that chart, so they never shuffle
+   under you while you work. */
+var SYMBOLS = 20;
+var SYMTEXT = ["·","○","✕","+","╱","╲","△","▽","□","◇",
+               "─","│","⌒","⏜","⊤","⊥","✳","▲","■","◉"];
+function assignSymbol(p, hex){
+  if(!p.sym) p.sym = {};
+  if(p.sym[hex] !== undefined) return p.sym[hex];
+  var used = {}, k, n = 0;
+  for(k in p.sym) used[p.sym[k]] = 1;
+  while(used[n] && n < SYMBOLS - 1) n++;
+  p.sym[hex] = n;
+  return n;
+}
+/* Charts made before symbols existed get theirs in reading order, once. */
+function ensureSymbols(p){
+  if(!p) return;
+  if(!p.sym) p.sym = {};
+  for(var i = 0; i < p.cells.length; i++){
+    var c = p.cells[i];
+    if(c && p.sym[c] === undefined) assignSymbol(p, c);
+  }
+}
+function symbolFor(hex){
+  var p = S.proj;
+  if(!p) return 0;
+  var got = p.sym && p.sym[hex];
+  return got === undefined ? assignSymbol(p, hex) : got;
+}
+var symInkCache = {};
+function symInk(hex){
+  var hit = symInkCache[hex];
+  if(hit) return hit;
+  var rgb = hexToRGB(hex);
+  var lum = rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114;
+  var out = lum < 140 ? "rgba(255,255,255,.88)" : "rgba(22,18,30,.78)";
+  symInkCache[hex] = out;
+  return out;
+}
+function drawSymbol(c, n, cx, cy, r){
+  c.beginPath();
+  switch(n){
+    case 0:  c.arc(cx, cy, r*0.30, 0, 6.2832); c.fill(); return;
+    case 1:  c.arc(cx, cy, r*0.74, 0, 6.2832); break;
+    case 2:  c.moveTo(cx-r*.7, cy-r*.7); c.lineTo(cx+r*.7, cy+r*.7);
+             c.moveTo(cx+r*.7, cy-r*.7); c.lineTo(cx-r*.7, cy+r*.7); break;
+    case 3:  c.moveTo(cx, cy-r); c.lineTo(cx, cy+r); c.moveTo(cx-r, cy); c.lineTo(cx+r, cy); break;
+    case 4:  c.moveTo(cx-r*.8, cy+r*.8); c.lineTo(cx+r*.8, cy-r*.8); break;
+    case 5:  c.moveTo(cx-r*.8, cy-r*.8); c.lineTo(cx+r*.8, cy+r*.8); break;
+    case 6:  c.moveTo(cx, cy-r); c.lineTo(cx+r*.9, cy+r*.7); c.lineTo(cx-r*.9, cy+r*.7); c.closePath(); break;
+    case 7:  c.moveTo(cx, cy+r); c.lineTo(cx+r*.9, cy-r*.7); c.lineTo(cx-r*.9, cy-r*.7); c.closePath(); break;
+    case 8:  c.rect(cx-r*.72, cy-r*.72, r*1.44, r*1.44); break;
+    case 9:  c.moveTo(cx, cy-r); c.lineTo(cx+r, cy); c.lineTo(cx, cy+r); c.lineTo(cx-r, cy); c.closePath(); break;
+    case 10: c.moveTo(cx-r, cy); c.lineTo(cx+r, cy); break;
+    case 11: c.moveTo(cx, cy-r); c.lineTo(cx, cy+r); break;
+    case 12: c.arc(cx, cy+r*.3, r*.85, 3.34, 6.08); break;
+    case 13: c.arc(cx, cy-r*.3, r*.85, 0.20, 2.94); break;
+    case 14: c.moveTo(cx-r, cy-r*.5); c.lineTo(cx+r, cy-r*.5); c.moveTo(cx, cy-r*.5); c.lineTo(cx, cy+r*.8); break;
+    case 15: c.moveTo(cx-r, cy+r*.5); c.lineTo(cx+r, cy+r*.5); c.moveTo(cx, cy+r*.5); c.lineTo(cx, cy-r*.8); break;
+    case 16: c.moveTo(cx, cy-r); c.lineTo(cx, cy+r);
+             c.moveTo(cx-r*.87, cy-r*.5); c.lineTo(cx+r*.87, cy+r*.5);
+             c.moveTo(cx-r*.87, cy+r*.5); c.lineTo(cx+r*.87, cy-r*.5); break;
+    case 17: c.moveTo(cx, cy-r); c.lineTo(cx+r*.9, cy+r*.7); c.lineTo(cx-r*.9, cy+r*.7); c.closePath(); c.fill(); return;
+    case 18: c.rect(cx-r*.68, cy-r*.68, r*1.36, r*1.36); c.fill(); return;
+    default: c.arc(cx, cy, r*.78, 0, 6.2832); c.stroke();
+             c.beginPath(); c.arc(cx, cy, r*.28, 0, 6.2832); c.fill(); return;
+  }
+  c.stroke();
+}
+function drawSymbols(ox, oy, p, v, r){
+  if(!SET.symbols || v.scale < 13) return;
+  var x0 = Math.max(0, Math.floor((0 - ox) / v.scale));
+  var x1 = Math.min(p.w - 1, Math.ceil((r.width  - ox) / v.scale));
+  var y0 = Math.max(0, Math.floor((0 - oy) / v.scale));
+  var y1 = Math.min(p.h - 1, Math.ceil((r.height - oy) / v.scale));
+  if(x1 < x0 || y1 < y0) return;
+  if((x1-x0+1) * (y1-y0+1) > 1400) return;        /* never at the cost of a smooth pan */
+  var rad = v.scale * 0.26, x, y, hex, ink, last = null;
+  ctx.save();
+  ctx.lineWidth = Math.max(1, v.scale * 0.075);
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  for(y = y0; y <= y1; y++) for(x = x0; x <= x1; x++){
+    hex = p.cells[y*p.w + x];
+    if(!hex) continue;
+    if(S.isolate && hex !== S.isolate) continue;
+    ink = symInk(hex);
+    if(ink !== last){ ctx.strokeStyle = ctx.fillStyle = ink; last = ink; }
+    drawSymbol(ctx, symbolFor(hex), ox + (x+0.5)*v.scale, oy + (y+0.5)*v.scale, rad);
+  }
+  ctx.restore();
+}
+
 function draw(){
   if(!S.proj || !ctx) return;
   var p = S.proj, v = S.view, r = stage.getBoundingClientRect();
@@ -3269,23 +3469,8 @@ function draw(){
     ctx.globalAlpha = 1;
   }
 
-  /* chart lines: thin every stitch, heavier every ten, like a printed chart */
-  if(S.showGrid && v.scale >= 4.5){
-    var ink = css("--ink") || "#000", i;
-    ctx.strokeStyle = ink;
-    var RULE = SET.rule || 10;
-    for(i=0;i<=p.w;i++){
-      ctx.globalAlpha = (i % RULE === 0) ? .30 : .10;
-      ctx.lineWidth = (i % RULE === 0) ? 1.1 : 0.6;
-      ctx.beginPath(); ctx.moveTo(ox + i*v.scale, oy); ctx.lineTo(ox + i*v.scale, oy + gh); ctx.stroke();
-    }
-    for(i=0;i<=p.h;i++){
-      ctx.globalAlpha = (i % RULE === 0) ? .30 : .10;
-      ctx.lineWidth = (i % RULE === 0) ? 1.1 : 0.6;
-      ctx.beginPath(); ctx.moveTo(ox, oy + i*v.scale); ctx.lineTo(ox + gw, oy + i*v.scale); ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-  }
+  drawSymbols(ox, oy, p, v, r);
+  drawRules(ox, oy, gw, gh, p, v);
 
   /* stitch and row numbers in the margin, once there's room */
   if(v.scale >= 9){
@@ -3295,7 +3480,8 @@ function draw(){
     var R2 = SET.rule || 10;
     for(var n=R2;n<=p.w;n+=R2) ctx.fillText(String(n), ox + (n-0.5)*v.scale, oy - 4);
     ctx.textAlign = "right"; ctx.textBaseline = "middle";
-    for(var m=R2;m<=p.h;m+=R2) ctx.fillText(String(m), ox - 5, oy + (m-0.5)*v.scale);
+    /* Row 1 is the bottom row — the same row the pattern calls Row 1. */
+    for(var m=R2;m<=p.h;m+=R2) ctx.fillText(String(m), ox - 5, oy + (p.h - m + 0.5)*v.scale);
   }
 
   /* the fold lines, where the mirror is working */
@@ -3370,7 +3556,8 @@ function showLoupe(px, py){
   loupeCtx.fillRect(0,0,96,96);
   loupeCtx.drawImage(buf, sx, sy, span, span, 0, 0, 96, 96);
   var cell = 96/span;
-  loupeCtx.strokeStyle = css("--ink") || "#000"; loupeCtx.globalAlpha = .18; loupeCtx.lineWidth = 1;
+  loupeCtx.strokeStyle = paperIsDark() ? "rgba(236,231,247,.55)" : "rgba(34,30,44,.55)";
+  loupeCtx.globalAlpha = 1; loupeCtx.lineWidth = 1;
   for(var i=1;i<span;i++){
     loupeCtx.beginPath(); loupeCtx.moveTo(i*cell,0); loupeCtx.lineTo(i*cell,96); loupeCtx.stroke();
     loupeCtx.beginPath(); loupeCtx.moveTo(0,i*cell); loupeCtx.lineTo(96,i*cell); loupeCtx.stroke();
@@ -3402,7 +3589,7 @@ function setIsolate(hex){
 }
 function updateGauge(){
   var g = $("gauge"); if(!g || !S.proj) return;
-  g.innerHTML = "R<b>" + (S.cursor.y+1) + "</b> · St<b>" + (S.cursor.x+1) + "</b> &nbsp;·&nbsp; " + S.proj.w + "×" + S.proj.h;
+  g.innerHTML = "R<b>" + (S.proj.h - S.cursor.y) + "</b> · St<b>" + (S.cursor.x+1) + "</b> &nbsp;·&nbsp; " + S.proj.w + "×" + S.proj.h;
 }
 
 /* ==========================================================================
@@ -3415,6 +3602,7 @@ function put(i, colour){
   var p = S.proj;
   if(i < 0 || i >= p.cells.length) return;
   if(p.cells[i] === colour) return;
+  if(colour && (!p.sym || p.sym[colour] === undefined)) assignSymbol(p, colour);
   if(stroke && !stroke.has(i)) stroke.set(i, p.cells[i]);
   p.cells[i] = colour;
   markCell(i);
@@ -3793,6 +3981,123 @@ function paintInto(canvas, w, h, cells){
   var dw = w*s, dh = h*s;
   x2.drawImage(smallCanvas(w,h,cells,false), (side-dw)/2, (canvas.height-dh)/2, dw, dh);
 }
+/* A chart sheet meant for paper: the grid drawn heavy enough to follow from
+   a sofa, rows numbered from the bottom like the pattern, a mark in every
+   square so it still works photocopied, and a legend naming each yarn with
+   what it will take. */
+function chartSheetCanvas(name, w, h, cells){
+  var cell = Math.max(9, Math.min(34, Math.round(1500 / Math.max(w, h))));
+  var RULE = SET.rule || 10;
+  var cens = chartCensus(cells), total = 0;
+  cens.order.forEach(function(k){ total += cens.counts[k]; });
+  var label = {}, mark = {};
+  cens.order.forEach(function(c, j){
+    label[c] = String.fromCharCode(65 + (j % 26)) + (j >= 26 ? String(Math.floor(j/26)+1) : "");
+    mark[c] = j % SYMBOLS;
+  });
+
+  var padL = 58, padT = 92, padR = 26, padB = 30;
+  var rows = Math.max(1, cens.order.length);
+  var legendTop = padT + h*cell + 68;
+  var c2 = document.createElement("canvas");
+  c2.width  = Math.max(560, padL + w*cell + padR);
+  c2.height = legendTop + 34 + rows*32 + 46 + padB;
+  var g = c2.getContext("2d");
+  var UI = '"Karla",-apple-system,sans-serif', DS = '"Fraunces",Georgia,serif';
+
+  g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, c2.width, c2.height);
+  g.fillStyle = "#171221";
+  g.font = "600 30px " + DS;
+  g.textAlign = "left"; g.textBaseline = "alphabetic";
+  g.fillText(name, padL, 44);
+  g.fillStyle = "#5C5370";
+  g.font = "400 15px " + UI;
+  g.fillText(w + " stitches wide  ·  " + h + " rows tall  ·  " + total.toLocaleString() + " stitches", padL, 66);
+
+  /* the stitches themselves, hard-edged */
+  var gx = padL, gy = padT, gw = w*cell, gh = h*cell;
+  g.imageSmoothingEnabled = false;
+  g.drawImage(smallCanvas(w, h, cells, true), gx, gy, gw, gh);
+
+  /* lines: every stitch, heavier every RULE */
+  var i;
+  g.lineCap = "butt";
+  g.strokeStyle = "rgba(24,20,32,.34)"; g.lineWidth = 1;
+  g.beginPath();
+  for(i=0;i<=w;i++) if(i % RULE){ g.moveTo(gx + i*cell + .5, gy); g.lineTo(gx + i*cell + .5, gy + gh); }
+  for(i=0;i<=h;i++) if(i % RULE){ g.moveTo(gx, gy + i*cell + .5); g.lineTo(gx + gw, gy + i*cell + .5); }
+  g.stroke();
+  g.strokeStyle = "rgba(24,20,32,.85)"; g.lineWidth = 2;
+  g.beginPath();
+  for(i=0;i<=w;i+=RULE){ g.moveTo(gx + i*cell, gy); g.lineTo(gx + i*cell, gy + gh); }
+  for(i=0;i<=h;i+=RULE){ g.moveTo(gx, gy + i*cell); g.lineTo(gx + gw, gy + i*cell); }
+  g.moveTo(gx, gy + gh); g.lineTo(gx + gw, gy + gh);
+  g.moveTo(gx + gw, gy); g.lineTo(gx + gw, gy + gh);
+  g.stroke();
+
+  /* a mark in every worked square, so it survives being printed in grey */
+  if(cell >= 11){
+    g.lineWidth = Math.max(1, cell * .08);
+    g.lineCap = "round"; g.lineJoin = "round";
+    var x, y, hex, ink, last = null;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){
+      hex = cells[y*w + x];
+      if(!hex) continue;
+      ink = symInk(hex);
+      if(ink !== last){ g.strokeStyle = g.fillStyle = ink; last = ink; }
+      drawSymbol(g, mark[hex], gx + (x+.5)*cell, gy + (y+.5)*cell, cell*.26);
+    }
+  }
+
+  /* numbers: stitches along the top, rows up the left from the bottom */
+  g.fillStyle = "#5C5370";
+  g.font = "500 13px " + UI;
+  g.textAlign = "center"; g.textBaseline = "bottom";
+  for(i=RULE;i<=w;i+=RULE) g.fillText(String(i), gx + (i-.5)*cell, gy - 6);
+  g.textAlign = "right"; g.textBaseline = "middle";
+  for(i=RULE;i<=h;i+=RULE) g.fillText(String(i), gx - 8, gy + (h - i + .5)*cell);
+
+  g.textAlign = "left"; g.textBaseline = "alphabetic";
+  g.fillStyle = "#5C5370"; g.font = "400 13px " + UI;
+  g.fillText("Row 1 is the bottom row. Odd rows read right to left, even rows left to right.",
+             padL, gy + gh + 24);
+
+  /* the legend */
+  g.fillStyle = "#171221"; g.font = "600 18px " + DS;
+  g.fillText("Yarns", padL, legendTop);
+  g.font = "400 14px " + UI;
+  cens.order.forEach(function(hex, j){
+    var ly = legendTop + 26 + j*32;
+    g.fillStyle = hex;
+    g.beginPath(); g.arc(padL + 13, ly + 8, 13, 0, 6.2832); g.fill();
+    g.strokeStyle = "rgba(24,20,32,.35)"; g.lineWidth = 1.2; g.stroke();
+    g.save();
+    g.strokeStyle = g.fillStyle = symInk(hex);
+    g.lineWidth = 1.6; g.lineCap = "round"; g.lineJoin = "round";
+    drawSymbol(g, mark[hex], padL + 13, ly + 8, 7);
+    g.restore();
+    g.fillStyle = "#171221";
+    g.fillText(label[hex] + "   " + nearestShade(hex).name, padL + 38, ly + 13);
+    g.fillStyle = "#5C5370";
+    g.textAlign = "right";
+    g.fillText(hex + "   " + cens.counts[hex].toLocaleString() + " sts   ~" + metresFor(cens.counts[hex]) + " m",
+               c2.width - padR, ly + 13);
+    g.textAlign = "left";
+  });
+  g.fillStyle = "#8A8199"; g.font = "400 12px " + UI;
+  g.fillText("Threadwyn  ·  " + buildParts().version + "  ·  " + new Date().toLocaleDateString(),
+             padL, c2.height - padB + 6);
+  return c2;
+}
+function saveChartSheet(name, w, h, cells){
+  try{
+    var c2 = chartSheetCanvas(name, w, h, cells);
+    if(saveFile(safeName(name) + "-chart-sheet.png", dataURLtoBlob(c2.toDataURL("image/png")))){
+      SET.stats.exported = true; saveSettings();
+      toast("Saved to Downloads — print it or send it on.");
+    } else toast("This browser wouldn't save it.");
+  }catch(e){ toast("This chart was too big to draw out."); }
+}
 function pieceDataURL(piece, cells){
   var cell = Math.max(4, Math.min(14, Math.floor(760 / Math.max(piece.w, piece.h))));
   var big = document.createElement("canvas");
@@ -4048,6 +4353,7 @@ function openProject(id){
 /* ---------------- the loom ---------------- */
 function enterLoom(){
   $("loom-name").textContent = S.proj.name;
+  ensureSymbols(S.proj);
   readCloth();
   makeBuffer();
   requestAnimationFrame(function(){
@@ -4449,6 +4755,9 @@ function renderPiece(){
         renderPiece();
       });
   };
+  var sheetBtn = $("piece-sheet");
+  sheetBtn.hidden = !canSaveFiles();
+  sheetBtn.onclick = function(){ saveChartSheet(piece.name, piece.w, piece.h, cells); };
   var pngBtn = $("piece-png");
   pngBtn.hidden = !canSaveFiles();
   pngBtn.onclick = function(){
@@ -4493,10 +4802,12 @@ function writePattern(name, w, h, cells){
   L.push("");
   L.push("YARNS");
   if(!order.length) L.push("  nothing worked yet");
-  order.forEach(function(c){
-    L.push("  " + (label[c] + "     ").slice(0,4) + c + "   " + counts[c] + " sts   ~" + metresFor(counts[c]) + " m");
+  order.forEach(function(c, j){
+    L.push("  " + (label[c] + "     ").slice(0,4) + SYMTEXT[j % SYMBOLS] + "  " + c + "  "
+           + (nearestShade(c).name + "              ").slice(0,14)
+           + counts[c] + " sts   ~" + metresFor(counts[c]) + " m");
   });
-  if(total) L.push("  " + "     ".slice(0,4) + "         " + total.toLocaleString() + " sts   ~" + metresFor(total) + " m in all");
+  if(total) L.push("  " + "                          " + (total.toLocaleString() + " sts   ~" + metresFor(total) + " m in all"));
   L.push("  (worked out at " + SET.cmPerStitch + " cm of yarn a stitch, plus a bit for the ends —");
   L.push("   change that in Settings once you've measured your own.)");
   L.push("");
@@ -4649,6 +4960,7 @@ function copyText(text, okMsg){
 
 /* ---------------- theme ---------------- */
 function applyTheme(){
+  cssForget();
   if(SET.theme) document.documentElement.setAttribute("data-theme", SET.theme);
   else document.documentElement.removeAttribute("data-theme");
   readCloth();
@@ -4898,6 +5210,23 @@ function renderRegauge(){
 /* ==========================================================================
    THE YARNS IN THIS CHART
    ========================================================================== */
+/* A swatch with its chart mark on it — the legend, drawn wherever a yarn is
+   listed, so the mark on the chart always has something to be looked up in. */
+function symChip(hex, size){
+  var dpr = Math.min(window.devicePixelRatio || 1, 3);
+  var c = document.createElement("canvas");
+  c.className = "sw";
+  c.width = Math.round(size * dpr); c.height = Math.round(size * dpr);
+  c.style.width = size + "px"; c.style.height = size + "px";
+  c.style.background = hex;
+  var g = c.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.strokeStyle = g.fillStyle = symInk(hex);
+  g.lineWidth = Math.max(1, size * 0.075);
+  g.lineCap = "round"; g.lineJoin = "round";
+  drawSymbol(g, symbolFor(hex), size/2, size/2, size * 0.26);
+  return c;
+}
 function chartCensus(cells){
   var counts = {}, i;
   for(i=0;i<cells.length;i++) if(cells[i]) counts[cells[i]] = (counts[cells[i]] || 0) + 1;
@@ -4918,10 +5247,10 @@ function renderYarnsSheet(){
   var list = $("yarns-list"); list.innerHTML = "";
   c.order.forEach(function(hex){
     var row = el("div","yarnrow");
-    var sw = el("span","sw"); sw.style.background = hex;
+    var sw = symChip(hex, 32);
     var mid = el("span","m");
-    mid.appendChild(el("span","hx", hex));
-    mid.appendChild(el("span","ct", c.counts[hex].toLocaleString() + " sts · " + Math.round(c.counts[hex]/total*100) + "%"));
+    mid.appendChild(el("span","hx", nearestShade(hex).name));
+    mid.appendChild(el("span","ct", hex + " · " + c.counts[hex].toLocaleString() + " sts · " + Math.round(c.counts[hex]/total*100) + "%"));
     var swap = el("button", null, "Swap");
     swap.onclick = function(){
       if(hex === S.yarn){ toast("That's already the loaded yarn."); return; }
@@ -4938,7 +5267,9 @@ function renderYarnsSheet(){
       closeSheet("sheet-yarns");
       if(S.isolate) toast("Everything else has faded back.");
     };
-    row.appendChild(sw); row.appendChild(mid); row.appendChild(showme); row.appendChild(load); row.appendChild(swap); row.appendChild(take);
+    var acts = el("span","acts");
+    acts.appendChild(showme); acts.appendChild(load); acts.appendChild(swap); acts.appendChild(take);
+    row.appendChild(sw); row.appendChild(mid); row.appendChild(acts);
     list.appendChild(row);
   });
   $("yarns-basket").onclick = function(){
@@ -5032,6 +5363,8 @@ function renderSettings(){
   $("set-buzz-state").textContent = SET.buzz ? "on" : "off";
   $("set-awake-state").textContent = SET.awake ? "on" : "off";
   $("set-rule-state").textContent = String(SET.rule);
+  $("set-grid-state").textContent = t(GRIDWORDS[SET.grid | 0]);
+  $("set-sym-state").textContent = t(SET.symbols ? "on" : "off");
   $("set-yarn-state").textContent = SET.cmPerStitch + " cm";
   refreshStorage();
 }
@@ -5398,7 +5731,7 @@ function renderWork(){
   });
   var cur = row.runs[W.si];
   $("work-now").textContent = cur
-    ? (cur.c ? cur.n + " stitches in " + W.label[cur.c] + " (" + cur.c + ")" : "Skip " + cur.n + " squares")
+    ? (cur.c ? cur.n + " stitches in " + W.label[cur.c] + " \u2014 " + nearestShade(cur.c).name : "Skip " + cur.n + " squares")
     : "—";
   drawWorkChart();
   keepAwake(true);
@@ -5888,10 +6221,16 @@ function wire(){
   $("btn-more").onclick = function(){
     var st = S.proj.cells.filter(Boolean).length;
     $("more-sub").textContent = S.proj.name + " · " + S.proj.w + "×" + S.proj.h + " · " + st.toLocaleString() + " stitches worked";
-    $("m-grid-state").textContent = S.showGrid ? "on" : "off";
+    $("m-sheet").hidden = !canSaveFiles();
+    $("m-grid-state").textContent = t(GRIDWORDS[SET.grid | 0]);
+    $("m-sym-state").textContent = t(SET.symbols ? "on" : "off");
     openSheet("sheet-more");
   };
   $("m-fasten").onclick = fastenOff;
+  $("m-sheet").onclick = function(){
+    closeSheet("sheet-more");
+    saveChartSheet(S.proj.name, S.proj.w, S.proj.h, S.proj.cells);
+  };
   $("m-write").onclick = function(){
     closeSheet("sheet-more");
     showWritten(S.proj.name, S.proj.w, S.proj.h, S.proj.cells, "chart:" + S.proj.id);
@@ -5986,6 +6325,8 @@ function wire(){
     keepAwake(SET.awake && S.screen === "loom");
   };
   $("set-rule").onclick  = function(){ SET.rule = SET.rule === 10 ? 8 : (SET.rule === 8 ? 5 : 10); saveSettings(); renderSettings(); invalidate(); };
+  $("set-grid").onclick  = function(){ SET.grid = ((SET.grid | 0) + 1) % 3; saveSettings(); renderSettings(); invalidate(); };
+  $("set-sym").onclick   = function(){ SET.symbols = !SET.symbols; saveSettings(); renderSettings(); invalidate(); };
   $("set-tips").onclick  = function(){ SET.tipsSeen = false; saveSettings(); closeSheet("sheet-settings"); toast("They'll show next time you open a chart."); };
 
   /* photo */
@@ -6149,7 +6490,19 @@ function wire(){
     toast("Guide cleared.");
   };
   $("m-fit").onclick = function(){ fitView(); invalidate(); closeSheet("sheet-more"); };
-  $("m-grid").onclick = function(){ S.showGrid = !S.showGrid; $("m-grid-state").textContent = S.showGrid ? "on" : "off"; invalidate(); };
+  $("m-grid").onclick = function(){
+    SET.grid = ((SET.grid | 0) + 1) % 3; saveSettings();
+    $("m-grid-state").textContent = t(GRIDWORDS[SET.grid]);
+    if($("set-grid-state")) $("set-grid-state").textContent = t(GRIDWORDS[SET.grid]);
+    invalidate();
+  };
+  $("m-symbols").onclick = function(){
+    SET.symbols = !SET.symbols; saveSettings();
+    $("m-sym-state").textContent = t(SET.symbols ? "on" : "off");
+    if($("set-sym-state")) $("set-sym-state").textContent = t(SET.symbols ? "on" : "off");
+    if(SET.symbols && S.view.scale < 13) toast("Zoom in and every yarn shows its own mark.");
+    invalidate();
+  };
 
   /* letters */
   $("textin").addEventListener("input", refreshTextPreview);

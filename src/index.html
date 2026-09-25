@@ -1572,6 +1572,14 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.12", d:"25 Sep", items:[
+   "Opening a second chart no longer brings the first one's selection, faded-back yarn or cursor with it.",
+   "The row and stitch readout could show a negative row after changing a chart's size. It can't now.",
+   "The faded-back chip stayed on screen after leaving the chart, saying a yarn was picked out when none was.",
+   "If your phone switched itself to night while the game was open, the chart stayed in daylight. It follows along now.",
+   "A chart with more than twenty yarns gave every extra one the same symbol.",
+   "Throwing a chart away now also clears the place you had got to in it."
+ ]},
  { v:"1.11", d:"25 Sep", items:[
    "The block tool lays four shapes now — block, frame, ring and disc. Tap it again while it is already chosen to move on to the next one.",
    "A frame gives you a border in one drag; a ring and a disc give you a proper round worked in squares.",
@@ -2997,6 +3005,14 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Changelog lines for the fixes. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A chart with more than twenty yarns gave every extra one the same symbol.": "Une grille de plus de vingt fils donnait le même symbole à tous les suivants.", "If your phone switched itself to night while the game was open, the chart stayed in daylight. It follows along now.": "Si votre téléphone passait en mode nuit pendant le jeu, la grille restait en clair. Elle suit désormais.", "Opening a second chart no longer brings the first one's selection, faded-back yarn or cursor with it.": "Ouvrir une deuxième grille n'emporte plus la sélection, le fil mis en avant ni le curseur de la première.", "The faded-back chip stayed on screen after leaving the chart, saying a yarn was picked out when none was.": "La pastille du fil mis en avant restait à l'écran après avoir quitté la grille, alors qu'aucun ne l'était.", "The row and stitch readout could show a negative row after changing a chart's size. It can't now.": "Le compteur de rang pouvait afficher un rang négatif après un changement de taille. Plus maintenant.", "Throwing a chart away now also clears the place you had got to in it.": "Jeter une grille efface aussi l'endroit où vous en étiez."},{"A chart with more than twenty yarns gave every extra one the same symbol.": "Una cuadrícula con más de veinte hilos daba el mismo símbolo a todos los demás.", "If your phone switched itself to night while the game was open, the chart stayed in daylight. It follows along now.": "Si el teléfono pasaba a modo noche con el juego abierto, la cuadrícula se quedaba en claro. Ahora lo sigue.", "Opening a second chart no longer brings the first one's selection, faded-back yarn or cursor with it.": "Abrir una segunda cuadrícula ya no se trae la selección, el hilo destacado ni el cursor de la primera.", "The faded-back chip stayed on screen after leaving the chart, saying a yarn was picked out when none was.": "La etiqueta del hilo destacado se quedaba en pantalla al salir de la cuadrícula, aunque ya no hubiera ninguno.", "The row and stitch readout could show a negative row after changing a chart's size. It can't now.": "El contador de vuelta podía mostrar una vuelta negativa tras cambiar el tamaño. Ya no.", "Throwing a chart away now also clears the place you had got to in it.": "Tirar una cuadrícula ahora también borra el punto por donde ibas."},{"A chart with more than twenty yarns gave every extra one the same symbol.": "Ein Zählmuster mit mehr als zwanzig Garnen gab allen weiteren dasselbe Symbol.", "If your phone switched itself to night while the game was open, the chart stayed in daylight. It follows along now.": "Wechselte das Telefon bei geöffnetem Spiel in den Nachtmodus, blieb das Zählmuster hell. Jetzt zieht es mit.", "Opening a second chart no longer brings the first one's selection, faded-back yarn or cursor with it.": "Ein zweites Zählmuster zu öffnen bringt die Auswahl, das hervorgehobene Garn und den Cursor des ersten nicht mehr mit.", "The faded-back chip stayed on screen after leaving the chart, saying a yarn was picked out when none was.": "Der Hinweis auf das hervorgehobene Garn blieb nach dem Verlassen des Zählmusters stehen, obwohl keines mehr hervorgehoben war.", "The row and stitch readout could show a negative row after changing a chart's size. It can't now.": "Die Reihenanzeige konnte nach einer Größenänderung eine negative Reihe zeigen. Jetzt nicht mehr.", "Throwing a chart away now also clears the place you had got to in it.": "Ein weggeworfenes Zählmuster löscht jetzt auch die Stelle, an der du warst."}]);
 /* Changelog lines for the shape-tools release. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -3122,6 +3138,16 @@ function css(name){
   return v;
 }
 function cssForget(){ cssMemo = {}; }
+/* Following the phone means the tokens can change with nothing in the app
+   having touched them, so the memo has to be told. */
+(function(){
+  try{
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    var onFlip = function(){ if(!SET.theme) applyTheme(); };
+    if(mq.addEventListener) mq.addEventListener("change", onFlip);
+    else if(mq.addListener) mq.addListener(onFlip);
+  }catch(e){}
+})();
 
 /* ---------------- run-length storage ---------------- */
 function encodeRLE(cells){
@@ -3164,6 +3190,7 @@ function loadProject(id){
 }
 function deleteProject(id){
   lsDel("p:"+id);
+  lsDel("work:chart:"+id);
   setProjIndex(projIndex().filter(function(m){ return m.id!==id; }));
   if(SET.lastProject===id){ SET.lastProject=null; saveSettings(); }
 }
@@ -3379,9 +3406,12 @@ var SYMTEXT = ["·","○","✕","+","╱","╲","△","▽","□","◇",
 function assignSymbol(p, hex){
   if(!p.sym) p.sym = {};
   if(p.sym[hex] !== undefined) return p.sym[hex];
-  var used = {}, k, n = 0;
-  for(k in p.sym) used[p.sym[k]] = 1;
+  var used = {}, k, n = 0, taken = 0;
+  for(k in p.sym){ used[p.sym[k]] = 1; taken++; }
   while(used[n] && n < SYMBOLS - 1) n++;
+  /* Past twenty yarns the marks have to repeat; spread them rather than
+     handing every one after the twentieth the same mark. */
+  if(used[n]) n = taken % SYMBOLS;
   p.sym[hex] = n;
   return n;
 }
@@ -4195,7 +4225,7 @@ function pieceDataURL(piece, cells){
 var SCREENS = ["hearth","new","book","works","loom","cabinet","piece","charms","share","blankets","blanket","work","fabric"];
 function show(name, replace){
   if(S.screen === "loom" && name !== "loom"){ saveProject(S.proj); keepAwake(false); }
-  if(name !== "loom" && S.isolate) S.isolate = null;
+  if(name !== "loom" && S.isolate) setIsolate(null);
   if(!replace && S.screen !== name) S.stack.push(S.screen);
   SCREENS.forEach(function(n){ var e = $("scr-"+n); if(e) e.classList.toggle("on", n === name); });
   S.screen = name;
@@ -4328,7 +4358,7 @@ function castOnSize(w, h){
   var pat = S.newPattern ? patternById(S.newPattern) : null;
   var p = newProject(w, h, pat ? pat.t : niceName(), S.newPattern);
   saveProject(p);
-  S.proj = p; S.undoStack = []; S.redoStack = [];
+  adoptProject(p);
   S.stack = ["hearth"];
   show("loom", true);
 }
@@ -4424,9 +4454,22 @@ function when(ts){
   if(d < 30) return tf("{n} days ago", { n:d });
   return new Date(ts).toLocaleDateString();
 }
+/* Everything here belongs to one chart and to no other. Opening a second
+   chart used to keep the first one's selection, its faded-back yarn and its
+   cursor — which on a smaller chart read as a negative row number and drew a
+   selection off the edge. */
+function adoptProject(p){
+  /* cleared before the swap, so the old chart's buffer is the one it rebuilds */
+  if(S.isolate) setIsolate(null);
+  S.proj = p;
+  S.undoStack = []; S.redoStack = [];
+  S.sel = null; S.selPreview = null;
+  previewCells = null; anchor = null; lastCell = null;
+  S.cursor = { x:0, y:Math.max(0, p.h - 1) };   /* row 1, stitch 1, where you start */
+}
 function openProject(id){
   var p = loadProject(id); if(!p){ toast("That chart has gone."); return; }
-  S.proj = p; S.undoStack = []; S.redoStack = [];
+  adoptProject(p);
   SET.lastProject = id; saveSettings();
   show("loom");
 }
@@ -4866,7 +4909,7 @@ function renderPiece(){
     var p = newProject(piece.w, piece.h, piece.name + " again", piece.pattern);
     p.cells = decodeRLE(piece.rle, piece.w*piece.h);
     saveProject(p);
-    S.proj = p; S.undoStack = []; S.redoStack = [];
+    adoptProject(p);
     show("loom");
   };
   $("piece-del").onclick = function(){
@@ -5276,6 +5319,10 @@ function regauge(nw, nh){
   function apply(){
     p.cells = cells; p.guide = guide; p.w = nw; p.h = nh; p.fx = nw; p.fy = nh;
     S.undoStack = []; S.redoStack = []; refreshUndoButtons();
+    /* the cursor and any selection were placed on the old size */
+    S.sel = null; S.selPreview = null;
+    S.cursor = { x:Math.min(S.cursor.x, nw-1), y:Math.min(S.cursor.y, nh-1) };
+    updateSelBar(); updateGauge();
     saveProject(p); makeBuffer(); sizeCanvas(); fitView(); invalidate();
     closeSheet("sheet-shape");
     toast("Now " + nw + "×" + nh + ".");
@@ -5405,7 +5452,7 @@ function openChartCode(text){
   var p = newProject(d.w, d.h, (d.n || "A chart") + " (copy)", null);
   p.cells = decodeRLE(d.r, d.w * d.h);
   saveProject(p);
-  S.proj = p; S.undoStack = []; S.redoStack = [];
+  adoptProject(p);
   SET.stats.gifted = true; saveSettings();
   S.stack = ["hearth"];
   show("loom", true);

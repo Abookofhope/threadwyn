@@ -499,6 +499,9 @@ body.has-update .bar{padding-top:8px}
 <g id="i-photo"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M4 16.5l4.5-4 3 2.5 3.5-3.5 5 5"/></g>
 <g id="i-grid4"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1"/><rect x="13" y="13" width="7.5" height="7.5" rx="1"/></g>
 <g id="i-marks"><circle cx="7" cy="7" r="3"/><path d="M14 4.2l3.3 5.6h-6.6z"/><path d="M4.6 14.6l4.8 4.8M9.4 14.6l-4.8 4.8"/><rect x="14" y="14.5" width="5.5" height="5.5" rx=".8"/></g>
+<g id="i-frame"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></g>
+<g id="i-ring"><circle cx="12" cy="12" r="8.2"/></g>
+<g id="i-disc"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.9"/><circle cx="12" cy="12" r="1.7"/></g>
 <g id="i-play"><path d="M7 4.5l12 7.5-12 7.5z"/></g>
 <g id="i-copy"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5h-11v11"/></g>
 <g id="i-fit"><path d="M4.5 9V4.5H9M15 4.5h4.5V9M19.5 15v4.5H15M9 19.5H4.5V15"/></g>
@@ -1519,7 +1522,7 @@ var S = {
 };
 var SET = lsGet("settings", null) || {
   theme:null, basket:BASE_YARNS.slice(0,12), charms:[], lastProject:null, cloth:"linen",
-  buzz:true, awake:true, rule:10, grid:2, symbols:false, tipsSeen:false, cmPerStitch:5.5, recent:[],
+  buzz:true, awake:true, rule:10, grid:2, symbols:false, blockShape:0, tipsSeen:false, cmPerStitch:5.5, recent:[],
   gaugeSts:16, gaugeRows:18, xp:null, letters:null, lang:null,
   stats:{stitches:0, undos:0, finished:0, maxYarns:0, biggest:0, nightFinish:false,
          bigPiece:0, minYarns:99, tallest:0, exported:false, lettered:false},
@@ -1537,6 +1540,7 @@ if(!SET.rule) SET.rule = 10;
 if(SET.grid === undefined || SET.grid === true) SET.grid = 2;
 if(SET.grid === false) SET.grid = 0;
 if(SET.symbols === undefined) SET.symbols = false;
+if(!SET.blockShape) SET.blockShape = 0;
 if(!SET.cmPerStitch) SET.cmPerStitch = 5.5;
 if(!SET.recent) SET.recent = [];
 if(!SET.gaugeSts) SET.gaugeSts = 16;
@@ -1568,6 +1572,11 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.11", d:"25 Sep", items:[
+   "The block tool lays four shapes now — block, frame, ring and disc. Tap it again while it is already chosen to move on to the next one.",
+   "A frame gives you a border in one drag; a ring and a disc give you a proper round worked in squares.",
+   "Symbols turn up from a little further out, and they show in the magnifier under your finger too."
+ ]},
  { v:"1.10", d:"24 Sep", items:[
    "Chart lines you can always see: dark grey, on every square, at every zoom, and light grey when the chart is dark.",
    "They no longer vanish when you zoom out — they thin out to every second, fifth or tenth line instead.",
@@ -2988,6 +2997,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Changelog lines for the shape-tools release. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A frame gives you a border in one drag; a ring and a disc give you a proper round worked in squares.": "Un contour donne une bordure d'un seul geste ; un rond et un disque donnent un vrai cercle en carrés.", "Symbols turn up from a little further out, and they show in the magnifier under your finger too.": "Les symboles apparaissent d'un peu plus loin, et ils s'affichent aussi dans la loupe sous votre doigt.", "The block tool lays four shapes now — block, frame, ring and disc. Tap it again while it is already chosen to move on to the next one.": "L'outil bloc pose quatre formes — bloc, contour, rond et disque. Retapez-le quand il est déjà choisi pour passer au suivant."},{"A frame gives you a border in one drag; a ring and a disc give you a proper round worked in squares.": "Un contorno da una cenefa de un solo gesto; un aro y un disco dan un círculo de verdad hecho en cuadros.", "Symbols turn up from a little further out, and they show in the magnifier under your finger too.": "Los símbolos aparecen desde algo más lejos, y también salen en la lupa bajo tu dedo.", "The block tool lays four shapes now — block, frame, ring and disc. Tap it again while it is already chosen to move on to the next one.": "La herramienta de bloque hace cuatro formas: bloque, contorno, aro y disco. Tócala otra vez cuando ya esté elegida para pasar a la siguiente."},{"A frame gives you a border in one drag; a ring and a disc give you a proper round worked in squares.": "Ein Rahmen ergibt eine Bordüre in einem Zug; Ring und Scheibe ergeben einen echten Kreis in Kästchen.", "Symbols turn up from a little further out, and they show in the magnifier under your finger too.": "Symbole erscheinen schon aus etwas größerer Entfernung und zeigen sich auch in der Lupe unter deinem Finger.", "The block tool lays four shapes now — block, frame, ring and disc. Tap it again while it is already chosen to move on to the next one.": "Das Block-Werkzeug legt jetzt vier Formen — Block, Rahmen, Ring und Scheibe. Tippe es erneut an, wenn es schon gewählt ist, um zur nächsten zu wechseln."}]);
+/* Added with the shape tools. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Disc": "Disque", "Drag out a box and fill the round that fits inside it.": "Tirez un cadre et remplissez le rond qui tient dedans.", "Drag out a box and get the round that fits inside it, one stitch thick.": "Tirez un cadre et obtenez le rond qui tient dedans, épais d'une maille.", "Drag out a rectangle and lay only its edge — a border in one go.": "Tirez un rectangle et ne posez que son bord — une bordure d'un coup.", "Frame": "Contour", "Ring": "Rond"},{"Disc": "Disco", "Drag out a box and fill the round that fits inside it.": "Arrastra un recuadro y rellena el círculo que cabe dentro.", "Drag out a box and get the round that fits inside it, one stitch thick.": "Arrastra un recuadro y sale el círculo que cabe dentro, de un punto de grosor.", "Drag out a rectangle and lay only its edge — a border in one go.": "Arrastra un rectángulo y pon solo su borde: una cenefa de una vez.", "Frame": "Contorno", "Ring": "Aro"},{"Disc": "Scheibe", "Drag out a box and fill the round that fits inside it.": "Zieh einen Rahmen auf und fülle den Kreis, der hineinpasst.", "Drag out a box and get the round that fits inside it, one stitch thick.": "Zieh einen Rahmen auf und erhalte den Kreis, der hineinpasst, eine Masche stark.", "Drag out a rectangle and lay only its edge — a border in one go.": "Zieh ein Rechteck auf und lege nur seinen Rand — eine Bordüre auf einmal.", "Frame": "Rahmen", "Ring": "Ring"}]);
 /* Added with the lines-and-symbols release; same shape as the block above. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -3416,13 +3441,13 @@ function drawSymbol(c, n, cx, cy, r){
   c.stroke();
 }
 function drawSymbols(ox, oy, p, v, r){
-  if(!SET.symbols || v.scale < 13) return;
+  if(!SET.symbols || v.scale < 9) return;
   var x0 = Math.max(0, Math.floor((0 - ox) / v.scale));
   var x1 = Math.min(p.w - 1, Math.ceil((r.width  - ox) / v.scale));
   var y0 = Math.max(0, Math.floor((0 - oy) / v.scale));
   var y1 = Math.min(p.h - 1, Math.ceil((r.height - oy) / v.scale));
   if(x1 < x0 || y1 < y0) return;
-  if((x1-x0+1) * (y1-y0+1) > 1400) return;        /* never at the cost of a smooth pan */
+  if((x1-x0+1) * (y1-y0+1) > 1800) return;        /* never at the cost of a smooth pan */
   var rad = v.scale * 0.26, x, y, hex, ink, last = null;
   ctx.save();
   ctx.lineWidth = Math.max(1, v.scale * 0.075);
@@ -3563,6 +3588,18 @@ function showLoupe(px, py){
     loupeCtx.beginPath(); loupeCtx.moveTo(0,i*cell); loupeCtx.lineTo(96,i*cell); loupeCtx.stroke();
   }
   loupeCtx.globalAlpha = 1;
+  if(SET.symbols){
+    loupeCtx.lineWidth = Math.max(1, cell * 0.075);
+    loupeCtx.lineCap = "round"; loupeCtx.lineJoin = "round";
+    for(var gy=0; gy<span; gy++) for(var gx=0; gx<span; gx++){
+      var mx = sx+gx, my = sy+gy;
+      if(mx < 0 || my < 0 || mx >= p.w || my >= p.h) continue;
+      var mh = p.cells[my*p.w + mx];
+      if(!mh) continue;
+      loupeCtx.strokeStyle = loupeCtx.fillStyle = symInk(mh);
+      drawSymbol(loupeCtx, symbolFor(mh), (gx+0.5)*cell, (gy+0.5)*cell, cell*0.26);
+    }
+  }
   loupeCtx.strokeStyle = css("--accent") || "#f06"; loupeCtx.lineWidth = 2.5;
   loupeCtx.strokeRect(half*cell, half*cell, cell, cell);
 
@@ -3682,6 +3719,50 @@ function lineCells(x0,y0,x1,y1){
     e2 = 2*err;
     if(e2 > -dy){ err -= dy; x0 += sx; }
     if(e2 <  dx){ err += dx; y0 += sy; }
+  }
+  return out;
+}
+/* The block tool lays four shapes. Tapping it again while it is already the
+   chosen tool moves it on to the next one, so four shapes cost no room in a
+   tray that has none to spare. */
+var BLOCK_SHAPES = [
+  { id:"block", icon:"box",   n:"Block", d:"Drag out a rectangle and fill it solid." },
+  { id:"frame", icon:"frame", n:"Frame", d:"Drag out a rectangle and lay only its edge \u2014 a border in one go." },
+  { id:"ring",  icon:"ring",  n:"Ring",  d:"Drag out a box and get the round that fits inside it, one stitch thick." },
+  { id:"disc",  icon:"disc",  n:"Disc",  d:"Drag out a box and fill the round that fits inside it." }
+];
+function blockShape(){ return BLOCK_SHAPES[(SET.blockShape | 0) % BLOCK_SHAPES.length]; }
+function shapeCells(x0, y0, x1, y1){
+  var id = blockShape().id;
+  if(id === "frame") return frameCells(x0, y0, x1, y1);
+  if(id === "ring")  return roundCells(x0, y0, x1, y1, false);
+  if(id === "disc")  return roundCells(x0, y0, x1, y1, true);
+  return boxCells(x0, y0, x1, y1);
+}
+function frameCells(x0,y0,x1,y1){
+  var ax=Math.min(x0,x1), bx=Math.max(x0,x1), ay=Math.min(y0,y1), by=Math.max(y0,y1);
+  var out = [], x, y;
+  for(x=ax;x<=bx;x++){ out.push([x,ay]); if(by!==ay) out.push([x,by]); }
+  for(y=ay+1;y<by;y++){ out.push([ax,y]); if(bx!==ax) out.push([bx,y]); }
+  return out;
+}
+/* A round worked in squares: the ellipse that fits the box you dragged. The
+   outline keeps only the cells with a neighbour outside, which gives an even
+   one-stitch line at any size rather than the gaps a plain plot leaves. */
+function roundCells(x0,y0,x1,y1,filled){
+  var ax=Math.min(x0,x1), bx=Math.max(x0,x1), ay=Math.min(y0,y1), by=Math.max(y0,y1);
+  var w = bx-ax+1, h = by-ay+1;
+  var cx = (w-1)/2, cy = (h-1)/2, rx = w/2, ry = h/2;
+  function inside(x, y){
+    if(x < 0 || y < 0 || x >= w || y >= h) return false;
+    var dx = (x-cx)/rx, dy = (y-cy)/ry;
+    return dx*dx + dy*dy <= 1;
+  }
+  var out = [], x, y;
+  for(y=0;y<h;y++) for(x=0;x<w;x++){
+    if(!inside(x,y)) continue;
+    if(filled || !inside(x-1,y) || !inside(x+1,y) || !inside(x,y-1) || !inside(x,y+1))
+      out.push([ax+x, ay+y]);
   }
   return out;
 }
@@ -3828,7 +3909,7 @@ function toolMove(cell){
     previewCells = {list:lineCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
   }
   if(t === "block"){
-    previewCells = {list:boxCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
+    previewCells = {list:shapeCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
   }
   if(lastCell && (lastCell.x !== cell.x || lastCell.y !== cell.y)){
     var pts = lineCells(lastCell.x, lastCell.y, cell.x, cell.y);
@@ -4354,6 +4435,7 @@ function openProject(id){
 function enterLoom(){
   $("loom-name").textContent = S.proj.name;
   ensureSymbols(S.proj);
+  paintBlockIcon();
   readCloth();
   makeBuffer();
   requestAnimationFrame(function(){
@@ -4362,11 +4444,23 @@ function enterLoom(){
   renderSkeins(); refreshUndoButtons(); updateGauge(); updateMirrorBadge();
   showTips(false); keepAwake(true); updateSelBar();
 }
+function cycleBlockShape(){
+  SET.blockShape = ((SET.blockShape | 0) + 1) % BLOCK_SHAPES.length;
+  saveSettings();
+  paintBlockIcon();
+  showToolHint("block");
+  buzz(10);
+}
+function paintBlockIcon(){
+  var b = document.querySelector('#tools .tool[data-tool="block"] use');
+  if(b) b.setAttribute("href", "#i-" + blockShape().icon);
+}
 function setTool(t, quiet){
   S.tool = t;
   var all = document.querySelectorAll("#tools .tool[data-tool]");
   for(var i=0;i<all.length;i++) all[i].classList.toggle("on", all[i].getAttribute("data-tool") === t);
   if(t === "motif" && !quiet) openSheet("sheet-motif");
+  if(t === "block") paintBlockIcon();
   showToolHint(t);
   updateSelBar();
 }
@@ -6155,7 +6249,11 @@ function wire(){
   /* tools */
   var tools = document.querySelectorAll("#tools .tool[data-tool]");
   for(var i=0;i<tools.length;i++)(function(b){
-    b.onclick = function(){ setTool(b.getAttribute("data-tool")); };
+    b.onclick = function(){
+      var want = b.getAttribute("data-tool");
+      if(want === "block" && S.tool === "block"){ cycleBlockShape(); return; }
+      setTool(want);
+    };
   })(tools[i]);
   var sheets = document.querySelectorAll(".sheet");
   for(var si=0; si<sheets.length; si++) bindSheetDrag(sheets[si]);
@@ -6665,7 +6763,8 @@ var TOOL_HELP = {
 };
 var hintTimer;
 function showToolHint(key){
-  var h = TOOL_HELP[key], box = $("toolhint");
+  var h = (key === "block") ? blockShape() : TOOL_HELP[key];
+  var box = $("toolhint");
   if(!box) return;
   if(!h){ box.classList.remove("on"); return; }
   box.innerHTML = "<b>" + t(h.n) + "</b> — " + t(h.d);

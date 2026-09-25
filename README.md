@@ -74,6 +74,16 @@ They are drawn only for the stitches actually on screen, and only above 13x
 zoom and under 1400 visible stitches, so turning them on never costs a smooth
 pan.
 
+### Shapes
+
+The block tool lays four shapes, and tapping it again while it is already the
+chosen tool moves it on to the next: **block**, **frame**, **ring**, **disc**.
+Four shapes for one slot, in a tool tray with no room for three more buttons.
+The icon changes to whichever is loaded, the choice is remembered, and the
+round ones keep only the cells with a neighbour outside the ellipse, which
+gives an even one-stitch line at any size instead of the gaps a naive plot
+leaves.
+
 ### A sheet to print
 
 **Save a chart sheet to print** draws the whole thing as one page: the grid

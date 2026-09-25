@@ -110,6 +110,16 @@ and the screen tells you the **true finished size in centimetres**, plus a
 shopping list: every colour named in plain words, with its stitch count and
 roughly how many metres of it you need.
 
+## The Cabinet
+
+It opens on the work. The ribbons sit under it, and the ones still to earn are
+one chip reading *"n still to earn"* rather than twenty-two greyed badges
+filling the screen before a single finished piece is in sight.
+
+Thumbnails lay one even cloth behind a piece rather than the woven check the
+chart itself uses: at thumbnail size a check reads as the transparency pattern
+from an image editor, which is the last thing a framed piece should look like.
+
 ## Levels
 
 Finishing a piece earns experience — roughly a point per eight stitches, plus a

@@ -213,6 +213,7 @@ input,textarea{font:inherit;color:inherit}
 .ribbons{display:flex;flex-wrap:wrap;gap:7px}
 .ribbon{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 8px;font-size:12px;background:var(--paper)}
 .ribbon.locked{opacity:.42}
+.ribbon.more{border-style:dashed;color:var(--ink-2);font-weight:600;cursor:pointer}
 .ribbon .dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
 .ribbon.got .dot{background:var(--brass-bright)}
 .ribbon.got{border-color:var(--brass-bright)}
@@ -233,6 +234,9 @@ input,textarea{font:inherit;color:inherit}
 .pat .no{font-family:var(--display);font-size:15px;color:var(--ink-3);width:24px;flex:none;text-align:center}
 .pat .t{font-family:var(--display);font-size:16px;line-height:1.2}
 .pat .h{font-size:12.5px;color:var(--ink-3);line-height:1.35;margin-top:2px}
+/* Both are spans, so without this the hint runs straight on from the title. */
+.pat .t,.pat .h{display:block}
+.pat .mid{flex:1;min-width:0}
 .pat .g{margin-left:auto;flex:none;font-size:10.5px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase}
 .pat.done{border-color:var(--teal)}
 .pat.done .g{color:var(--teal);font-weight:700}
@@ -248,6 +252,7 @@ input,textarea{font:inherit;color:inherit}
 .charm .r{font-size:12.5px;color:var(--ink-3);font-style:italic}
 .charm .w{font-size:12.5px;color:var(--ink-2)}
 .charm .cbody{flex:1;min-width:0}
+.charm .g{display:block;margin-top:4px;font-size:12px;color:var(--ink-3);opacity:.85}
 .charm .n,.charm .w,.charm .r{display:block}
 .charm .r{margin-top:7px}
 .charm .next{display:block;margin-top:6px;font-size:12px;color:var(--accent);font-weight:600}
@@ -730,9 +735,9 @@ body.has-update .bar{padding-top:8px}
    <h2>The Cabinet</h2>
  </div>
  <div class="pad stack">
-   <div><span class="eyebrow">Ribbons</span><div class="ribbons" id="ribbons" style="margin-top:8px"></div></div>
-   <button class="btn" data-go="blankets">Lay out a blanket</button>
    <div id="cabinet-body"></div>
+   <button class="btn" data-go="blankets">Lay out a blanket</button>
+   <div><span class="eyebrow">Ribbons <b id="ribbon-count" style="color:var(--ink-3);font-weight:600">—</b></span><div class="ribbons" id="ribbons" style="margin-top:8px"></div></div>
  </div>
 </section>
 
@@ -865,6 +870,7 @@ body.has-update .bar{padding-top:8px}
      <input id="codein" placeholder="TYPE A CHARM" autocomplete="off" autocapitalize="characters" spellcheck="false">
      <button class="btn go" id="codego" style="width:auto;flex:none;padding:0 20px">Say it</button>
    </div>
+   <p class="sub" id="charm-count" style="margin:-4px 2px 0">—</p>
    <div class="stack" style="gap:8px" id="charm-list"></div>
  </div>
 </section>
@@ -1559,6 +1565,22 @@ if(SET.xp == null){
   for(var mi = 0; mi < done; mi++) turnOverLetter();
   saveSettings();
 }
+/* The home screen said nought stitches next to a chart with four hundred in
+   it. Count what is already there, once, and carry on from that. Called after
+   the first run has laid down its sampler, not before it. */
+function seedStitchCount(){
+  if(SET.stats.seeded) return;
+  var worked = 0;
+  lsGet("index", []).forEach(function(m){
+    var body = lsGet("p:" + m.id, null);
+    if(!body || !body.rle) return;
+    body.rle.forEach(function(run){ if(run[0]) worked += run[1]; });
+  });
+  lsGet("cabinet", []).forEach(function(pc){ if(!pc.example) worked += pc.stitches || 0; });
+  if(worked > SET.stats.stitches) SET.stats.stitches = worked;
+  SET.stats.seeded = true;
+  saveSettings();
+}
 function saveSettings(){ lsSet("settings", SET); }
 function hasCharm(c){ return !c || SET.charms.indexOf(c) >= 0; }
 
@@ -1572,6 +1594,13 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.13", d:"25 Sep", items:[
+   "The Cabinet opens on your work now. The ribbons sit underneath it, and the ones still to earn are behind a tap.",
+   "Every charm says what it gives, even the ones you haven't said yet — and the screen counts how many you have.",
+   "The Pattern Book ran each title and its hint together on one line. They sit apart now.",
+   "The home screen counted nought stitches next to a chart with hundreds in it. It counts what you have already worked.",
+   "Thumbnails lay a plain cloth behind a piece instead of a checker that looked like a hole in the picture."
+ ]},
  { v:"1.12", d:"25 Sep", items:[
    "Opening a second chart no longer brings the first one's selection, faded-back yarn or cursor with it.",
    "The row and stitch readout could show a negative row after changing a chart's size. It can't now.",
@@ -3005,6 +3034,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Changelog lines for the cabinet-and-book polish. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Every charm says what it gives, even the ones you haven't said yet — and the screen counts how many you have.": "Chaque charme dit ce qu'il offre, même ceux que vous n'avez pas encore prononcés — et l'écran compte ceux que vous avez.", "The Cabinet opens on your work now. The ribbons sit underneath it, and the ones still to earn are behind a tap.": "La vitrine s'ouvre désormais sur vos ouvrages. Les rubans passent dessous, et ceux qui restent à gagner tiennent derrière une touche.", "The Pattern Book ran each title and its hint together on one line. They sit apart now.": "Le carnet de motifs collait chaque titre à son indice sur une seule ligne. Ils sont séparés.", "The home screen counted nought stitches next to a chart with hundreds in it. It counts what you have already worked.": "L'accueil affichait zéro maille à côté d'une grille qui en comptait des centaines. Il compte désormais le travail déjà fait.", "Thumbnails lay a plain cloth behind a piece instead of a checker that looked like a hole in the picture.": "Les vignettes posent un tissu uni derrière l'ouvrage, au lieu d'un damier qui ressemblait à un trou dans l'image."},{"Every charm says what it gives, even the ones you haven't said yet — and the screen counts how many you have.": "Cada encanto dice lo que da, incluso los que aún no has dicho, y la pantalla cuenta cuántos llevas.", "The Cabinet opens on your work now. The ribbons sit underneath it, and the ones still to earn are behind a tap.": "La vitrina se abre ahora con tus piezas. Las cintas van debajo, y las que faltan por conseguir quedan detrás de un toque.", "The Pattern Book ran each title and its hint together on one line. They sit apart now.": "El libro de patrones juntaba cada título con su pista en una línea. Ya van separados.", "The home screen counted nought stitches next to a chart with hundreds in it. It counts what you have already worked.": "La pantalla de inicio contaba cero puntos junto a una cuadrícula con cientos. Ahora cuenta lo que ya has hecho.", "Thumbnails lay a plain cloth behind a piece instead of a checker that looked like a hole in the picture.": "Las miniaturas ponen una tela lisa detrás de la pieza, en vez de un damero que parecía un agujero en la imagen."},{"Every charm says what it gives, even the ones you haven't said yet — and the screen counts how many you have.": "Jeder Zauberspruch sagt, was er gibt, auch die ungesagten — und der Bildschirm zählt, wie viele du hast.", "The Cabinet opens on your work now. The ribbons sit underneath it, and the ones still to earn are behind a tap.": "Die Vitrine öffnet jetzt mit deinen Stücken. Die Bänder stehen darunter, und die noch offenen liegen hinter einem Tipp.", "The Pattern Book ran each title and its hint together on one line. They sit apart now.": "Das Musterbuch klebte Titel und Hinweis in einer Zeile zusammen. Jetzt stehen sie getrennt.", "The home screen counted nought stitches next to a chart with hundreds in it. It counts what you have already worked.": "Der Startbildschirm zählte null Maschen neben einem Zählmuster mit Hunderten. Jetzt zählt er, was schon gearbeitet ist.", "Thumbnails lay a plain cloth behind a piece instead of a checker that looked like a hole in the picture.": "Vorschaubilder legen jetzt einen einfarbigen Stoff hinter das Stück statt eines Karomusters, das wie ein Loch im Bild aussah."}]);
+/* Cabinet and charm wording. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Hide the rest": "Masquer le reste", "Ribbons": "Rubans", "{a} of {b} said": "{a} sur {b} prononcés", "{n} still to earn": "{n} encore à gagner"},{"Hide the rest": "Ocultar el resto", "Ribbons": "Cintas", "{a} of {b} said": "{a} de {b} dichos", "{n} still to earn": "{n} por conseguir"},{"Hide the rest": "Den Rest ausblenden", "Ribbons": "Bänder", "{a} of {b} said": "{a} von {b} gesagt", "{n} still to earn": "noch {n} zu verdienen"}]);
 /* Changelog lines for the fixes. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -4071,13 +4116,18 @@ function zoomAbout(pt, target){
 /* ==========================================================================
    PICTURES OF CHARTS  (thumbnails, framed pieces)
    ========================================================================== */
-function smallCanvas(w, h, cells, transparentGround){
+/* `flat` lays one even ground instead of the woven check. At thumbnail size
+   the check reads as the transparency pattern from an image editor, which is
+   the last thing a framed piece should look like. */
+function smallCanvas(w, h, cells, transparentGround, flat){
   var c = document.createElement("canvas"); c.width = w; c.height = h;
+  var even = mixRGB(clothA, clothB, 0.5);
   var x2 = c.getContext("2d"), img = x2.createImageData(w,h), d = img.data, x, y, i, rgb, col;
   for(y=0;y<h;y++) for(x=0;x<w;x++){
     i = y*w+x; col = cells[i];
     if(col){ rgb = hexToRGB(col); d[i*4+3] = 255; }
     else if(transparentGround){ rgb = [0,0,0]; d[i*4+3] = 0; }
+    else if(flat){ rgb = even; d[i*4+3] = 255; }
     else { rgb = ((x+y)&1) ? clothB : clothA; d[i*4+3] = 255; }
     d[i*4] = rgb[0]; d[i*4+1] = rgb[1]; d[i*4+2] = rgb[2];
   }
@@ -4090,7 +4140,7 @@ function paintInto(canvas, w, h, cells){
   x2.clearRect(0,0,side,canvas.height);
   var s = Math.min(side/w, canvas.height/h);
   var dw = w*s, dh = h*s;
-  x2.drawImage(smallCanvas(w,h,cells,false), (side-dw)/2, (canvas.height-dh)/2, dw, dh);
+  x2.drawImage(smallCanvas(w,h,cells,false,true), (side-dw)/2, (canvas.height-dh)/2, dw, dh);
 }
 /* A chart sheet meant for paper: the grid drawn heavy enough to follow from
    a sofa, rows numbered from the bottom like the pattern, a mark in every
@@ -4392,7 +4442,7 @@ function renderBook(){
   PATTERNS.forEach(function(p, i){
     var b = el("button", "pat" + (done[p.id] ? " done" : ""));
     b.innerHTML = '<span class="no">'+(i+1)+'</span>' +
-      '<span><span class="t">'+p.t+'</span><span class="h">'+p.hint+'</span></span>' +
+      '<span class="mid"><span class="t">'+p.t+'</span><span class="h">'+p.hint+'</span></span>' +
       '<span class="g">'+(done[p.id] ? "made" : p.w+"×"+p.h)+'</span>';
     b.onclick = function(){
       S.newPattern = p.id;
@@ -4822,14 +4872,28 @@ function earnedRibbons(){
   var snap = statsSnapshot();
   return RIBBONS.filter(function(r){ try{ return !!r.test(snap); }catch(e){ return false; } });
 }
+/* Not remembered between visits on purpose: the cabinet should open on the
+   work every time, not on wherever the ribbons were left. */
+var showLockedRibbons = false;
 function renderCabinet(){
   var got = {}; earnedRibbons().forEach(function(r){ got[r.id] = true; });
   var rb = $("ribbons"); rb.innerHTML = "";
-  RIBBONS.forEach(function(r){
-    var n = el("div","ribbon " + (got[r.id] ? "got" : "locked"));
-    n.innerHTML = '<span class="dot"></span>' + r.name;
+  var earned = [], locked = [];
+  RIBBONS.forEach(function(r){ (got[r.id] ? earned : locked).push(r); });
+  $("ribbon-count").textContent = earned.length + " / " + RIBBONS.length;
+  function chip(r, cls){
+    var n = el("div","ribbon " + cls);
+    n.innerHTML = '<span class="dot"></span>' + t(r.name);
     rb.appendChild(n);
-  });
+  }
+  earned.forEach(function(r){ chip(r, "got"); });
+  if(showLockedRibbons) locked.forEach(function(r){ chip(r, "locked"); });
+  if(locked.length){
+    var more = el("button","ribbon more",
+      showLockedRibbons ? t("Hide the rest") : tf("{n} still to earn", { n:locked.length }));
+    more.onclick = function(){ showLockedRibbons = !showLockedRibbons; renderCabinet(); };
+    rb.appendChild(more);
+  }
 
   var body = $("cabinet-body"); body.innerHTML = "";
   var cab = cabinet();
@@ -5006,6 +5070,8 @@ function renderTemplates(){
 function renderCharms(){
   var list = $("charm-list"); list.innerHTML = "";
   var active = activeCharm();
+  var said = CHARMS.filter(function(c){ return hasCharm(c.code); }).length;
+  $("charm-count").textContent = tf("{a} of {b} said", { a:said, b:CHARMS.length });
   CHARMS.forEach(function(c){
     var got = hasCharm(c.code), shown = lettersFor(c.code);
     var n = el("div","charm" + (got ? " got" : ""));
@@ -5019,6 +5085,7 @@ function renderCharms(){
       paintTiles(tiles, c.code);
       body.appendChild(tiles);
       body.appendChild(el("span","r", "\u201C" + t(c.riddle) + "\u201D"));
+      body.appendChild(el("span","g", t(c.gives)));
       if(active && active.code === c.code){
         var tag = el("span","next", shown
           ? shown + " of " + c.code.length + " turned over — the next thing you fasten off turns another."
@@ -6992,6 +7059,7 @@ function start(hot){
   try{ document.documentElement.setAttribute("lang", LANG); }catch(e){}
   applyTheme();
   seedFirstRun();
+  seedStitchCount();
   wire();
   setLanguage(LANG, true);
   try{

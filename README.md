@@ -160,6 +160,11 @@ Three tools back that up:
   already in the basket, and **Push apart** walks it clear — lightness first,
   because that is the difference that survives a small square on a phone, then
   hue.
+- The dyer names the colour while you drag it, so you know what you are making
+  before you keep it.
+- A colour we only have a near name for is set in *italics* rather than
+  prefixed with a tilde: a tilde in front of a colour name reads as a typo, and
+  in four languages a punctuation mark explains nothing.
 - Picking a yarn names it, so *Marigold* and *Ochre* are told apart by word as
   well as by eye — and the yarn list, the written pattern, the printed sheet
   and the row-by-row helper all name them too, rather than printing a hex code

@@ -190,8 +190,10 @@ input,textarea{font:inherit;color:inherit}
 #hue{height:26px;margin-top:10px}
 .hexrow{display:flex;gap:10px;align-items:center;margin-top:12px}
 #pchip{width:46px;height:46px;border-radius:12px;border:2px solid var(--line);flex:none}
-#phex{flex:1;min-width:0;background:var(--raise);border:1px solid var(--line);border-radius:12px;height:46px;padding:0 12px;
+#phex{flex:1 1 118px;min-width:0;background:var(--raise);border:1px solid var(--line);border-radius:12px;height:46px;padding:0 12px;
   font-variant-numeric:tabular-nums;letter-spacing:.06em;text-transform:uppercase}
+.pname{flex:1 1 100px;min-width:0;font-family:var(--display);font-size:16px;line-height:1.15;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .swatchgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .swatchgrid button{width:36px;height:36px;border-radius:50%;border:2px solid var(--line)}
 .skeingroup{margin-top:14px}
@@ -252,6 +254,7 @@ input,textarea{font:inherit;color:inherit}
 .charm .r{font-size:12.5px;color:var(--ink-3);font-style:italic}
 .charm .w{font-size:12.5px;color:var(--ink-2)}
 .charm .cbody{flex:1;min-width:0}
+.approx{font-style:italic;opacity:.9}
 .charm .g{display:block;margin-top:4px;font-size:12px;color:var(--ink-3);opacity:.85}
 .charm .n,.charm .w,.charm .r{display:block}
 .charm .r{margin-top:7px}
@@ -779,6 +782,7 @@ body.has-update .bar{padding-top:8px}
        <button data-fab="chart"><span>Chart</span></button>
      </div>
    </div>
+   <p class="note" id="fab-blank" hidden style="margin:10px 2px 0">The blank squares are the ones still to work.</p>
    <div class="facts" id="fabric-facts"></div>
    <div class="axis">
      <div class="lab">Your tension — per 10&nbsp;cm</div>
@@ -925,6 +929,7 @@ body.has-update .bar{padding-top:8px}
    </div>
    <div class="hexrow">
      <span id="pchip"></span>
+     <span class="pname" id="pname">\u2014</span>
      <input id="phex" maxlength="7" autocomplete="off" spellcheck="false">
      <button class="btn go" id="pkeep" style="width:auto;flex:none;padding:0 16px">Keep</button>
    </div>
@@ -1594,6 +1599,13 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.14", d:"29 Sep", items:[
+   "The dyer names the colour as you drag it, so you know what you are making before you keep it.",
+   "A locked skein set shows the colours you would get, dimmed, instead of a row of blank circles.",
+   "A colour we only have a near name for is set in italics now, rather than prefixed with a tilde that read as a typo.",
+   "Works in progress says how far along each chart is, not just how big it is.",
+   "Worked up says plainly that the blank squares are the ones still to do."
+ ]},
  { v:"1.13", d:"25 Sep", items:[
    "The Cabinet opens on your work now. The ribbons sit underneath it, and the ones still to earn are behind a tap.",
    "Every charm says what it gives, even the ones you haven't said yet — and the screen counts how many you have.",
@@ -3034,6 +3046,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Changelog lines for the dyer-and-names polish. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A colour we only have a near name for is set in italics now, rather than prefixed with a tilde that read as a typo.": "Une couleur dont nous n'avons qu'un nom approchant s'écrit en italique, au lieu d'un tilde qui passait pour une faute de frappe.", "A locked skein set shows the colours you would get, dimmed, instead of a row of blank circles.": "Un jeu de pelotes verrouillé montre les couleurs que vous auriez, en sourdine, au lieu de ronds vides.", "The dyer names the colour as you drag it, so you know what you are making before you keep it.": "Le teinturier nomme la couleur pendant que vous la réglez : vous savez ce que vous fabriquez avant de la garder.", "Worked up says plainly that the blank squares are the ones still to do.": "La vue en vrai fil dit clairement que les carrés vides sont ceux qui restent à faire.", "Works in progress says how far along each chart is, not just how big it is.": "Les ouvrages en cours indiquent où en est chaque grille, pas seulement sa taille."},{"A colour we only have a near name for is set in italics now, rather than prefixed with a tilde that read as a typo.": "Un color del que solo tenemos un nombre aproximado va ahora en cursiva, en vez de llevar una tilde que parecía una errata.", "A locked skein set shows the colours you would get, dimmed, instead of a row of blank circles.": "Un juego de madejas bloqueado enseña los colores que tendrías, atenuados, en vez de círculos vacíos.", "The dyer names the colour as you drag it, so you know what you are making before you keep it.": "El tinte nombra el color mientras lo arrastras, así sabes qué estás haciendo antes de guardarlo.", "Worked up says plainly that the blank squares are the ones still to do.": "La vista en hilo real dice claramente que los cuadros en blanco son los que faltan.", "Works in progress says how far along each chart is, not just how big it is.": "Las labores en curso dicen por dónde va cada cuadrícula, no solo su tamaño."},{"A colour we only have a near name for is set in italics now, rather than prefixed with a tilde that read as a typo.": "Eine Farbe, für die wir nur einen ungefähren Namen haben, steht jetzt kursiv statt mit einer Tilde, die wie ein Tippfehler aussah.", "A locked skein set shows the colours you would get, dimmed, instead of a row of blank circles.": "Ein gesperrtes Garnset zeigt die Farben, die du bekämst, gedimmt statt einer Reihe leerer Kreise.", "The dyer names the colour as you drag it, so you know what you are making before you keep it.": "Die Färberei nennt die Farbe schon beim Ziehen, damit du weißt, was du machst, bevor du sie behältst.", "Worked up says plainly that the blank squares are the ones still to do.": "Die Ansicht in echtem Garn sagt deutlich, dass die leeren Kästchen noch zu arbeiten sind.", "Works in progress says how far along each chart is, not just how big it is.": "Angefangene Arbeiten sagen, wie weit jedes Zählmuster ist, nicht nur wie groß."}]);
+/* Shade names, progress and the worked-up note. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A name in italics is the closest shade we know to yours.": "Un nom en italique est la teinte la plus proche que nous connaissons de la vôtre.", "The blank squares are the ones still to work.": "Les carrés vides sont ceux qu'il reste à faire.", "not started": "pas commencée", "{n} sts · {p}%": "{n} m · {p} %"},{"A name in italics is the closest shade we know to yours.": "Un nombre en cursiva es el tono más parecido que conocemos al tuyo.", "The blank squares are the ones still to work.": "Los cuadros en blanco son los que quedan por hacer.", "not started": "sin empezar", "{n} sts · {p}%": "{n} pts · {p} %"},{"A name in italics is the closest shade we know to yours.": "Ein kursiver Name ist der nächstliegende Farbton, den wir zu deinem kennen.", "The blank squares are the ones still to work.": "Die leeren Kästchen sind die, die noch zu arbeiten sind.", "not started": "nicht begonnen", "{n} sts · {p}%": "{n} M · {p} %"}]);
 /* Changelog lines for the cabinet-and-book polish. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -4467,8 +4495,12 @@ function renderWorks(){
     var f = el("div","frame"), c = el("canvas");
     c.width = 180; c.height = 180;
     f.appendChild(c); b.appendChild(f);
-    var t = el("div","t", p.name), s = el("div","s", p.w+"×"+p.h+" · "+when(p.updated));
-    b.appendChild(t); b.appendChild(s);
+    var worked = p.cells.filter(Boolean).length;
+    var line = p.w + "×" + p.h + " · " + (worked
+      ? tf("{n} sts · {p}%", { n:worked.toLocaleString(), p:Math.round(worked/(p.w*p.h)*100) })
+      : t("not started")) + " · " + when(p.updated);
+    var ttl = el("div","t", p.name), sub2 = el("div","s", line);
+    b.appendChild(ttl); b.appendChild(sub2);
     paintInto(c, p.w, p.h, p.cells);
     b.onclick = function(){ openProject(p.id); };
     holdFor(b, function(){ openChartActions(p.id); });
@@ -4562,8 +4594,8 @@ function setYarn(hex, quiet){
   if(next !== S.yarn) S.prevYarn = S.yarn;
   S.yarn = next;
   if(!quiet && $("toolhint")){
-    var sh2 = nearestShade(next), box2 = $("toolhint");
-    box2.innerHTML = "<b>" + (sh2.close ? "" : "~") + t(sh2.name) + "</b> — " + next;
+    var box2 = $("toolhint");
+    box2.innerHTML = "<b>" + shadeHTML(next) + "</b> — " + next;
     box2.classList.add("on");
     clearTimeout(hintTimer);
     hintTimer = setTimeout(function(){ box2.classList.remove("on"); }, 1800);
@@ -4691,6 +4723,7 @@ function pkHex(){ var rgb = hsvToRGB(pk.h,pk.s,pk.v); return rgbToHex(rgb[0],rgb
 function syncPicker(fromInput){
   var hex = pkHex();
   $("pchip").style.background = hex;
+  $("pname").innerHTML = shadeHTML(hex);
   if(!fromInput) $("phex").value = hex;
   drawSV(); drawHueStrip();
   setYarn(hex, true);
@@ -4759,8 +4792,10 @@ function renderPresets(){
     wrap.appendChild(head);
     var grid = el("div","swatchgrid");
     set.colors.forEach(function(c){
-      var b = el("button"); b.style.background = unlocked ? c : "var(--line-soft)";
-      if(!unlocked) b.style.opacity = ".6";
+      /* Blank grey circles said nothing. The real colours, dimmed, say what
+         the charm is worth saying. */
+      var b = el("button"); b.style.background = c;
+      if(!unlocked){ b.style.opacity = ".55"; b.style.filter = "grayscale(.2)"; }
       b.onclick = function(){
         if(!unlocked){ toast("A charm opens this set."); return; }
         var rgb = hexToRGB(c), hsv = rgbToHSV(rgb[0],rgb[1],rgb[2]);
@@ -5457,7 +5492,8 @@ function renderYarnsSheet(){
     var row = el("div","yarnrow");
     var sw = symChip(hex, 32);
     var mid = el("span","m");
-    mid.appendChild(el("span","hx", nearestShade(hex).name));
+    var nm = el("span","hx"); nm.innerHTML = shadeHTML(hex);
+    mid.appendChild(nm);
     mid.appendChild(el("span","ct", hex + " · " + c.counts[hex].toLocaleString() + " sts · " + Math.round(c.counts[hex]/total*100) + "%"));
     var swap = el("button", null, "Swap");
     swap.onclick = function(){
@@ -5833,6 +5869,13 @@ function pushApart(hex, list){
   }
   return hex;
 }
+/* A name we are sure of is set plain; the closest-we-know is set in italics.
+   The tilde this replaces read as a typo in front of a colour name, and in
+   four languages a punctuation mark explains nothing. */
+function shadeHTML(hex){
+  var sh = nearestShade(hex), name = t(sh.name);
+  return sh.close ? name : '<i class="approx">' + name + '</i>';
+}
 function nearestShade(hex){
   var c = hexToRGB(hex), best = null, bd = Infinity, i, s2, dr, dg, db, d;
   for(i=0;i<SHADES.length;i++){
@@ -6007,6 +6050,7 @@ function renderFabricScreen(){
   g.clearRect(0,0,cv2.width,cv2.height);
   g.drawImage(made, 0, 0);
   cv2.style.imageRendering = (S.fabricMode === "chart") ? "pixelated" : "auto";
+  $("fab-blank").hidden = F.cells.every(Boolean);
 
   var segs = $("fab-seg").querySelectorAll("button");
   for(var i=0;i<segs.length;i++) segs[i].classList.toggle("on", segs[i].getAttribute("data-fab") === S.fabricMode);
@@ -6027,13 +6071,18 @@ function renderFabricScreen(){
   if(!cen.order.length) return;
   var head = el("span","eyebrow", "What to buy");
   box.appendChild(head);
+  if(cen.order.some(function(h){ return !nearestShade(h).close; })){
+    var note = el("p","note", t("A name in italics is the closest shade we know to yours."));
+    note.style.margin = "4px 2px 0";
+    box.appendChild(note);
+  }
   var list = el("div","shadelist");
   cen.order.forEach(function(hex){
-    var sh = nearestShade(hex);
     var row = el("div","shaderow");
     var dot = el("i"); dot.style.background = hex;
     var mid = el("span","nm2");
-    mid.appendChild(el("b", null, (sh.close ? "" : "~") + t(sh.name)));
+    var nameEl = el("b"); nameEl.innerHTML = shadeHTML(hex);
+    mid.appendChild(nameEl);
     mid.appendChild(el("span", null, hex));
     var amt = el("span","amt");
     amt.innerHTML = cen.counts[hex].toLocaleString() + " sts<br>~" + metresFor(cen.counts[hex]) + " m";

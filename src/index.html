@@ -934,6 +934,11 @@ body.has-update .bar{padding-top:8px}
      <input id="phex" maxlength="7" autocomplete="off" spellcheck="false">
      <button class="btn go" id="pkeep" style="width:auto;flex:none;padding:0 16px">Keep</button>
    </div>
+   <div class="skeingroup">
+     <div class="nm"><span>Goes with this</span><span style="color:var(--ink-3);font-weight:400">tap to try one</span></div>
+     <div class="swatchgrid" id="harmony"></div>
+     <button class="btn quiet" id="harmony-keep" style="margin-top:8px;min-height:38px">Put all five in the basket</button>
+   </div>
    <div class="skeingroup" id="recent-group" hidden><div class="nm"><span>Just used</span><span style="color:var(--ink-3);font-weight:400">newest first</span></div><div class="swatchgrid" id="recent-grid"></div></div>
    <div class="skeingroup"><div class="nm"><span>In the basket</span><span style="color:var(--ink-3);font-weight:400">hold to remove</span></div><div class="swatchgrid" id="basket-grid"></div></div>
    <div id="preset-groups"></div>
@@ -955,6 +960,7 @@ body.has-update .bar{padding-top:8px}
      <button class="tile" id="m-photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-photo"/></svg><span>Photo</span></button>
      <button class="tile" id="m-guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-layers"/></svg><span>Guide</span></button>
      <button class="tile" id="m-fabric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-yarn"/></svg><span>Worked up</span></button>
+     <button class="tile" id="m-recolour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-swap"/></svg><span>Recolour</span></button>
      <button class="tile" id="m-repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid4"/></svg><span>Repeat</span></button>
      <button class="tile" id="m-fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg><span>Fit</span></button>
      <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span>Lines <b id="m-grid-state">bold</b></span></button>
@@ -1105,6 +1111,17 @@ body.has-update .bar{padding-top:8px}
      </div>
    </div>
    <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-recolour">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Try other colours</h2>
+   <p class="sub">The same picture in a different set of yarns. Every colour moves to the one nearest it in tone, so the light and the dark stay where you put them. Undo takes it straight back.</p>
+   <div class="pieces" id="recolour-list" style="grid-template-columns:repeat(auto-fill,minmax(104px,1fr))"></div>
+   <button class="btn quiet" data-close style="margin-top:14px">Back to work</button>
  </div>
 </div>
 
@@ -1600,6 +1617,11 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.16", d:"29 Sep", items:[
+   "Recolour: see the same picture in any set of yarns you have, each one previewed before you pick it. One undo takes it back.",
+   "It moves colours by tone, not by hue, so the light and the dark stay where you put them even in a set that shares none of your colours.",
+   "The dyer offers five colours that go with the one you are making — the opposite, the two neighbours, a tint and a deeper shade — and can put all five in the basket at once."
+ ]},
  { v:"1.15", d:"29 Sep", items:[
    "With symbols on, each yarn in the tray wears the same mark it lays on the chart."
  ]},
@@ -3050,6 +3072,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Changelog lines for recolouring. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"It moves colours by tone, not by hue, so the light and the dark stay where you put them even in a set that shares none of your colours.": "Il déplace les couleurs par ton et non par teinte : les clairs et les foncés restent où vous les avez mis, même dans un jeu qui n'a aucune de vos couleurs.", "Recolour: see the same picture in any set of yarns you have, each one previewed before you pick it. One undo takes it back.": "Recolorer : voyez la même image dans n'importe quel jeu de fils que vous avez, chacun montré avant de choisir. Une annulation la ramène.", "The dyer offers five colours that go with the one you are making — the opposite, the two neighbours, a tint and a deeper shade — and can put all five in the basket at once.": "Le teinturier propose cinq couleurs qui vont avec celle que vous faites — l'opposée, les deux voisines, un ton clair et un plus profond — et peut mettre les cinq dans le panier d'un coup."},{"It moves colours by tone, not by hue, so the light and the dark stay where you put them even in a set that shares none of your colours.": "Cambia los colores por tono, no por matiz: los claros y los oscuros se quedan donde los pusiste, aunque el juego no comparta ningún color contigo.", "Recolour: see the same picture in any set of yarns you have, each one previewed before you pick it. One undo takes it back.": "Recolorear: mira la misma imagen con cualquier juego de hilos que tengas, cada uno mostrado antes de elegir. Un deshacer lo devuelve.", "The dyer offers five colours that go with the one you are making — the opposite, the two neighbours, a tint and a deeper shade — and can put all five in the basket at once.": "El tinte ofrece cinco colores que van con el que estás haciendo — el opuesto, los dos vecinos, un tono claro y uno más profundo — y puede poner los cinco en la cesta de una vez."},{"It moves colours by tone, not by hue, so the light and the dark stay where you put them even in a set that shares none of your colours.": "Es verschiebt Farben nach Ton, nicht nach Farbton — Hell und Dunkel bleiben, wo du sie hingelegt hast, auch in einem Satz ohne eine einzige deiner Farben.", "Recolour: see the same picture in any set of yarns you have, each one previewed before you pick it. One undo takes it back.": "Umfärben: dasselbe Bild in jedem Garnsatz, den du hast, jeder vorab gezeigt. Ein Rückgängig holt es zurück.", "The dyer offers five colours that go with the one you are making — the opposite, the two neighbours, a tint and a deeper shade — and can put all five in the basket at once.": "Die Färberei schlägt fünf Farben vor, die zu deiner passen — die gegenüberliegende, die beiden Nachbarn, einen hellen und einen tieferen Ton — und legt alle fünf auf einmal in den Korb."}]);
+/* Recolouring and the colours that go with one. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Goes with this": "Va avec celle-ci", "Nothing to recolour": "Rien à recolorer", "Put all five in the basket": "Mettre les cinq dans le panier", "Recolour": "Recolorer", "The basket": "Le panier", "The same picture in a different set of yarns. Every colour moves to the one nearest it in tone, so the light and the dark stay where you put them. Undo takes it straight back.": "La même image dans un autre jeu de fils. Chaque couleur passe à celle dont le ton est le plus proche, pour que les clairs et les foncés restent où vous les avez mis. L'annulation la ramène aussitôt.", "They are all in the basket already.": "Elles y sont déjà toutes.", "Try other colours": "Essayer d'autres couleurs", "Work a few stitches first.": "Faites d'abord quelques mailles.", "Worked again in {name}. Undo puts it back.": "Refait en {name}. L'annulation le remet comme avant.", "one yarn": "un fil", "tap to try one": "touchez pour essayer", "{n} added to the basket.": "{n} ajoutées au panier.", "{n} yarns": "{n} fils"},{"Goes with this": "Va con este", "Nothing to recolour": "Nada que recolorear", "Put all five in the basket": "Poner los cinco en la cesta", "Recolour": "Recolorear", "The basket": "La cesta", "The same picture in a different set of yarns. Every colour moves to the one nearest it in tone, so the light and the dark stay where you put them. Undo takes it straight back.": "La misma imagen con otro juego de hilos. Cada color pasa al más cercano en tono, así los claros y los oscuros se quedan donde los pusiste. Deshacer lo devuelve al instante.", "They are all in the basket already.": "Ya están todos en la cesta.", "Try other colours": "Probar otros colores", "Work a few stitches first.": "Haz unos cuantos puntos primero.", "Worked again in {name}. Undo puts it back.": "Rehecho en {name}. Deshacer lo devuelve.", "one yarn": "un hilo", "tap to try one": "toca para probar", "{n} added to the basket.": "{n} añadidos a la cesta.", "{n} yarns": "{n} hilos"},{"Goes with this": "Passt dazu", "Nothing to recolour": "Nichts zum Umfärben", "Put all five in the basket": "Alle fünf in den Korb legen", "Recolour": "Umfärben", "The basket": "Der Korb", "The same picture in a different set of yarns. Every colour moves to the one nearest it in tone, so the light and the dark stay where you put them. Undo takes it straight back.": "Dasselbe Bild in einem anderen Garnsatz. Jede Farbe rückt auf die im Ton nächstliegende, damit Hell und Dunkel bleiben, wo du sie hingelegt hast. Rückgängig holt alles sofort zurück.", "They are all in the basket already.": "Die sind alle schon im Korb.", "Try other colours": "Andere Farben ausprobieren", "Work a few stitches first.": "Arbeite zuerst ein paar Maschen.", "Worked again in {name}. Undo puts it back.": "Neu in {name} gearbeitet. Rückgängig stellt es wieder her.", "one yarn": "ein Garn", "tap to try one": "antippen zum Ausprobieren", "{n} added to the basket.": "{n} in den Korb gelegt.", "{n} yarns": "{n} Garne"}]);
 /* Changelog line for the marks on the tray. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -4750,11 +4788,53 @@ function drawSV(){
   x2.strokeStyle = "#fff"; x2.lineWidth = 3; x2.beginPath(); x2.arc(x,y,9,0,6.3); x2.stroke();
   x2.strokeStyle = "rgba(0,0,0,.6)"; x2.lineWidth = 1.5; x2.beginPath(); x2.arc(x,y,10.5,0,6.3); x2.stroke();
 }
+/* Five colours that sit well beside one: the opposite, the two neighbours, a
+   tint and a deeper shade. Enough to build a palette from one decision, which
+   is the hard part of choosing yarn. */
+function harmoniesOf(h, sat, val){
+  function mk(hh, ss, vv){
+    ss = Math.max(0, Math.min(1, ss)); vv = Math.max(0.06, Math.min(1, vv));
+    var rgb = hsvToRGB((hh % 360 + 360) % 360, ss, vv);
+    return rgbToHex(rgb[0], rgb[1], rgb[2]);
+  }
+  return [ mk(h + 180, sat, val),
+           mk(h - 32, sat, val),
+           mk(h + 32, sat, val),
+           mk(h, sat * 0.42, val * 0.82 + 0.30),
+           mk(h, sat * 1.10 + 0.06, val * 0.52) ];
+}
+var harmonyBtns = null;
+function renderHarmony(){
+  var box = $("harmony"); if(!box) return;
+  var cols = harmoniesOf(pk.h, pk.s, pk.v), i;
+  if(!harmonyBtns){
+    harmonyBtns = [];
+    for(i = 0; i < cols.length; i++){
+      var b = el("button");
+      b.onclick = (function(btn){
+        return function(){
+          var hex = btn.getAttribute("data-c");
+          var rgb = hexToRGB(hex), hsv = rgbToHSV(rgb[0], rgb[1], rgb[2]);
+          pk.h = hsv[0]; pk.s = hsv[1]; pk.v = hsv[2];
+          syncPicker();
+        };
+      })(b);
+      box.appendChild(b);
+      harmonyBtns.push(b);
+    }
+  }
+  for(i = 0; i < harmonyBtns.length; i++){
+    harmonyBtns[i].style.background = cols[i];
+    harmonyBtns[i].setAttribute("data-c", cols[i]);
+    harmonyBtns[i].setAttribute("aria-label", "Yarn " + cols[i]);
+  }
+}
 function pkHex(){ var rgb = hsvToRGB(pk.h,pk.s,pk.v); return rgbToHex(rgb[0],rgb[1],rgb[2]); }
 function syncPicker(fromInput){
   var hex = pkHex();
   $("pchip").style.background = hex;
   $("pname").innerHTML = shadeHTML(hex);
+  renderHarmony();
   if(!fromInput) $("phex").value = hex;
   drawSV(); drawHueStrip();
   setYarn(hex, true);
@@ -5505,6 +5585,64 @@ function chartCensus(cells){
   var counts = {}, i;
   for(i=0;i<cells.length;i++) if(cells[i]) counts[cells[i]] = (counts[cells[i]] || 0) + 1;
   return { counts:counts, order:Object.keys(counts).sort(function(a,b){ return counts[b]-counts[a]; }) };
+}
+/* Recolouring by tone rather than by hue. Sorting both sides by lightness and
+   mapping rank to rank is what keeps a picture readable in a set that shares
+   none of its colours \u2014 nearest-hue would flatten a night palette into one
+   grey. Each target is taken at most once while there are spare ones. */
+function toneOf(hex){ var c = hexToRGB(hex); return c[0]*0.299 + c[1]*0.587 + c[2]*0.114; }
+function recolourMap(from, into){
+  var byTone = function(a,b){ return toneOf(a) - toneOf(b); };
+  var src = from.slice().sort(byTone), dst = into.slice().sort(byTone);
+  var used = {}, out = {}, i, ideal, j;
+  if(!dst.length) return out;
+  for(i=0;i<src.length;i++){
+    ideal = src.length === 1 ? (dst.length >> 1)
+          : Math.round(i / (src.length - 1) * (dst.length - 1));
+    j = ideal;
+    while(j < dst.length && used[j]) j++;
+    if(j >= dst.length){ j = ideal; while(j >= 0 && used[j]) j--; }
+    if(j < 0) j = ideal;
+    used[j] = 1;
+    out[src[i]] = dst[j];
+  }
+  return out;
+}
+function recolouredCells(cells, map){
+  return cells.map(function(c){ return c && map[c] ? map[c] : c; });
+}
+function applyRecolour(map, label){
+  var p = S.proj, i, c;
+  beginStroke();
+  for(i=0;i<p.cells.length;i++){ c = p.cells[i]; if(c && map[c]) put(i, map[c]); }
+  endStroke(); invalidate(); buzz(16);
+  toast(tf("Worked again in {name}. Undo puts it back.", { name:label }));
+}
+function renderRecolour(){
+  var box = $("recolour-list"); box.innerHTML = "";
+  var p = S.proj, cen = chartCensus(p.cells);
+  if(!cen.order.length){
+    box.innerHTML = '<div class="empty" style="grid-column:1/-1"><h3>Nothing to recolour</h3><p>Work a few stitches first.</p></div>';
+    return;
+  }
+  var options = [{ name:"The basket", colors:SET.basket }];
+  SKEIN_SETS.forEach(function(set){ if(hasCharm(set.charm)) options.push(set); });
+  options.forEach(function(opt){
+    var map = recolourMap(cen.order, opt.colors);
+    var b = el("button","piece");
+    var f = el("div","frame"), c2 = el("canvas");
+    c2.width = 180; c2.height = 180;
+    f.appendChild(c2); b.appendChild(f);
+    b.appendChild(el("div","t", t(opt.name)));
+    b.appendChild(el("div","s", cen.order.length === 1
+      ? t("one yarn") : tf("{n} yarns", { n:cen.order.length })));
+    paintInto(c2, p.w, p.h, recolouredCells(p.cells, map));
+    b.onclick = function(){
+      closeSheet("sheet-recolour");
+      applyRecolour(map, t(opt.name));
+    };
+    box.appendChild(b);
+  });
 }
 function swapYarn(from, to){
   var p = S.proj;
@@ -6617,6 +6755,17 @@ function wire(){
     keepAwake(SET.awake && S.screen === "loom");
   };
   $("set-rule").onclick  = function(){ SET.rule = SET.rule === 10 ? 8 : (SET.rule === 8 ? 5 : 10); saveSettings(); renderSettings(); invalidate(); };
+  $("harmony-keep").onclick = function(){
+    var cols = harmoniesOf(pk.h, pk.s, pk.v);
+    var added = 0;
+    cols.forEach(function(c){
+      if(SET.basket.indexOf(c) >= 0) return;
+      SET.basket.push(c); added++;
+    });
+    if(SET.basket.length > 30) SET.basket = SET.basket.slice(-30);
+    saveSettings(); renderBasketGrid(); renderSkeins();
+    toast(added ? tf("{n} added to the basket.", { n:added }) : t("They are all in the basket already."));
+  };
   $("set-grid").onclick  = function(){ SET.grid = ((SET.grid | 0) + 1) % 3; saveSettings(); renderSettings(); invalidate(); };
   $("set-sym").onclick   = function(){ SET.symbols = !SET.symbols; saveSettings(); renderSettings(); invalidate(); };
   $("set-tips").onclick  = function(){ SET.tipsSeen = false; saveSettings(); closeSheet("sheet-settings"); toast("They'll show next time you open a chart."); };
@@ -6655,6 +6804,7 @@ function wire(){
     if(saveFile(safeName(S.fabric.name) + "-worked-up.png", dataURLtoBlob(cv2.toDataURL("image/png")))) toast("Saved to Downloads.");
     else toast("Press and hold the picture instead.");
   };
+  $("m-recolour").onclick = function(){ closeSheet("sheet-more"); renderRecolour(); openSheet("sheet-recolour"); };
   $("m-repeat").onclick = function(){ closeSheet("sheet-more"); renderRepeat(); openSheet("sheet-repeat"); };
 
   /* selection */

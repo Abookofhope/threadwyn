@@ -146,6 +146,22 @@ afterwards. Strings the app builds by hand use `tf()` with `{braces}`.
 
 To add a language: add its pack to `I18N`, add it to `LANGS`, done.
 
+## Recolour
+
+**Try other colours** shows the chart as it would be in every set of yarns you
+have — the basket and each unlocked skein set — each one previewed live before
+you pick it, and applied as a single undoable change.
+
+It maps by **tone, not by hue**: both sides are sorted by lightness and rank is
+mapped to rank, with each target taken at most once while spares remain. That
+is what keeps a picture readable in a set that shares none of its colours —
+mapping to the nearest hue would flatten a night palette into one grey.
+
+The dyer also offers five colours that go with the one you are making: the
+opposite, the two neighbours, a tint and a deeper shade, all recomputed as you
+drag, with one button to drop the lot in the basket. Choosing the first colour
+is the hard part; the other five should not be.
+
 ## Telling colours apart
 
 The starting basket is chosen so every pair of yarns is far apart to the eye,

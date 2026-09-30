@@ -144,6 +144,16 @@ original English on each node — which is what lets it switch back and forth
 rather than only forwards. A `MutationObserver` catches anything rendered
 afterwards. Strings the app builds by hand use `tf()` with `{braces}`.
 
+Every string the app builds by hand goes through `t()` or `tf()` too — the
+toasts, the questions it asks, the notes under buttons, the guide templates and
+the whole written pattern, down to RS/WS and the yarn units. A translation that
+covers the markup and not the messages is not a translation; for a long time
+this one only covered the markup.
+
+`audit.py` in the scratchpad keeps it honest: it strips the dictionary blocks
+out of the source, scans what is left for sentence-shaped literals, and reports
+any that no pack has a key for. It reads zero.
+
 To add a language: add its pack to `I18N`, add it to `LANGS`, done.
 
 ## Recolour

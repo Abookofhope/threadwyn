@@ -120,6 +120,29 @@ Thumbnails lay one even cloth behind a piece rather than the woven check the
 chart itself uses: at thumbnail size a check reads as the transparency pattern
 from an image editor, which is the last thing a framed piece should look like.
 
+## What I already have
+
+A shopping list that says "buy 40 m of teal" when there are 60 m of it in a
+drawer is asking for a wasted trip. Tell the app how many metres of each yarn
+are really in the basket at home and the list changes: colours you have enough
+of are marked **you have it**, the rest say how many metres you are *short*,
+and nothing else changes. It is kept on the phone with everything else.
+
+## Hands busy
+
+Following a pattern with a hook in one hand and yarn in the other, a small
+button is the wrong target. **Hands busy** turns the whole panel into the
+button and sets the run you are on at 30–46 px, readable from a lap, with the
+chart and the run list out of the way and the screen held awake.
+
+## Your own pace
+
+It times how long you actually take between marking one run done and the next,
+divides by the stitches in it, and keeps the **median** — so putting the work
+down for an hour does not make every estimate an hour long. Once it has a few
+samples, the worked-up screen says how long a chart will take *you*, rather
+than how long it would take somebody else.
+
 ## Levels
 
 Finishing a piece earns experience — roughly a point per eight stitches, plus a

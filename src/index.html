@@ -416,6 +416,15 @@ body.has-update .bar{padding-top:8px}
 .shaderow .nm2 b{display:block;font-family:var(--display);font-size:15px;font-weight:600}
 .shaderow .nm2 span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.04em}
 .shaderow .amt{font-size:12px;color:var(--ink-3);text-align:right;flex:none;font-variant-numeric:tabular-nums}
+.shaderow .have{display:block;font-weight:700}
+.shaderow .have.ok{color:var(--teal)}
+.shaderow .have.short{color:var(--accent)}
+.stashrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
+.stashrow i{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);flex:none;display:block}
+.stashrow .m{flex:1;min-width:0;text-align:left}
+.stashrow .m b{display:block;font-family:var(--display);font-size:15px}
+.stashrow .m span{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.stashrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 12px;font-size:12.5px;background:var(--paper);flex:none}
 .tilegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .tile{display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center;padding:12px 4px;
   border:1px solid var(--line);border-radius:15px;background:var(--raise);min-height:76px;
@@ -465,6 +474,17 @@ body.has-update .bar{padding-top:8px}
 .runs span.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
 .runs span.past{opacity:.42}
 .nowrun{font-family:var(--display);font-size:22px;text-align:center;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+/* Hands busy: with a hook in one hand and yarn in the other, a small button is
+   the wrong target. The whole panel becomes the button, and the run you are on
+   is set large enough to read from a lap. */
+#scr-work.busy .runs,
+#scr-work.busy #work-chart{display:none}
+#scr-work.busy .workwrap{justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none}
+#scr-work.busy .nowrun{font-size:clamp(30px,9vw,46px);padding:26px 14px;line-height:1.15}
+#scr-work.busy .workhead .rowno{font-size:38px}
+#scr-work.busy .workwrap:active{background:var(--line-soft)}
+.busyhint{text-align:center;margin:0}
+#work-busy.on{background:var(--accent-soft);color:var(--accent)}
 .workfoot{display:flex;gap:10px;padding:10px max(16px,env(safe-area-inset-left)) calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--paper)}
 .workfoot .btn{flex:1}
 .workfoot #work-next{flex:2}
@@ -795,6 +815,7 @@ body.has-update .bar{padding-top:8px}
    </div>
    <p class="note" id="fab-blank" hidden style="margin:10px 2px 0">The blank squares are the ones still to work.</p>
    <div class="facts" id="fabric-facts"></div>
+   <p class="note" id="fab-pace" hidden style="margin:10px 2px 0">—</p>
    <div class="axis">
      <div class="lab">Your tension — per 10&nbsp;cm</div>
      <div class="gaugerow">
@@ -809,6 +830,7 @@ body.has-update .bar{padding-top:8px}
      <p class="note" style="margin:8px 2px 0">Work a 10&nbsp;cm square, count what you actually get, and put it in here. Everything below is then true to your hands.</p>
    </div>
    <div id="fabric-shades"></div>
+   <button class="btn" id="fab-stash" style="margin-top:10px">What I already have</button>
  </div>
 </section>
 
@@ -854,9 +876,10 @@ body.has-update .bar{padding-top:8px}
  <div class="bar">
    <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2 id="work-name">Working</h2>
+   <button class="ib" id="work-busy" aria-label="Hands busy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hand"/></svg></button>
    <button class="ib" id="work-restart" aria-label="Start again"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
  </div>
- <div class="workwrap">
+ <div class="workwrap" id="workwrap-tap">
    <div class="workhead">
      <span class="rowno" id="work-row">Row 1</span>
      <span class="side" id="work-side">RS</span>
@@ -866,6 +889,7 @@ body.has-update .bar{padding-top:8px}
    <canvas id="work-chart"></canvas>
    <div class="runs" id="work-runs"></div>
    <div class="nowrun" id="work-now">—</div>
+   <p class="note busyhint" id="work-busyhint" hidden>Tap anywhere on this panel when that run is done.</p>
  </div>
  <div class="workfoot">
    <button class="btn" id="work-prev">Back</button>
@@ -1121,6 +1145,18 @@ body.has-update .bar{padding-top:8px}
      </div>
    </div>
    <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-stash">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>What I already have</h2>
+   <p class="sub">Say how much of each yarn is really in the basket at home. The shopping list then asks only for what you are short of, and says nothing about the rest.</p>
+   <div class="stack" id="stash-list" style="gap:8px"></div>
+   <button class="btn" id="stash-add" style="margin-top:12px">Add this chart's yarns</button>
+   <button class="btn quiet" data-close style="margin-top:8px">Done</button>
  </div>
 </div>
 
@@ -1627,6 +1663,11 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.20", d:"30 Sep", items:[
+   "What I already have: tell it how many metres of each yarn are really in the basket at home, and the shopping list only asks for what you are short of.",
+   "Hands busy: while you follow a pattern row by row, the whole panel becomes the button and the run you are on is set large enough to read from your lap.",
+   "It learns how fast you actually crochet, and then says how long a chart will take you — not how long it would take somebody else."
+ ]},
  { v:"1.19", d:"30 Sep", items:[
    "Tapping an empty square with the colour-picker could stop the tools working until you left the chart. Fixed.",
    "Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.",
@@ -3132,6 +3173,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Chaque bouton qui n'est qu'une image a désormais un nom : un téléphone qui lit l'écran à voix haute peut dire ce que c'est.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si votre téléphone demande moins d'animations, les panneaux et les boutons cessent de glisser.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La grille dit où est votre curseur et combien est fait, à voix haute, dans votre langue."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Cada botón que es solo un dibujo tiene ahora un nombre, así un teléfono que lee la pantalla en voz alta puede decir qué es.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si tu teléfono pide menos movimiento, los paneles y los botones dejan de deslizarse.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La cuadrícula dice dónde está tu cursor y cuánto llevas hecho, en voz alta y en tu idioma."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Jede Taste, die nur ein Bild ist, hat jetzt einen Namen — ein Telefon, das den Bildschirm vorliest, kann sagen, was sie ist.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Wenn dein Telefon weniger Bewegung verlangt, hören Blätter und Tasten auf zu gleiten.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "Das Zählmuster sagt laut und in deiner Sprache, wo dein Cursor steht und wie viel gearbeitet ist."}]);
+/* Changelog lines for them. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Hands busy: while you follow a pattern row by row, the whole panel becomes the button and the run you are on is set large enough to read from your lap.": "Mains prises : pendant que vous suivez un patron rang par rang, tout le panneau devient le bouton et la série en cours s'écrit assez grand pour se lire depuis les genoux.", "It learns how fast you actually crochet, and then says how long a chart will take you — not how long it would take somebody else.": "Il apprend à quelle vitesse vous crochetez vraiment, puis dit combien de temps une grille vous prendra — pas à quelqu'un d'autre.", "What I already have: tell it how many metres of each yarn are really in the basket at home, and the shopping list only asks for what you are short of.": "Ce que j'ai déjà : dites-lui combien de mètres de chaque fil sont vraiment dans le panier à la maison, et la liste de courses ne demandera que ce qui manque."},{"Hands busy: while you follow a pattern row by row, the whole panel becomes the button and the run you are on is set large enough to read from your lap.": "Manos ocupadas: mientras sigues un patrón vuelta a vuelta, todo el panel es el botón y el tramo en curso se escribe lo bastante grande para leerlo desde el regazo.", "It learns how fast you actually crochet, and then says how long a chart will take you — not how long it would take somebody else.": "Aprende a qué velocidad tejes de verdad y luego dice cuánto te llevará una cuadrícula, no cuánto le llevaría a otra persona.", "What I already have: tell it how many metres of each yarn are really in the basket at home, and the shopping list only asks for what you are short of.": "Lo que ya tengo: dile cuántos metros de cada hilo hay de verdad en la cesta de casa y la lista de la compra solo pedirá lo que falte."},{"Hands busy: while you follow a pattern row by row, the whole panel becomes the button and the run you are on is set large enough to read from your lap.": "Hände voll: während du eine Anleitung Reihe für Reihe verfolgst, wird die ganze Fläche zur Taste und der laufende Abschnitt steht groß genug, um ihn vom Schoß aus zu lesen.", "It learns how fast you actually crochet, and then says how long a chart will take you — not how long it would take somebody else.": "Es lernt, wie schnell du wirklich häkelst, und sagt dann, wie lange ein Zählmuster bei dir dauert — nicht bei jemand anderem.", "What I already have: tell it how many metres of each yarn are really in the basket at home, and the shopping list only asks for what you are short of.": "Was ich schon habe: sag ihm, wie viele Meter von jedem Garn wirklich im Korb zu Hause liegen — die Einkaufsliste fragt dann nur noch nach dem, was fehlt."}]);
+/* The stash, hands-busy working and your own pace. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"About {t} at your pace — measured from the runs you have worked row by row.": "Environ {t} à votre rythme — mesuré sur les séries que vous avez faites rang par rang.", "Add the yarns from this chart, then say how much of each you have.": "Ajoutez les fils de cette grille, puis dites combien vous en avez.", "Add this chart's yarns": "Ajouter les fils de cette grille", "Back to the buttons.": "Retour aux boutons.", "Hands busy": "Mains prises", "How many metres of it have you got? Leave it empty to take it off the list.": "Combien de mètres en avez-vous ? Laissez vide pour le retirer de la liste.", "Nothing listed yet": "Rien d'inscrit pour l'instant", "Open a chart first.": "Ouvrez d'abord une grille.", "Remove": "Retirer", "Save": "Enregistrer", "Say how much of each yarn is really in the basket at home. The shopping list then asks only for what you are short of, and says nothing about the rest.": "Dites combien de chaque fil se trouve vraiment dans le panier à la maison. La liste de courses ne demandera plus que ce qui vous manque, et se taira sur le reste.", "Tap anywhere on the panel to move on.": "Touchez n'importe où sur le panneau pour avancer.", "Tap anywhere on this panel when that run is done.": "Touchez n'importe où sur ce panneau quand cette série est faite.", "They are all on the list already.": "Ils y sont déjà tous.", "What I already have": "Ce que j'ai déjà", "you have it": "vous l'avez", "{h} h": "{h} h", "{h} h {m}": "{h} h {m}", "{n} added — tap each to say how much.": "{n} ajoutés — touchez chacun pour dire combien.", "{n} m": "{n} m", "{n} m short": "il manque {n} m", "{n} min": "{n} min"},{"About {t} at your pace — measured from the runs you have worked row by row.": "Unos {t} a tu ritmo, medido con los tramos que has hecho vuelta a vuelta.", "Add the yarns from this chart, then say how much of each you have.": "Añade los hilos de esta cuadrícula y luego di cuánto tienes de cada uno.", "Add this chart's yarns": "Añadir los hilos de esta cuadrícula", "Back to the buttons.": "De vuelta a los botones.", "Hands busy": "Manos ocupadas", "How many metres of it have you got? Leave it empty to take it off the list.": "¿Cuántos metros tienes? Déjalo vacío para quitarlo de la lista.", "Nothing listed yet": "Todavía nada en la lista", "Open a chart first.": "Abre primero una cuadrícula.", "Remove": "Quitar", "Save": "Guardar", "Say how much of each yarn is really in the basket at home. The shopping list then asks only for what you are short of, and says nothing about the rest.": "Di cuánto hay de verdad de cada hilo en la cesta de casa. La lista de la compra pedirá solo lo que te falte y callará sobre el resto.", "Tap anywhere on the panel to move on.": "Toca cualquier parte del panel para avanzar.", "Tap anywhere on this panel when that run is done.": "Toca cualquier parte de este panel cuando acabes ese tramo.", "They are all on the list already.": "Ya están todos en la lista.", "What I already have": "Lo que ya tengo", "you have it": "ya lo tienes", "{h} h": "{h} h", "{h} h {m}": "{h} h {m}", "{n} added — tap each to say how much.": "{n} añadidos: toca cada uno para decir cuánto.", "{n} m": "{n} m", "{n} m short": "faltan {n} m", "{n} min": "{n} min"},{"About {t} at your pace — measured from the runs you have worked row by row.": "Etwa {t} in deinem Tempo — gemessen an den Abschnitten, die du Reihe für Reihe gearbeitet hast.", "Add the yarns from this chart, then say how much of each you have.": "Füge die Garne dieses Zählmusters hinzu und sag dann, wie viel du von jedem hast.", "Add this chart's yarns": "Die Garne dieses Zählmusters hinzufügen", "Back to the buttons.": "Zurück zu den Tasten.", "Hands busy": "Hände voll", "How many metres of it have you got? Leave it empty to take it off the list.": "Wie viele Meter hast du davon? Leer lassen, um es von der Liste zu nehmen.", "Nothing listed yet": "Noch nichts eingetragen", "Open a chart first.": "Öffne zuerst ein Zählmuster.", "Remove": "Entfernen", "Save": "Sichern", "Say how much of each yarn is really in the basket at home. The shopping list then asks only for what you are short of, and says nothing about the rest.": "Sag, wie viel von jedem Garn wirklich im Korb zu Hause liegt. Die Einkaufsliste fragt dann nur noch nach dem, was fehlt, und schweigt über den Rest.", "Tap anywhere on the panel to move on.": "Tippe irgendwo auf die Fläche, um weiterzugehen.", "Tap anywhere on this panel when that run is done.": "Tippe irgendwo auf diese Fläche, wenn der Abschnitt fertig ist.", "They are all on the list already.": "Die stehen alle schon auf der Liste.", "What I already have": "Was ich schon habe", "you have it": "hast du", "{h} h": "{h} Std.", "{h} h {m}": "{h} Std. {m}", "{n} added — tap each to say how much.": "{n} hinzugefügt — tippe jedes an, um die Menge zu sagen.", "{n} m": "{n} m", "{n} m short": "{n} m fehlen", "{n} min": "{n} Min."}]);
 /* Names for the controls that are only an icon. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -5754,6 +5811,53 @@ function applyRecolour(map, label){
   endStroke(); invalidate(); buzz(16);
   toast(tf("Worked again in {name}. Undo puts it back.", { name:label }));
 }
+/* What is actually in the basket at home. Metres per colour, kept on this
+   phone like everything else. A pattern that says "buy 40 m of teal" when
+   there are 60 m of it in a drawer is asking for a wasted trip. */
+function stash(){ if(!SET.stash) SET.stash = {}; return SET.stash; }
+function stashHas(hex){ var v = stash()[hex]; return typeof v === "number" ? v : 0; }
+function setStash(hex, metres){
+  var st = stash();
+  if(metres > 0) st[hex] = Math.round(metres * 10) / 10;
+  else delete st[hex];
+  saveSettings();
+}
+function askMetres(hex){
+  var name = t(nearestShade(hex).name);
+  return ask({ title:name, msg:t("How many metres of it have you got? Leave it empty to take it off the list."),
+               input:true, value:stashHas(hex) ? String(stashHas(hex)) : "", ok:t("Save") })
+    .then(function(v){
+      if(v === null) return false;
+      var n = parseFloat(String(v).replace(",", "."));
+      setStash(hex, isFinite(n) && n > 0 ? n : 0);
+      return true;
+    });
+}
+function renderStash(){
+  var box = $("stash-list"); box.innerHTML = "";
+  var st = stash(), keys = Object.keys(st).sort(function(a,b){ return st[b] - st[a]; });
+  if(!keys.length){
+    box.innerHTML = '<div class="empty"><h3>' + t("Nothing listed yet") + '</h3><p>'
+      + t("Add the yarns from this chart, then say how much of each you have.") + '</p></div>';
+    return;
+  }
+  keys.forEach(function(hex){
+    var row = el("div","stashrow");
+    var dot = el("i"); dot.style.background = hex;
+    var mid = el("button","m");
+    mid.appendChild(el("b", null, t(nearestShade(hex).name)));
+    mid.appendChild(el("span", null, hex + " \u00b7 " + tf("{n} m", { n:stashHas(hex) })));
+    mid.onclick = function(){ askMetres(hex).then(function(ok){ if(ok) refreshStashViews(); }); };
+    var rm = el("button", null, t("Remove"));
+    rm.onclick = function(){ setStash(hex, 0); refreshStashViews(); };
+    row.appendChild(dot); row.appendChild(mid); row.appendChild(rm);
+    box.appendChild(row);
+  });
+}
+function refreshStashViews(){
+  renderStash();
+  if(S.screen === "fabric") renderFabricScreen();
+}
 function renderRecolour(){
   var box = $("recolour-list"); box.innerHTML = "";
   var p = S.proj, cen = chartCensus(p.cells);
@@ -6231,9 +6335,37 @@ function startWork(key, name, w, h, cells){
 function saveWorkPos(){
   if(S.work) lsSet("work:" + S.work.key, { ri:S.work.ri, si:S.work.si });
 }
+/* How long a stitch takes you. Timed between one run being marked done and the
+   next, divided by the stitches in it, and kept as a median so putting the work
+   down for an hour does not make every estimate an hour long. */
+var runStartedAt = 0;
+function notePace(stitches){
+  var now = Date.now();
+  if(runStartedAt && stitches > 0){
+    var per = (now - runStartedAt) / 1000 / stitches;
+    if(per > 0.25 && per < 25){
+      if(!SET.paceSamples) SET.paceSamples = [];
+      SET.paceSamples.push(Math.round(per * 100) / 100);
+      if(SET.paceSamples.length > 60) SET.paceSamples.shift();
+      var sorted = SET.paceSamples.slice().sort(function(a,b){ return a-b; });
+      SET.pace = sorted[sorted.length >> 1];
+      saveSettings();
+    }
+  }
+  runStartedAt = now;
+}
+function timeFor(stitches){
+  if(!SET.pace || !stitches) return null;
+  var mins = Math.round(SET.pace * stitches / 60);
+  if(mins < 1) return tf("{n} min", { n:1 });
+  if(mins < 90) return tf("{n} min", { n:mins });
+  var h = Math.floor(mins / 60), m = mins % 60;
+  return m ? tf("{h} h {m}", { h:h, m:m }) : tf("{h} h", { h:h });
+}
 function workStep(dir){
   var W = S.work; if(!W) return;
   var row = W.rows[W.ri];
+  if(dir > 0) notePace(row.runs[W.si] ? row.runs[W.si].n : 0);
   if(dir > 0){
     if(W.si < row.runs.length - 1) W.si++;
     else if(W.ri < W.rows.length - 1){ W.ri++; W.si = 0; buzz(22); }
@@ -6265,8 +6397,15 @@ function drawWorkChart(){
   x2.strokeStyle = "rgba(0,0,0,.65)"; x2.lineWidth = 1;
   x2.strokeRect(x0*cell - 2.5, row.y*cell - 2.5, n*cell + 5, cell + 5);
 }
+function applyHandsBusy(){
+  var scr = $("scr-work"); if(!scr) return;
+  scr.classList.toggle("busy", !!SET.handsBusy);
+  $("work-busy").classList.toggle("on", !!SET.handsBusy);
+  $("work-busyhint").hidden = !SET.handsBusy;
+}
 function renderWork(){
   var W = S.work; if(!W){ goBack(); return; }
+  applyHandsBusy();
   var row = W.rows[W.ri];
   $("work-name").textContent = W.name;
   $("work-row").textContent = "Row " + row.r;
@@ -6355,6 +6494,10 @@ function renderFabricScreen(){
   g.drawImage(made, 0, 0);
   cv2.style.imageRendering = (S.fabricMode === "chart") ? "pixelated" : "auto";
   $("fab-blank").hidden = F.cells.every(Boolean);
+  var left = F.cells.filter(Boolean).length, est = timeFor(left);
+  $("fab-pace").hidden = !est;
+  if(est) $("fab-pace").textContent = tf(
+    "About {t} at your pace \u2014 measured from the runs you have worked row by row.", { t:est });
 
   var segs = $("fab-seg").querySelectorAll("button");
   for(var i=0;i<segs.length;i++) segs[i].classList.toggle("on", segs[i].getAttribute("data-fab") === S.fabricMode);
@@ -6390,6 +6533,12 @@ function renderFabricScreen(){
     mid.appendChild(el("span", null, hex));
     var amt = el("span","amt");
     amt.innerHTML = cen.counts[hex].toLocaleString() + " sts<br>~" + metresFor(cen.counts[hex]) + " m";
+    var need = metresFor(cen.counts[hex]), got = stashHas(hex);
+    if(got > 0){
+      var tag = el("span", "have " + (got >= need ? "ok" : "short"),
+        got >= need ? t("you have it") : tf("{n} m short", { n:Math.round((need - got) * 10) / 10 }));
+      amt.appendChild(tag);
+    }
     row.appendChild(dot); row.appendChild(mid); row.appendChild(amt);
     list.appendChild(row);
   });
@@ -6938,6 +7087,17 @@ function wire(){
     if(saveFile(safeName(S.fabric.name) + "-worked-up.png", dataURLtoBlob(cv2.toDataURL("image/png")))) toast("Saved to Downloads.");
     else toast("Press and hold the picture instead.");
   };
+  $("fab-stash").onclick = function(){ renderStash(); openSheet("sheet-stash"); };
+  $("stash-add").onclick = function(){
+    var cells = S.fabric ? S.fabric.cells : (S.proj ? S.proj.cells : null);
+    if(!cells){ toast(t("Open a chart first.")); return; }
+    var order = chartCensus(cells).order, added = 0;
+    order.forEach(function(hex){ if(!(hex in stash())){ stash()[hex] = 0; added++; } });
+    saveSettings();
+    renderStash();
+    toast(added ? tf("{n} added \u2014 tap each to say how much.", { n:added })
+                : t("They are all on the list already."));
+  };
   $("m-recolour").onclick = function(){ closeSheet("sheet-more"); renderRecolour(); openSheet("sheet-recolour"); };
   $("m-repeat").onclick = function(){ closeSheet("sheet-more"); renderRepeat(); openSheet("sheet-repeat"); };
 
@@ -7023,6 +7183,11 @@ function wire(){
   /* working mode */
   $("work-next").onclick = function(){ workStep(1); };
   $("work-prev").onclick = function(){ workStep(-1); };
+  $("work-busy").onclick = function(){
+    SET.handsBusy = !SET.handsBusy; saveSettings(); applyHandsBusy();
+    toast(SET.handsBusy ? t("Tap anywhere on the panel to move on.") : t("Back to the buttons."));
+  };
+  $("workwrap-tap").onclick = function(){ if(SET.handsBusy) workStep(1); };
   $("work-restart").onclick = function(){
     ask({ title:"Start again?", msg:"Back to row 1, first stitch.", ok:"Start again" }).then(function(ok){
       if(!ok || !S.work) return;

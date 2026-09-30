@@ -36,7 +36,33 @@ for m in re.finditer(r'"((?:[^"\\\n]|\\.){6,200})"', code):
     if v in SKIP: continue
     cands.add(v)
 
+# markup attributes the tree walk translates, which the script scan cannot see
+markup = s[s.index("<svg"):s.index("<script>")]
+for a in ("aria-label", "placeholder", "title"):
+    for m in re.finditer(a + r'="([^"]+)"', markup):
+        v = m.group(1).strip()
+        if v and " " in v or (v and v[0].isupper()):
+            cands.add(v)
+
 missing = sorted(c for c in cands if c not in keys)
 print("keys %d  scanned %d  MISSING %d" % (len(keys), len(cands), len(missing)))
 if "-v" in sys.argv:
     for m2 in missing: print(json.dumps(m2, ensure_ascii=False))
+
+# `t` is the translate function; anything that shadows it in a scope which also
+# calls t() throws "t is not a function" only when that branch is reached.
+code_lines = code.split("\n")
+stack, depth, shadowed = [], 0, []
+for i, ln in enumerate(code_lines):
+    m = re.search(r'function\s*\w*\s*\(([^)]*)\)', ln)
+    if m:
+        stack.append({"shadow": "t" in [p.strip() for p in m.group(1).split(",")], "depth": depth})
+    if re.search(r'\bvar\b[^;]*\bt\b\s*(=|,|;)', ln) and stack:
+        stack[-1]["shadow"] = True
+    if re.search(r'(?<![\w.$])t\(', ln) and stack and any(f["shadow"] for f in stack):
+        shadowed.append((i + 1, ln.strip()[:100]))
+    depth += ln.count("{") - ln.count("}")
+    while stack and depth <= stack[-1]["depth"]:
+        stack.pop()
+print("t() called where t is shadowed: %d" % len(shadowed))
+for ln, txt in shadowed: print("  line", ln, "|", txt)

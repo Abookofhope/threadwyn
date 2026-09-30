@@ -198,6 +198,20 @@ Three tools back that up:
 - **Symbols** settle it for good: two yarns that read alike still carry
   different marks.
 
+## Read aloud
+
+Every control that is only a picture carries a name, in whatever language the
+app is set to, so a phone reading the screen aloud says *Undo* rather than
+*button*. The chart is a canvas, which announces nothing at all on its own, so
+it carries a live description instead — the chart's name and size, where the
+cursor is, and how much is worked — rebuilt with the row and stitch readout.
+
+`i18n_audit.py` checks the control names alongside everything else: it reads
+the `aria-label`, `placeholder` and `title` attributes out of the markup and
+reports any with no key in any pack.
+
+If the phone asks for less movement, the sheets and the buttons stop sliding.
+
 ## Version
 
 The home screen carries a build stamp in the bottom right, like `v1.6 · 34c8c93`.

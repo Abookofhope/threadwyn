@@ -52,6 +52,13 @@
   --shadow-2:0 2px 6px rgba(0,0,0,.50), 0 16px 40px -12px rgba(0,0,0,.80);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* Sheets rise, tiles press and the chart slides. If the phone has been told
+   that movement is unwelcome, none of that is worth making someone ill for. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important; animation-iteration-count:1!important;
+    transition-duration:.01ms!important; scroll-behavior:auto!important}
+}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.45;
   overscroll-behavior:none;-webkit-user-select:none;user-select:none}
 h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.01em}
@@ -619,7 +626,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ CAST ON ============ -->
 <section class="screen" id="scr-new">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>Cast on</h2>
  </div>
  <div class="pad stack">
@@ -639,7 +646,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ PATTERN BOOK ============ -->
 <section class="screen" id="scr-book">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>Pattern Book</h2>
  </div>
  <div class="pad stack">
@@ -651,7 +658,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ WORKS IN PROGRESS ============ -->
 <section class="screen" id="scr-works">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>Works in progress</h2>
  </div>
  <div class="pad stack"><div class="pieces" id="works-list"></div></div>
@@ -660,15 +667,15 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ THE LOOM ============ -->
 <section class="screen flex" id="scr-loom">
  <div class="bar">
-  <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+  <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
   <h2 id="loom-name">Sampler</h2>
   <span class="saved" id="saved" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></span>
-  <button class="ib" id="btn-undo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
-  <button class="ib" id="btn-redo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-redo"/></svg></button>
-  <button class="ib" id="btn-more"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-more"/></svg></button>
+  <button class="ib" id="btn-undo" aria-label="Undo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
+  <button class="ib" id="btn-redo" aria-label="Redo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-redo"/></svg></button>
+  <button class="ib" id="btn-more" aria-label="This chart"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-more"/></svg></button>
  </div>
  <div class="stage" id="stage">
-   <canvas id="cv"></canvas>
+   <canvas id="cv" role="img" data-notw aria-label="The chart"></canvas>
    <div class="gauge" id="gauge">R<b>1</b> · St<b>1</b></div>
    <button class="isochip" id="isochip" hidden><i id="iso-dot"></i><span id="iso-name">—</span><span class="x">tap to stop</span></button>
    <div id="loupe"><canvas id="loupe-cv" width="96" height="96"></canvas></div>
@@ -691,28 +698,28 @@ body.has-update .bar{padding-top:8px}
      <button class="btn go" id="tips-ok">Got it</button>
    </div>
    <div class="nudge" id="nudge">
-     <button class="sp"></button>
-     <button data-n="0,-1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-up"/></svg></button>
-     <button class="sp"></button>
-     <button data-n="-1,0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-left"/></svg></button>
-     <button class="stamp" id="nudge-go"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></button>
-     <button data-n="1,0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-right"/></svg></button>
-     <button class="sp"></button>
-     <button data-n="0,1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-down"/></svg></button>
-     <button class="sp"></button>
+     <span class="sp" aria-hidden="true"></span>
+     <button data-n="0,-1" aria-label="Nudge up"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-up"/></svg></button>
+     <span class="sp" aria-hidden="true"></span>
+     <button data-n="-1,0" aria-label="Nudge left"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-left"/></svg></button>
+     <button class="stamp" id="nudge-go" aria-label="Work the tool here"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></button>
+     <button data-n="1,0" aria-label="Nudge right"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-right"/></svg></button>
+     <span class="sp" aria-hidden="true"></span>
+     <button data-n="0,1" aria-label="Nudge down"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-down"/></svg></button>
+     <span class="sp" aria-hidden="true"></span>
    </div>
  </div>
  <div class="tray">
    <div class="toolhint" id="toolhint">—</div>
    <div class="tools" id="tools">
-     <button class="tool on" data-tool="stitch" title="Stitch"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
-     <button class="tool" data-tool="unpick" title="Unpick"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-erase"/></svg></button>
-     <button class="tool" data-tool="flood" title="Flood"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fill"/></svg></button>
-     <button class="tool" data-tool="match" title="Match a yarn"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pick"/></svg></button>
-     <button class="tool" data-tool="row" title="Straight run"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-line"/></svg></button>
-     <button class="tool" data-tool="block" title="Block"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg></button>
-     <button class="tool" data-tool="select" title="Select"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-select"/></svg></button>
-     <button class="tool" data-tool="motif" title="Stamps"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stamp"/></svg></button>
+     <button class="tool on" data-tool="stitch" title="Stitch" aria-label="Stitch"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
+     <button class="tool" data-tool="unpick" title="Unpick" aria-label="Unpick"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-erase"/></svg></button>
+     <button class="tool" data-tool="flood" title="Flood" aria-label="Flood"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fill"/></svg></button>
+     <button class="tool" data-tool="match" title="Match a yarn" aria-label="Match a yarn"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pick"/></svg></button>
+     <button class="tool" data-tool="row" title="Straight run" aria-label="Straight run"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-line"/></svg></button>
+     <button class="tool" data-tool="block" title="Block" aria-label="Block"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-box"/></svg></button>
+     <button class="tool" data-tool="select" title="Select" aria-label="Select"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-select"/></svg></button>
+     <button class="tool" data-tool="motif" title="Stamps" aria-label="Stamps"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-stamp"/></svg></button>
    </div>
    <div class="selbar" id="selbar" hidden>
      <span class="selinfo" id="selinfo">—</span>
@@ -729,7 +736,7 @@ body.has-update .bar{padding-top:8px}
      <button data-sel="done">Done</button>
    </div>
    <div class="basket">
-     <button class="dye" id="dye"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+     <button class="dye" id="dye" aria-label="Dye a yarn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><use href="#i-plus"/></svg></button>
      <div class="skeins" id="skeins"></div>
    </div>
  </div>
@@ -738,7 +745,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ CABINET ============ -->
 <section class="screen" id="scr-cabinet">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>The Cabinet</h2>
  </div>
  <div class="pad stack">
@@ -751,7 +758,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ ONE PIECE ============ -->
 <section class="screen" id="scr-piece">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2 id="piece-title">Piece</h2>
  </div>
  <div class="pad stack">
@@ -774,7 +781,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ THE FABRIC ============ -->
 <section class="screen flex" id="scr-fabric">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2 id="fabric-name">Worked up</h2>
    <button class="ib" id="fabric-save" hidden aria-label="Save the picture"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-share"/></svg></button>
  </div>
@@ -791,13 +798,13 @@ body.has-update .bar{padding-top:8px}
    <div class="axis">
      <div class="lab">Your tension — per 10&nbsp;cm</div>
      <div class="gaugerow">
-       <button data-g="sts-"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+       <button data-g="sts-" aria-label="Fewer stitches per 10 cm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
        <span class="gv"><b id="g-sts">16</b> sts</span>
-       <button data-g="sts+"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       <button data-g="sts+" aria-label="More stitches per 10 cm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
        <span class="gsep"></span>
-       <button data-g="rows-"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+       <button data-g="rows-" aria-label="Fewer rows per 10 cm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
        <span class="gv"><b id="g-rows">18</b> rows</span>
-       <button data-g="rows+"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       <button data-g="rows+" aria-label="More rows per 10 cm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
      </div>
      <p class="note" style="margin:8px 2px 0">Work a 10&nbsp;cm square, count what you actually get, and put it in here. Everything below is then true to your hands.</p>
    </div>
@@ -808,7 +815,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ BLANKETS ============ -->
 <section class="screen" id="scr-blankets">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>Blankets</h2>
  </div>
  <div class="pad stack">
@@ -820,9 +827,9 @@ body.has-update .bar{padding-top:8px}
 
 <section class="screen" id="scr-blanket">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2 id="blanket-name">Blanket</h2>
-   <button class="ib" id="blanket-rename"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
+   <button class="ib" id="blanket-rename" aria-label="Rename this blanket"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pen"/></svg></button>
  </div>
  <div class="pad stack">
    <div class="plate"><div class="frame" style="border-width:8px"><canvas id="blanket-prev" style="width:100%;height:auto;display:block;image-rendering:pixelated"></canvas></div></div>
@@ -845,7 +852,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ WORKING MODE ============ -->
 <section class="screen flex" id="scr-work">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2 id="work-name">Working</h2>
    <button class="ib" id="work-restart" aria-label="Start again"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
  </div>
@@ -869,7 +876,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ CHARMS ============ -->
 <section class="screen" id="scr-charms">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>Charm Codes</h2>
  </div>
  <div class="pad stack">
@@ -886,7 +893,7 @@ body.has-update .bar{padding-top:8px}
 <!-- ============ SHARE / BACKUP ============ -->
 <section class="screen" id="scr-share">
  <div class="bar">
-   <button class="ib" data-back><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
+   <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2>Share &amp; backup</h2>
  </div>
  <div class="pad stack">
@@ -1103,9 +1110,9 @@ body.has-update .bar{padding-top:8px}
      <div class="axis" style="margin-top:10px">
        <div class="lab">How many yarns</div>
        <div class="stepper">
-         <button id="ph-less"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+         <button id="ph-less" aria-label="Fewer yarns"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
          <div class="val" id="ph-count">8</div>
-         <button id="ph-more"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+         <button id="ph-more" aria-label="More yarns"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
        </div>
      </div>
      <div class="stack" style="gap:8px;margin-top:12px">
@@ -1620,6 +1627,12 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.19", d:"30 Sep", items:[
+   "Tapping an empty square with the colour-picker could stop the tools working until you left the chart. Fixed.",
+   "Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.",
+   "The chart says where your cursor is and how much is worked, out loud, in your language.",
+   "If your phone is set to keep movement down, the sheets and buttons stop sliding about."
+ ]},
  { v:"1.18", d:"30 Sep", items:[
    "Everything the game says to you is now in your language: every message, every question it asks, every note under a button.",
    "The written pattern too — the headings, the instructions, the yarn names and the row lines.",
@@ -3103,6 +3116,30 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"A locked mirror said only “· · ·”. It says what it is now, so you can tell whether the charm is worth chasing.": "Un miroir verrouillé n'affichait que « · · · ». Il dit maintenant ce qu'il est, pour savoir si le charme vaut la peine.", "Everything the game says to you is now in your language: every message, every question it asks, every note under a button.": "Tout ce que le jeu vous dit est désormais dans votre langue : chaque message, chaque question, chaque note sous un bouton.", "The guide layer ran each name into its note on one line, as the pattern book used to. They sit apart now.": "Le calque de guidage collait chaque nom à sa note sur une seule ligne, comme le carnet de motifs avant lui. Ils sont séparés.", "The written pattern too — the headings, the instructions, the yarn names and the row lines.": "Le patron écrit aussi — les titres, les consignes, les noms de fils et les lignes de rangs."},{"A locked mirror said only “· · ·”. It says what it is now, so you can tell whether the charm is worth chasing.": "Un espejo bloqueado solo ponía «· · ·». Ahora dice lo que es, para saber si vale la pena buscar el encanto.", "Everything the game says to you is now in your language: every message, every question it asks, every note under a button.": "Todo lo que el juego te dice está ahora en tu idioma: cada mensaje, cada pregunta, cada nota bajo un botón.", "The guide layer ran each name into its note on one line, as the pattern book used to. They sit apart now.": "La capa guía juntaba cada nombre con su nota en una línea, como hacía el libro de patrones. Ya van separados.", "The written pattern too — the headings, the instructions, the yarn names and the row lines.": "El patrón escrito también: los títulos, las instrucciones, los nombres de los hilos y las líneas de vueltas."},{"A locked mirror said only “· · ·”. It says what it is now, so you can tell whether the charm is worth chasing.": "Ein gesperrter Spiegel zeigte nur „· · ·“. Jetzt sagt er, was er ist — damit du weißt, ob sich das Zauberwort lohnt.", "Everything the game says to you is now in your language: every message, every question it asks, every note under a button.": "Alles, was das Spiel dir sagt, steht jetzt in deiner Sprache: jede Meldung, jede Frage, jede Notiz unter einer Taste.", "The guide layer ran each name into its note on one line, as the pattern book used to. They sit apart now.": "Die Hilfsebene klebte Namen und Notiz in eine Zeile, wie zuvor das Musterbuch. Jetzt stehen sie getrennt.", "The written pattern too — the headings, the instructions, the yarn names and the row lines.": "Auch die geschriebene Anleitung — Überschriften, Anweisungen, Garnnamen und Reihenzeilen."}]);
+/* And the fix that came with it. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Tapping an empty square with the colour-picker could stop the tools working until you left the chart. Fixed.": "Toucher un carré vide avec la pipette pouvait bloquer les outils jusqu'à ce qu'on quitte la grille. Corrigé."},{"Tapping an empty square with the colour-picker could stop the tools working until you left the chart. Fixed.": "Tocar un cuadro vacío con el cuentagotas podía dejar las herramientas sin funcionar hasta salir de la cuadrícula. Arreglado."},{"Tapping an empty square with the colour-picker could stop the tools working until you left the chart. Fixed.": "Ein leeres Kästchen mit der Pipette anzutippen konnte die Werkzeuge lahmlegen, bis man das Zählmuster verließ. Behoben."}]);
+/* Changelog lines for the accessibility pass. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Chaque bouton qui n'est qu'une image a désormais un nom : un téléphone qui lit l'écran à voix haute peut dire ce que c'est.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si votre téléphone demande moins d'animations, les panneaux et les boutons cessent de glisser.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La grille dit où est votre curseur et combien est fait, à voix haute, dans votre langue."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Cada botón que es solo un dibujo tiene ahora un nombre, así un teléfono que lee la pantalla en voz alta puede decir qué es.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si tu teléfono pide menos movimiento, los paneles y los botones dejan de deslizarse.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La cuadrícula dice dónde está tu cursor y cuánto llevas hecho, en voz alta y en tu idioma."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Jede Taste, die nur ein Bild ist, hat jetzt einen Namen — ein Telefon, das den Bildschirm vorliest, kann sagen, was sie ist.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Wenn dein Telefon weniger Bewegung verlangt, hören Blätter und Tasten auf zu gleiten.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "Das Zählmuster sagt laut und in deiner Sprache, wo dein Cursor steht und wie viel gearbeitet ist."}]);
+/* Names for the controls that are only an icon. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Chart {name}, {w} by {h}. Row {r}, stitch {s}. {n} stitches worked.": "Grille {name}, {w} sur {h}. Rang {r}, maille {s}. {n} mailles faites.", "Fewer rows per 10 cm": "Moins de rangs pour 10 cm", "Fewer stitches per 10 cm": "Moins de mailles pour 10 cm", "Fewer yarns": "Moins de fils", "Fit the chart": "Ajuster la grille", "More rows per 10 cm": "Plus de rangs pour 10 cm", "More stitches per 10 cm": "Plus de mailles pour 10 cm", "More yarns": "Plus de fils", "Move the crease back": "Reculer le pli", "Move the crease on": "Avancer le pli", "Redo": "Rétablir", "Rename this blanket": "Renommer cette couverture", "The chart": "La grille", "Undo": "Annuler", "Work the tool here": "Actionner l'outil ici"},{"Chart {name}, {w} by {h}. Row {r}, stitch {s}. {n} stitches worked.": "Cuadrícula {name}, {w} por {h}. Vuelta {r}, punto {s}. {n} puntos hechos.", "Fewer rows per 10 cm": "Menos vueltas por 10 cm", "Fewer stitches per 10 cm": "Menos puntos por 10 cm", "Fewer yarns": "Menos hilos", "Fit the chart": "Ajustar la cuadrícula", "More rows per 10 cm": "Más vueltas por 10 cm", "More stitches per 10 cm": "Más puntos por 10 cm", "More yarns": "Más hilos", "Move the crease back": "Atrasar el pliegue", "Move the crease on": "Adelantar el pliegue", "Redo": "Rehacer", "Rename this blanket": "Renombrar esta manta", "The chart": "La cuadrícula", "Undo": "Deshacer", "Work the tool here": "Accionar la herramienta aquí"},{"Chart {name}, {w} by {h}. Row {r}, stitch {s}. {n} stitches worked.": "Zählmuster {name}, {w} mal {h}. Reihe {r}, Masche {s}. {n} Maschen gearbeitet.", "Fewer rows per 10 cm": "Weniger Reihen auf 10 cm", "Fewer stitches per 10 cm": "Weniger Maschen auf 10 cm", "Fewer yarns": "Weniger Garne", "Fit the chart": "Zählmuster einpassen", "More rows per 10 cm": "Mehr Reihen auf 10 cm", "More stitches per 10 cm": "Mehr Maschen auf 10 cm", "More yarns": "Mehr Garne", "Move the crease back": "Falte zurückschieben", "Move the crease on": "Falte vorschieben", "Redo": "Wiederholen", "Rename this blanket": "Diese Decke umbenennen", "The chart": "Das Zählmuster", "Undo": "Rückgängig", "Work the tool here": "Werkzeug hier auslösen"}]);
 /* Units on the yarn lines. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -3248,6 +3285,7 @@ function translateTree(root){
       var next = orig.replace(key, got);
       if(node.nodeValue !== next) node.nodeValue = next;   /* idempotent: no loop */
     } else {
+      if(node.hasAttribute && node.hasAttribute("data-notw")) continue;
       for(i = 0; i < TW_ATTRS.length; i++){
         var an = TW_ATTRS[i];
         if(!node.hasAttribute || !node.hasAttribute(an)) continue;
@@ -3866,6 +3904,13 @@ function setIsolate(hex){
 function updateGauge(){
   var g = $("gauge"); if(!g || !S.proj) return;
   g.innerHTML = "R<b>" + (S.proj.h - S.cursor.y) + "</b> · St<b>" + (S.cursor.x+1) + "</b> &nbsp;·&nbsp; " + S.proj.w + "×" + S.proj.h;
+  /* A canvas has nothing to announce on its own. Keep it saying where the
+     cursor is and how much is worked, so the chart is not a silent hole. */
+  if(cv) cv.setAttribute("aria-label", tf(
+    "Chart {name}, {w} by {h}. Row {r}, stitch {s}. {n} stitches worked.",
+    { name:S.proj.name, w:S.proj.w, h:S.proj.h,
+      r:(S.proj.h - S.cursor.y), s:(S.cursor.x + 1),
+      n:S.proj.cells.filter(Boolean).length }));
 }
 
 /* ==========================================================================
@@ -4120,8 +4165,8 @@ function localPoint(ev){
 }
 
 function toolDown(cell, pt){
-  var t = S.tool;
-  if(t === "match"){
+  var tool = S.tool;
+  if(tool === "match"){
     var p = S.proj;
     if(cell.x>=0 && cell.y>=0 && cell.x<p.w && cell.y<p.h){
       var c = p.cells[cell.y*p.w + cell.x];
@@ -4130,31 +4175,31 @@ function toolDown(cell, pt){
     setTool("stitch");
     return false;
   }
-  if(t === "flood"){ beginStroke(); flood(cell.x, cell.y, S.yarn); endStroke(); invalidate(); buzz(12); return false; }
-  if(t === "motif"){ beginStroke(); stampMotif(cell.x, cell.y); endStroke(); invalidate(); buzz(12); return false; }
-  if(t === "select"){ S.selPreview = {x0:cell.x, y0:cell.y, x1:cell.x, y1:cell.y}; S.sel = null; updateSelBar(); invalidate(); return true; }
-  if(t === "row" || t === "block"){ anchor = {x:cell.x, y:cell.y}; previewCells = {list:[[cell.x,cell.y]], color:S.yarn}; invalidate(); return true; }
+  if(tool === "flood"){ beginStroke(); flood(cell.x, cell.y, S.yarn); endStroke(); invalidate(); buzz(12); return false; }
+  if(tool === "motif"){ beginStroke(); stampMotif(cell.x, cell.y); endStroke(); invalidate(); buzz(12); return false; }
+  if(tool === "select"){ S.selPreview = {x0:cell.x, y0:cell.y, x1:cell.x, y1:cell.y}; S.sel = null; updateSelBar(); invalidate(); return true; }
+  if(tool === "row" || tool === "block"){ anchor = {x:cell.x, y:cell.y}; previewCells = {list:[[cell.x,cell.y]], color:S.yarn}; invalidate(); return true; }
   beginStroke();
-  paintAt(cell.x, cell.y, t === "unpick" ? null : S.yarn);
+  paintAt(cell.x, cell.y, tool === "unpick" ? null : S.yarn);
   lastCell = {x:cell.x, y:cell.y};
   invalidate();
   return true;
 }
 function toolMove(cell){
-  var t = S.tool;
-  if(t === "select"){
+  var tool = S.tool;
+  if(tool === "select"){
     if(S.selPreview){ S.selPreview.x1 = cell.x; S.selPreview.y1 = cell.y; invalidate(); }
     return;
   }
-  if(t === "row"){
+  if(tool === "row"){
     previewCells = {list:lineCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
   }
-  if(t === "block"){
+  if(tool === "block"){
     previewCells = {list:shapeCells(anchor.x,anchor.y,cell.x,cell.y), color:S.yarn}; invalidate(); return;
   }
   if(lastCell && (lastCell.x !== cell.x || lastCell.y !== cell.y)){
     var pts = lineCells(lastCell.x, lastCell.y, cell.x, cell.y);
-    for(var k=0;k<pts.length;k++) paintAt(pts[k][0], pts[k][1], t === "unpick" ? null : S.yarn);
+    for(var k=0;k<pts.length;k++) paintAt(pts[k][0], pts[k][1], tool === "unpick" ? null : S.yarn);
     lastCell = {x:cell.x, y:cell.y};
     invalidate();
   }
@@ -5504,23 +5549,23 @@ function setFold(which, val){
   saveProject(p); renderMirror(); invalidate();
 }
 function foldNow(axis, fromLow){
-  var p = S.proj, x, y, t, moved = 0;
+  var p = S.proj, x, y, mir, moved = 0;
   beginStroke();
   if(axis === "x"){
     var f = p.fx / 2;
     for(y=0;y<p.h;y++) for(x=0;x<p.w;x++){
       if(fromLow ? (x + 0.5) > f : (x + 0.5) < f) continue;
-      t = p.fx - x - 1;
-      if(t < 0 || t >= p.w || t === x) continue;
-      put(y*p.w + t, p.cells[y*p.w + x]); moved++;
+      mir = p.fx - x - 1;
+      if(mir < 0 || mir >= p.w || mir === x) continue;
+      put(y*p.w + mir, p.cells[y*p.w + x]); moved++;
     }
   } else {
     var g = p.fy / 2;
     for(y=0;y<p.h;y++){
       if(fromLow ? (y + 0.5) > g : (y + 0.5) < g) continue;
-      t = p.fy - y - 1;
-      if(t < 0 || t >= p.h || t === y) continue;
-      for(x=0;x<p.w;x++) put(t*p.w + x, p.cells[y*p.w + x]);
+      mir = p.fy - y - 1;
+      if(mir < 0 || mir >= p.h || mir === y) continue;
+      for(x=0;x<p.w;x++) put(mir*p.w + x, p.cells[y*p.w + x]);
       moved++;
     }
   }
@@ -5556,8 +5601,10 @@ function renderMirror(){
     box.appendChild(el("div","lab", title));
     var st = el("div","stepper");
     var minus = el("button", null); minus.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg>';
+    minus.setAttribute("aria-label", t("Move the crease back"));
     var val = el("div","val", axisLabel(f, span));
     var plus = el("button", null); plus.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg>';
+    plus.setAttribute("aria-label", t("Move the crease on"));
     minus.onclick = function(){ setFold(which, p[which] - 1); };
     plus.onclick  = function(){ setFold(which, p[which] + 1); };
     st.appendChild(minus); st.appendChild(val); st.appendChild(plus);

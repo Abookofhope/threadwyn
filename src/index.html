@@ -417,6 +417,7 @@ body.has-update .bar{padding-top:8px}
 .tile:active{transform:scale(.94);background:var(--line-soft)}
 .tile svg{width:22px;height:22px;color:var(--accent);flex:none}
 .tile b{color:var(--ink);font-weight:700}
+.tile.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
 .saved{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;flex:none;
   background:var(--teal);color:var(--paper);opacity:0;transform:scale(.6);
   transition:opacity .18s ease, transform .18s var(--ease)}
@@ -963,8 +964,8 @@ body.has-update .bar{padding-top:8px}
      <button class="tile" id="m-recolour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-swap"/></svg><span>Recolour</span></button>
      <button class="tile" id="m-repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid4"/></svg><span>Repeat</span></button>
      <button class="tile" id="m-fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg><span>Fit</span></button>
-     <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span>Lines <b id="m-grid-state">bold</b></span></button>
-     <button class="tile" id="m-symbols"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-marks"/></svg><span>Symbols <b id="m-sym-state">off</b></span></button>
+     <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span id="m-grid-label" data-notw>Lines bold</span></button>
+     <button class="tile" id="m-symbols"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-marks"/></svg><span id="m-sym-label" data-notw>Symbols off</span></button>
    </div>
    <div class="stack" style="gap:8px;margin-top:14px">
      <button class="btn" id="m-write">Write it out as a crochet pattern</button>
@@ -1212,8 +1213,8 @@ body.has-update .bar{padding-top:8px}
      <button class="btn" id="set-theme">Look: <b id="set-theme-state">follows your phone</b></button>
      <button class="btn" id="set-buzz">Buzz when a stitch lands: <b id="set-buzz-state">on</b></button>
      <button class="btn" id="set-awake">Keep the screen awake: <b id="set-awake-state">on</b></button>
-     <button class="btn" id="set-grid">Chart lines: <b id="set-grid-state">bold</b></button>
-     <button class="btn" id="set-sym">Stitch symbols: <b id="set-sym-state">off</b></button>
+     <button class="btn" id="set-grid" data-notw>Chart lines: bold</button>
+     <button class="btn" id="set-sym" data-notw>Stitch symbols: off</button>
      <button class="btn" id="set-rule">Heavy chart line every: <b id="set-rule-state">10</b></button>
      <button class="btn" id="set-yarn">Yarn per stitch: <b id="set-yarn-state">5.5 cm</b></button>
      <button class="btn" id="set-store">Protect my work from cleanup: <b id="set-store-state">checking…</b></button>
@@ -1617,6 +1618,10 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.17", d:"30 Sep", items:[
+   "The Lines and Symbols tiles light up while they are on, so you can see at a glance which are doing something.",
+   "They read properly in French, Spanish and German now; the state word used to sit after a noun it could not agree with."
+ ]},
  { v:"1.16", d:"29 Sep", items:[
    "Recolour: see the same picture in any set of yarns you have, each one previewed before you pick it. One undo takes it back.",
    "It moves colours by tone, not by hue, so the light and the dark stay where you put them even in a set that shares none of your colours.",
@@ -3072,6 +3077,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{", the old word for joy: the quiet pleasure of a pattern coming out even.":", le vieux mot pour la joie : le plaisir tranquille d'un motif qui tombe juste.","Nothing on the hooks yet":"Rien sur les crochets pour l'instant","one chart on the go":"une grille en cours","today":"aujourd'hui","yesterday":"hier","{a} / {b} to level {c}":"{a} / {b} avant le niveau {c}","{n} charts on the go":"{n} grilles en cours","{n} days ago":"il y a {n} jours","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} mailles faites","— thread, and":"— thread (fil), et",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", la vieja palabra para la alegría: el placer callado de un patrón que sale parejo.","Nothing on the hooks yet":"Nada en los ganchillos todavía","one chart on the go":"una cuadrícula en curso","today":"hoy","yesterday":"ayer","{a} / {b} to level {c}":"{a} / {b} para el nivel {c}","{n} charts on the go":"{n} cuadrículas en curso","{n} days ago":"hace {n} días","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} puntos hechos","— thread, and":"— thread (hilo), y",}, {", the old word for joy: the quiet pleasure of a pattern coming out even.":", das alte Wort für Freude: das stille Vergnügen, wenn ein Muster aufgeht.","Nothing on the hooks yet":"Noch nichts auf der Nadel","one chart on the go":"ein Zählmuster in Arbeit","today":"heute","yesterday":"gestern","{a} / {b} to level {c}":"{a} / {b} bis Stufe {c}","{n} charts on the go":"{n} Zählmuster in Arbeit","{n} days ago":"vor {n} Tagen","{w}×{h} · {n} stitches worked":"{w}×{h} · {n} Maschen gehäkelt","— thread, and":"— thread (Faden), und",}]);
+/* Changelog lines for the toggle tiles. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"The Lines and Symbols tiles light up while they are on, so you can see at a glance which are doing something.": "Les tuiles Lignes et Symboles s'allument quand elles sont actives : on voit d'un coup d'œil ce qui travaille.", "They read properly in French, Spanish and German now; the state word used to sit after a noun it could not agree with.": "Leur libellé est enfin correct en français, en espagnol et en allemand : le mot d'état suivait un nom avec lequel il ne pouvait pas s'accorder."},{"The Lines and Symbols tiles light up while they are on, so you can see at a glance which are doing something.": "Las casillas de Líneas y Símbolos se encienden cuando están activas, así ves de un vistazo cuáles hacen algo.", "They read properly in French, Spanish and German now; the state word used to sit after a noun it could not agree with.": "Ahora se leen bien en francés, español y alemán: la palabra de estado iba detrás de un nombre con el que no podía concordar."},{"The Lines and Symbols tiles light up while they are on, so you can see at a glance which are doing something.": "Die Kacheln Linien und Symbole leuchten, solange sie an sind — so siehst du auf einen Blick, was gerade wirkt.", "They read properly in French, Spanish and German now; the state word used to sit after a noun it could not agree with.": "Sie lesen sich jetzt in Französisch, Spanisch und Deutsch richtig; das Zustandswort stand hinter einem Substantiv, mit dem es nicht übereinstimmen konnte."}]);
+/* Whole phrases for the two toggles, so the state word agrees. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Chart lines: bold": "Lignes de la grille : marquées", "Chart lines: off": "Lignes de la grille : masquées", "Chart lines: soft": "Lignes de la grille : légères", "Lines bold": "Lignes marquées", "Lines off": "Lignes masquées", "Lines soft": "Lignes légères", "Stitch symbols: off": "Symboles de mailles : masqués", "Stitch symbols: on": "Symboles de mailles : affichés", "Symbols off": "Symboles masqués", "Symbols on": "Symboles affichés"},{"Chart lines: bold": "Líneas de la cuadrícula: marcadas", "Chart lines: off": "Líneas de la cuadrícula: ocultas", "Chart lines: soft": "Líneas de la cuadrícula: suaves", "Lines bold": "Líneas marcadas", "Lines off": "Líneas ocultas", "Lines soft": "Líneas suaves", "Stitch symbols: off": "Símbolos de puntos: ocultos", "Stitch symbols: on": "Símbolos de puntos: visibles", "Symbols off": "Símbolos ocultos", "Symbols on": "Símbolos visibles"},{"Chart lines: bold": "Zählmuster-Linien: kräftig", "Chart lines: off": "Zählmuster-Linien: aus", "Chart lines: soft": "Zählmuster-Linien: fein", "Lines bold": "Linien kräftig", "Lines off": "Linien aus", "Lines soft": "Linien fein", "Stitch symbols: off": "Maschensymbole: aus", "Stitch symbols: on": "Maschensymbole: an", "Symbols off": "Symbole aus", "Symbols on": "Symbole an"}]);
 /* Changelog lines for recolouring. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -3172,8 +3193,10 @@ function translateTree(root){
   var node, i;
   while((node = walker.nextNode())){
     if(node.nodeType === 3){
-      var pn = node.parentNode && node.parentNode.nodeName;
+      var par = node.parentNode;
+      var pn = par && par.nodeName;
       if(pn === "SCRIPT" || pn === "STYLE") continue;
+      if(par && par.hasAttribute && par.hasAttribute("data-notw")) continue;
       var orig = node.__tw;
       if(orig === undefined){ orig = node.nodeValue; node.__tw = orig; }
       var key = orig.trim();
@@ -3213,6 +3236,7 @@ function setLanguage(id, quiet){
   saveSettings();
   try{ document.documentElement.setAttribute("lang", id); }catch(e){}
   translateTree(document.body);
+  refreshToggleLabels();
   var chip = $("lang-now"), st = $("set-lang-state");
   if(chip) chip.textContent = langName(id);
   if(st) st.textContent = langName(id);
@@ -3450,7 +3474,25 @@ function sizeCanvas(){
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-var GRIDWORDS = ["off", "soft", "bold"];
+/* Whole phrases rather than a noun plus a loose state word. "off" has to
+   agree with what it describes in French and Spanish \u2014 lignes are feminine,
+   symboles masculine \u2014 and one shared word cannot do both. Translating the
+   sentence instead of the word sidesteps the grammar entirely. */
+var GRID_TILE = ["Lines off", "Lines soft", "Lines bold"];
+var SYM_TILE  = ["Symbols off", "Symbols on"];
+var GRID_ROW  = ["Chart lines: off", "Chart lines: soft", "Chart lines: bold"];
+var SYM_ROW   = ["Stitch symbols: off", "Stitch symbols: on"];
+/* The app writes these itself, already translated, so the tree walk must not
+   also have a go at them. */
+function refreshToggleLabels(){
+  var g = SET.grid | 0, y = SET.symbols ? 1 : 0, n;
+  if((n = $("m-grid-label"))) n.textContent = t(GRID_TILE[g]);
+  if((n = $("m-sym-label")))  n.textContent = t(SYM_TILE[y]);
+  if((n = $("set-grid")))     n.textContent = t(GRID_ROW[g]);
+  if((n = $("set-sym")))      n.textContent = t(SYM_ROW[y]);
+  if((n = $("m-grid")))       n.classList.toggle("on", g > 0);
+  if((n = $("m-symbols")))    n.classList.toggle("on", !!SET.symbols);
+}
 var previewCells = null;   /* {list:[[x,y]...], color:"#.."} while dragging a run or block */
 
 /* --- chart lines ---------------------------------------------------------
@@ -5776,8 +5818,7 @@ function renderSettings(){
   $("set-buzz-state").textContent = SET.buzz ? "on" : "off";
   $("set-awake-state").textContent = SET.awake ? "on" : "off";
   $("set-rule-state").textContent = String(SET.rule);
-  $("set-grid-state").textContent = t(GRIDWORDS[SET.grid | 0]);
-  $("set-sym-state").textContent = t(SET.symbols ? "on" : "off");
+  refreshToggleLabels();
   $("set-yarn-state").textContent = SET.cmPerStitch + " cm";
   refreshStorage();
 }
@@ -6652,8 +6693,7 @@ function wire(){
     var st = S.proj.cells.filter(Boolean).length;
     $("more-sub").textContent = S.proj.name + " · " + S.proj.w + "×" + S.proj.h + " · " + st.toLocaleString() + " stitches worked";
     $("m-sheet").hidden = !canSaveFiles();
-    $("m-grid-state").textContent = t(GRIDWORDS[SET.grid | 0]);
-    $("m-sym-state").textContent = t(SET.symbols ? "on" : "off");
+    refreshToggleLabels();
     openSheet("sheet-more");
   };
   $("m-fasten").onclick = fastenOff;
@@ -6934,15 +6974,13 @@ function wire(){
   $("m-fit").onclick = function(){ fitView(); invalidate(); closeSheet("sheet-more"); };
   $("m-grid").onclick = function(){
     SET.grid = ((SET.grid | 0) + 1) % 3; saveSettings();
-    $("m-grid-state").textContent = t(GRIDWORDS[SET.grid]);
-    if($("set-grid-state")) $("set-grid-state").textContent = t(GRIDWORDS[SET.grid]);
+    refreshToggleLabels();
     invalidate();
   };
   $("m-symbols").onclick = function(){
     SET.symbols = !SET.symbols; saveSettings();
     renderSkeins();
-    $("m-sym-state").textContent = t(SET.symbols ? "on" : "off");
-    if($("set-sym-state")) $("set-sym-state").textContent = t(SET.symbols ? "on" : "off");
+    refreshToggleLabels();
     if(SET.symbols && S.view.scale < 13) toast("Zoom in and every yarn shows its own mark.");
     invalidate();
   };

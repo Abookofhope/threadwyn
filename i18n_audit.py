@@ -44,6 +44,14 @@ for a in ("aria-label", "placeholder", "title"):
         if v and " " in v or (v and v[0].isupper()):
             cands.add(v)
 
+# the precise contract: every literal handed straight to t() or tf() must have
+# a key, whatever it starts with. The sentence-shaped scan above cannot see keys
+# that begin with a brace or a lowercase letter.
+for m in re.finditer(r'(?<![\w.$])tf?\(\s*("(?:[^"\\\n]|\\.)*")', code):
+    try: v = json.loads(m.group(1))
+    except Exception: continue
+    if v.strip(): cands.add(v)
+
 missing = sorted(c for c in cands if c not in keys)
 print("keys %d  scanned %d  MISSING %d" % (len(keys), len(cands), len(missing)))
 if "-v" in sys.argv:
@@ -66,3 +74,23 @@ for i, ln in enumerate(code_lines):
         stack.pop()
 print("t() called where t is shadowed: %d" % len(shadowed))
 for ln, txt in shadowed: print("  line", ln, "|", txt)
+
+# the reverse of the shadowing check: `t.name` / `t.on` where t is NOT a local
+# in scope is a property read on the translate function. Renaming a loop
+# variable away from t and missing one use of it produced "undefined is under
+# the chart", and no t( call was involved to flag it.
+stack, depth, strays_t = [], 0, []
+for i, ln in enumerate(code_lines):
+    m = re.search(r'function\s*\w*\s*\(([^)]*)\)', ln)
+    if m:
+        stack.append({"has": "t" in [p.strip() for p in m.group(1).split(",")], "depth": depth})
+    if re.search(r'\bvar\b[^;]*\bt\b\s*(=|,|;)', ln) and stack:
+        stack[-1]["has"] = True
+    if re.search(r'(?<![\w.$"\'])t\.[a-zA-Z]', ln) and not ln.strip().startswith(("/*", "*", "//")):
+        if not any(f["has"] for f in stack):
+            strays_t.append((i + 1, ln.strip()[:100]))
+    depth += ln.count("{") - ln.count("}")
+    while stack and depth <= stack[-1]["depth"]:
+        stack.pop()
+print("t.property where t is the translator: %d" % len(strays_t))
+for ln, txt in strays_t: print("  line", ln, "|", txt)

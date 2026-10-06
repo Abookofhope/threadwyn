@@ -120,6 +120,30 @@ Thumbnails lay one even cloth behind a piece rather than the woven check the
 chart itself uses: at thumbnail size a check reads as the transparency pattern
 from an image editor, which is the last thing a framed piece should look like.
 
+## Carry or cut
+
+In colour-work the cost of a picture is not its stitches, it is its colour
+*changes*: every one is a yarn end to weave in, and weaving in ends is the part
+everyone dreads. A drawing app would show a stitch count. This one shows the
+work.
+
+**Effort** (in the chart menu) counts the colour changes, then the ends you
+would face two ways: cutting at every change, or **carrying** the yarn along the
+back where the colour returns within six stitches. Rows turn, so the colour a
+row ends in is the colour the next starts with, and that join costs nothing.
+It turns the ends into a rough weaving time and says how big a job the whole
+chart is, from *gentle* to *an epic*.
+
+**Strays** are single stitches surrounded on three or four sides by other
+colours; each costs a change and two ends for almost nothing on the finished
+piece. Effort rings them on the chart, and one tap matches each to the commonest
+colour round it, as a single undo. A lone dot on bare ground is left alone, as
+is an edge stitch with only two worked neighbours: those are deliberate.
+
+And when you work the pattern row by row, it says what to **reach for next**
+and whether to **carry the yarn behind or cut it** — the decision a crocheter
+actually makes at the end of every run, answered at the moment it comes up.
+
 ## What I already have
 
 A shopping list that says "buy 40 m of teal" when there are 60 m of it in a

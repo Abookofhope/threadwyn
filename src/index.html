@@ -263,6 +263,13 @@ input,textarea{font:inherit;color:inherit}
 .charm .w{font-size:12.5px;color:var(--ink-2)}
 .charm .cbody{flex:1;min-width:0}
 .approx{font-style:italic;opacity:.9}
+.verdict{font-family:var(--display);font-size:19px;text-align:center;margin:14px 0 6px;line-height:1.25}
+.effortstray{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--paper)}
+.effortstray b{font-family:var(--display);font-size:16px}
+.effortstray .row{flex-direction:column;gap:8px}
+.reach{font-size:14px;color:var(--ink-2);text-align:center;white-space:pre-line;line-height:1.55;margin:0}
+.reach b{color:var(--ink)}
+#scr-work.busy .reach{font-size:clamp(16px,4.6vw,21px);padding:0 6px}
 .charm .g{display:block;margin-top:4px;font-size:12px;color:var(--ink-3);opacity:.85}
 .charm .n,.charm .w,.charm .r{display:block}
 .charm .r{margin-top:7px}
@@ -542,6 +549,7 @@ body.has-update .bar{padding-top:8px}
 <g id="i-frame"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></g>
 <g id="i-ring"><circle cx="12" cy="12" r="8.2"/></g>
 <g id="i-disc"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.9"/><circle cx="12" cy="12" r="1.7"/></g>
+<g id="i-effort"><path d="M5 19V10M10 19V5M15 19v-6M20 19V8"/></g>
 <g id="i-play"><path d="M7 4.5l12 7.5-12 7.5z"/></g>
 <g id="i-copy"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5h-11v11"/></g>
 <g id="i-fit"><path d="M4.5 9V4.5H9M15 4.5h4.5V9M19.5 15v4.5H15M9 19.5H4.5V15"/></g>
@@ -890,6 +898,7 @@ body.has-update .bar{padding-top:8px}
    <canvas id="work-chart"></canvas>
    <div class="runs" id="work-runs"></div>
    <div class="nowrun" id="work-now">—</div>
+   <p class="reach" id="work-reach"></p>
    <p class="note busyhint" id="work-busyhint" hidden>Tap anywhere on this panel when that run is done.</p>
  </div>
  <div class="workfoot">
@@ -996,6 +1005,7 @@ body.has-update .bar{padding-top:8px}
      <button class="tile" id="m-guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-layers"/></svg><span>Guide</span></button>
      <button class="tile" id="m-fabric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-yarn"/></svg><span>Worked up</span></button>
      <button class="tile" id="m-recolour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-swap"/></svg><span>Recolour</span></button>
+     <button class="tile" id="m-effort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-effort"/></svg><span>Effort</span></button>
      <button class="tile" id="m-repeat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid4"/></svg><span>Repeat</span></button>
      <button class="tile" id="m-fit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-fit"/></svg><span>Fit</span></button>
      <button class="tile" id="m-grid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-new"/></svg><span id="m-grid-label" data-notw>Lines bold</span></button>
@@ -1158,6 +1168,27 @@ body.has-update .bar{padding-top:8px}
    <div class="stack" id="stash-list" style="gap:8px"></div>
    <button class="btn" id="stash-add" style="margin-top:12px">Add this chart's yarns</button>
    <button class="btn quiet" data-close style="margin-top:8px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-effort">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>How much work is this?</h2>
+   <p class="sub">What the chart will ask of your hands: how often the colour changes, how many yarn ends you will have to weave in, and the stray stitches that cost you a change for almost nothing.</p>
+   <div class="facts" id="effort-facts"></div>
+   <p class="verdict" id="effort-verdict">—</p>
+   <p class="note" id="effort-carry" style="margin:2px 2px 12px">—</p>
+   <div class="effortstray">
+     <b id="effort-stray-head">—</b>
+     <p class="note" id="effort-stray-note" style="margin:4px 0 10px">—</p>
+     <div class="row">
+       <button class="btn" id="effort-show">Show the strays</button>
+       <button class="btn go" id="effort-tidy">Tidy them — match their neighbours</button>
+     </div>
+   </div>
+   <button class="btn quiet" data-close style="margin-top:14px">Back to work</button>
  </div>
 </div>
 
@@ -1664,6 +1695,13 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.22", d:"6 Oct", items:[
+   "Applying a guide layer told you “undefined is under the chart”. It names the guide now.",
+   "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.",
+   "Effort: how often the colour changes, how many yarn ends you would weave in cutting every change or carrying short gaps, roughly how long that weaving takes, and how big a job the whole chart is.",
+   "Strays: single stitches ringed on the chart, each one costing a colour change and two ends for almost nothing. One tap matches them to their neighbours; one undo puts them back.",
+   "Working a pattern now says what to reach for next, and whether to carry the yarn behind or cut it — the decision a crocheter actually makes at the end of every run."
+ ]},
  { v:"1.21", d:"6 Oct", items:[
    "A ring was drawn round the first letter of any colour name set in italics. Gone.",
    "The names in What I already have sat inside a box that clipped them. They are plain text you tap now.",
@@ -3179,6 +3217,31 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Chaque bouton qui n'est qu'une image a désormais un nom : un téléphone qui lit l'écran à voix haute peut dire ce que c'est.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si votre téléphone demande moins d'animations, les panneaux et les boutons cessent de glisser.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La grille dit où est votre curseur et combien est fait, à voix haute, dans votre langue."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Cada botón que es solo un dibujo tiene ahora un nombre, así un teléfono que lee la pantalla en voz alta puede decir qué es.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si tu teléfono pide menos movimiento, los paneles y los botones dejan de deslizarse.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La cuadrícula dice dónde está tu cursor y cuánto llevas hecho, en voz alta y en tu idioma."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Jede Taste, die nur ein Bild ist, hat jetzt einen Namen — ein Telefon, das den Bildschirm vorliest, kann sagen, was sie ist.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Wenn dein Telefon weniger Bewegung verlangt, hören Blätter und Tasten auf zu gleiten.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "Das Zählmuster sagt laut und in deiner Sprache, wo dein Cursor steht und wie viel gearbeitet ist."}]);
+/* Sentences the app glues together in code, which no dictionary lookup
+   could see until they were turned into templates. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"One stitch falls outside a {w}×{h} chart and would be lost. Undo can't bring it back.": "Une maille tombe hors d'une grille de {w}×{h} et serait perdue. L'annulation ne peut pas la ramener.", "Skip {n} square": "Sauter {n} carré", "Skip {n} squares": "Sauter {n} carrés", "after the last stitch": "après la dernière maille", "before the first stitch": "avant la première maille", "between {a} and {b}": "entre {a} et {b}", "down stitch {n}": "au milieu de la maille {n}", "{a} across × {b} down · {n} of {m} filled": "{a} en largeur × {b} en hauteur · {n} sur {m} remplis", "{a} of {b} turned over — the next thing you fasten off turns another.": "{a} sur {b} retournées — le prochain ouvrage arrêché en retournera une autre.", "{name} is in the basket.": "{name} est dans le panier.", "{name} is on the shelf.": "{name} est sur l'étagère.", "{name} is under the chart.": "{name} est sous la grille.", "{name} loaded — tap the chart.": "{name} chargé — touchez la grille.", "{name} took you up a level.": "{name} vous a fait monter d'un niveau.", "{name} · {w}×{h} · {n} stitches worked": "{name} · {w}×{h} · {n} mailles faites", "{name} — a {w} by {h} stitch chart": "{name} — une grille de {w} sur {h} mailles", "{n} stitch in {l} — {name}": "{n} maille en {l} — {name}", "{n} stitches fall outside a {w}×{h} chart and would be lost. Undo can't bring them back.": "{n} mailles tombent hors d'une grille de {w}×{h} et seraient perdues. L'annulation ne peut pas les ramener.", "{n} stitches in {l} — {name}": "{n} mailles en {l} — {name}", "{size} used": "{size} utilisés"},{"One stitch falls outside a {w}×{h} chart and would be lost. Undo can't bring it back.": "Un punto cae fuera de una cuadrícula de {w}×{h} y se perdería. Deshacer no puede devolverlo.", "Skip {n} square": "Salta {n} cuadro", "Skip {n} squares": "Salta {n} cuadros", "after the last stitch": "después del último punto", "before the first stitch": "antes del primer punto", "between {a} and {b}": "entre {a} y {b}", "down stitch {n}": "en medio del punto {n}", "{a} across × {b} down · {n} of {m} filled": "{a} de ancho × {b} de alto · {n} de {m} llenos", "{a} of {b} turned over — the next thing you fasten off turns another.": "{a} de {b} dadas la vuelta: lo próximo que remates dará la vuelta a otra.", "{name} is in the basket.": "{name} está en la cesta.", "{name} is on the shelf.": "{name} está en el estante.", "{name} is under the chart.": "{name} está bajo la cuadrícula.", "{name} loaded — tap the chart.": "{name} cargado: toca la cuadrícula.", "{name} took you up a level.": "{name} te ha subido de nivel.", "{name} · {w}×{h} · {n} stitches worked": "{name} · {w}×{h} · {n} puntos hechos", "{name} — a {w} by {h} stitch chart": "{name} — una cuadrícula de {w} por {h} puntos", "{n} stitch in {l} — {name}": "{n} punto en {l} — {name}", "{n} stitches fall outside a {w}×{h} chart and would be lost. Undo can't bring them back.": "{n} puntos caen fuera de una cuadrícula de {w}×{h} y se perderían. Deshacer no puede devolverlos.", "{n} stitches in {l} — {name}": "{n} puntos en {l} — {name}", "{size} used": "{size} usados"},{"One stitch falls outside a {w}×{h} chart and would be lost. Undo can't bring it back.": "Eine Masche läge außerhalb eines Zählmusters von {w}×{h} und ginge verloren. Rückgängig bringt sie nicht zurück.", "Skip {n} square": "{n} Kästchen auslassen", "Skip {n} squares": "{n} Kästchen auslassen", "after the last stitch": "nach der letzten Masche", "before the first stitch": "vor der ersten Masche", "between {a} and {b}": "zwischen {a} und {b}", "down stitch {n}": "mitten durch Masche {n}", "{a} across × {b} down · {n} of {m} filled": "{a} breit × {b} hoch · {n} von {m} belegt", "{a} of {b} turned over — the next thing you fasten off turns another.": "{a} von {b} umgedreht — das nächste abgeschlossene Stück dreht einen weiteren Buchstaben um.", "{name} is in the basket.": "{name} liegt im Korb.", "{name} is on the shelf.": "{name} steht im Regal.", "{name} is under the chart.": "{name} liegt unter dem Zählmuster.", "{name} loaded — tap the chart.": "{name} geladen — tippe aufs Zählmuster.", "{name} took you up a level.": "{name} hat dich eine Stufe weitergebracht.", "{name} · {w}×{h} · {n} stitches worked": "{name} · {w}×{h} · {n} Maschen gearbeitet", "{name} — a {w} by {h} stitch chart": "{name} — ein Zählmuster von {w} mal {h} Maschen", "{n} stitch in {l} — {name}": "{n} Masche in {l} — {name}", "{n} stitches fall outside a {w}×{h} chart and would be lost. Undo can't bring them back.": "{n} Maschen lägen außerhalb eines Zählmusters von {w}×{h} und gingen verloren. Rückgängig bringt sie nicht zurück.", "{n} stitches in {l} — {name}": "{n} Maschen in {l} — {name}", "{size} used": "{size} belegt"}]);
+/* Changelog lines for the fixes that came with it. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Applying a guide layer told you “undefined is under the chart”. It names the guide now.": "Appliquer un calque de guidage affichait « undefined est sous la grille ». Il nomme maintenant le guide.", "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.": "En suivant un patron, une seule maille s'affichait « 1 stitches » et restait en anglais quelle que soit la langue. C'est correct et traduit, tout comme une douzaine d'autres phrases que l'appli compose en route."},{"Applying a guide layer told you “undefined is under the chart”. It names the guide now.": "Aplicar una capa guía decía «undefined está bajo la cuadrícula». Ahora nombra la guía.", "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.": "Al seguir un patrón, un solo punto ponía «1 stitches» y se quedaba en inglés sin importar el idioma. Ahora es correcto y está traducido, igual que una docena de frases más que la app arma sobre la marcha."},{"Applying a guide layer told you “undefined is under the chart”. It names the guide now.": "Eine Hilfsebene anzulegen meldete „undefined liegt unter dem Zählmuster“. Jetzt nennt es die Hilfsebene beim Namen.", "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.": "Beim Arbeiten nach Anleitung hieß eine einzelne Masche „1 stitches“ und blieb in jeder Sprache englisch. Jetzt stimmt es und ist übersetzt, ebenso ein Dutzend weiterer Sätze, die die App unterwegs zusammensetzt."}]);
+/* Effort, strays and carry-or-cut. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A long haul — put the kettle on.": "Au long cours — mettez la bouilloire.", "A stray is one stitch surrounded by other colours. Each costs a colour change and two ends for almost nothing on the finished piece.": "Une maille isolée est entourée d'autres couleurs. Chacune coûte un changement de couleur et deux fils pour presque rien sur l'ouvrage fini.", "An epic — pace yourself.": "Une épopée — ménagez-vous.", "Carry {name} along the back — it returns after {n} st.": "Gardez {name} derrière l'ouvrage — il revient après {n} m.", "Carrying means leaving the yarn along the back and picking it up when the colour returns within {n} stitches. Past that, cutting is tidier.": "Porter le fil, c'est le laisser derrière l'ouvrage et le reprendre quand la couleur revient dans les {n} mailles. Au-delà, couper est plus propre.", "Colour changes": "Changements de couleur", "Cut {name} — it does not come back this row.": "Coupez {name} — il ne revient pas dans ce rang.", "Effort": "Effort", "Effort: how often the colour changes, how many yarn ends you would weave in cutting every change or carrying short gaps, roughly how long that weaving takes, and how big a job the whole chart is.": "Effort : combien de fois la couleur change, combien de fils vous rentreriez en coupant à chaque changement ou en portant les courts écarts, environ combien de temps cela prend, et l'ampleur du travail.", "End of the row — turn and start the next.": "Fin du rang — tournez et commencez le suivant.", "Ends — carrying short gaps": "Fils — en portant les courts écarts", "Ends — cutting at every change": "Fils — en coupant à chaque changement", "Gentle — a calm one.": "Douce — une tranquille.", "How much work is this?": "Combien de travail ?", "Next: leave {n} empty.": "Ensuite : laisser {n} vides.", "Next: {name}.": "Ensuite : {name}.", "No strays — every stitch has a neighbour in its colour.": "Aucune maille isolée — chacune a une voisine de sa couleur.", "One stray stitch": "Une maille isolée", "Show the strays": "Montrer les mailles isolées", "Steady — a good evening or two.": "Régulière — une bonne soirée ou deux.", "Strays: single stitches ringed on the chart, each one costing a colour change and two ends for almost nothing. One tap matches them to their neighbours; one undo puts them back.": "Mailles isolées : entourées sur la grille, chacune coûtant un changement de couleur et deux fils pour presque rien. Une touche les aligne sur leurs voisines ; une annulation les remet.", "Tidy them — match their neighbours": "Les ranger — prendre la couleur des voisines", "Weaving them in": "Pour les rentrer", "What the chart will ask of your hands: how often the colour changes, how many yarn ends you will have to weave in, and the stray stitches that cost you a change for almost nothing.": "Ce que la grille demandera à vos mains : combien de fois la couleur change, combien de fils vous devrez rentrer, et les mailles isolées qui coûtent un changement pour presque rien.", "Working a pattern now says what to reach for next, and whether to carry the yarn behind or cut it — the decision a crocheter actually makes at the end of every run.": "Suivre un patron indique maintenant quel fil prendre ensuite, et s'il faut porter le fil derrière ou le couper — la décision que prend vraiment une crocheteuse à la fin de chaque série.", "{n} stitches matched to their neighbours. Undo puts them back.": "{n} mailles alignées sur leurs voisines. L'annulation les remet.", "{n} stray stitches": "{n} mailles isolées", "{n} stray stitches ringed.": "{n} mailles isolées entourées."},{"A long haul — put the kettle on.": "De largo aliento: pon el agua a hervir.", "A stray is one stitch surrounded by other colours. Each costs a colour change and two ends for almost nothing on the finished piece.": "Un punto suelto está rodeado de otros colores. Cada uno cuesta un cambio de color y dos cabos por casi nada en la pieza terminada.", "An epic — pace yourself.": "Una epopeya: dosifica tus fuerzas.", "Carry {name} along the back — it returns after {n} st.": "Lleva {name} por detrás: vuelve tras {n} pt.", "Carrying means leaving the yarn along the back and picking it up when the colour returns within {n} stitches. Past that, cutting is tidier.": "Llevar el hilo es dejarlo por detrás y retomarlo cuando el color vuelve antes de {n} puntos. Más allá, cortar queda más limpio.", "Colour changes": "Cambios de color", "Cut {name} — it does not come back this row.": "Corta {name}: no vuelve en esta vuelta.", "Effort": "Esfuerzo", "Effort: how often the colour changes, how many yarn ends you would weave in cutting every change or carrying short gaps, roughly how long that weaving takes, and how big a job the whole chart is.": "Esfuerzo: cuántas veces cambia el color, cuántos cabos esconderías cortando en cada cambio o llevando los tramos cortos, más o menos cuánto tarda y qué tamaño de trabajo es.", "End of the row — turn and start the next.": "Fin de la vuelta: gira y empieza la siguiente.", "Ends — carrying short gaps": "Cabos — llevando los tramos cortos", "Ends — cutting at every change": "Cabos — cortando en cada cambio", "Gentle — a calm one.": "Suave: una tranquila.", "How much work is this?": "¿Cuánto trabajo es?", "Next: leave {n} empty.": "Luego: dejar {n} vacíos.", "Next: {name}.": "Luego: {name}.", "No strays — every stitch has a neighbour in its colour.": "Ningún punto suelto: cada uno tiene un vecino de su color.", "One stray stitch": "Un punto suelto", "Show the strays": "Mostrar los puntos sueltos", "Steady — a good evening or two.": "Constante: una tarde o dos.", "Strays: single stitches ringed on the chart, each one costing a colour change and two ends for almost nothing. One tap matches them to their neighbours; one undo puts them back.": "Puntos sueltos: marcados en la cuadrícula, cada uno cuesta un cambio de color y dos cabos por casi nada. Un toque los iguala a sus vecinos; un deshacer los devuelve.", "Tidy them — match their neighbours": "Ordenarlos: igualar a sus vecinos", "Weaving them in": "Para esconderlos", "What the chart will ask of your hands: how often the colour changes, how many yarn ends you will have to weave in, and the stray stitches that cost you a change for almost nothing.": "Lo que la cuadrícula pedirá a tus manos: cuántas veces cambia el color, cuántos cabos tendrás que esconder y los puntos sueltos que cuestan un cambio por casi nada.", "Working a pattern now says what to reach for next, and whether to carry the yarn behind or cut it — the decision a crocheter actually makes at the end of every run.": "Al seguir un patrón ahora dice qué hilo coger después y si llevarlo por detrás o cortarlo: la decisión que una tejedora toma de verdad al final de cada tramo.", "{n} stitches matched to their neighbours. Undo puts them back.": "{n} puntos igualados a sus vecinos. Deshacer los devuelve.", "{n} stray stitches": "{n} puntos sueltos", "{n} stray stitches ringed.": "{n} puntos sueltos marcados."},{"A long haul — put the kettle on.": "Ein langer Atem — setz Wasser auf.", "A stray is one stitch surrounded by other colours. Each costs a colour change and two ends for almost nothing on the finished piece.": "Eine einzelne Masche ist von anderen Farben umgeben. Jede kostet einen Farbwechsel und zwei Fäden und bringt am fertigen Stück kaum etwas.", "An epic — pace yourself.": "Ein Epos — teil dir die Kräfte ein.", "Carry {name} along the back — it returns after {n} st.": "{name} hinten mitführen — kommt nach {n} M. wieder.", "Carrying means leaving the yarn along the back and picking it up when the colour returns within {n} stitches. Past that, cutting is tidier.": "Mitführen heißt, das Garn hinten mitlaufen zu lassen und wieder aufzunehmen, wenn die Farbe innerhalb von {n} Maschen zurückkommt. Darüber ist Abschneiden sauberer.", "Colour changes": "Farbwechsel", "Cut {name} — it does not come back this row.": "{name} abschneiden — kommt in dieser Reihe nicht wieder.", "Effort": "Aufwand", "Effort: how often the colour changes, how many yarn ends you would weave in cutting every change or carrying short gaps, roughly how long that weaving takes, and how big a job the whole chart is.": "Aufwand: wie oft die Farbe wechselt, wie viele Fäden du vernähen würdest, wenn du bei jedem Wechsel abschneidest oder kurze Lücken mitführst, etwa wie lange das dauert und wie groß die Arbeit ist.", "End of the row — turn and start the next.": "Reihenende — wenden und die nächste beginnen.", "Ends — carrying short gaps": "Fäden — kurze Lücken mitführen", "Ends — cutting at every change": "Fäden — bei jedem Wechsel abschneiden", "Gentle — a calm one.": "Sanft — eine ruhige.", "How much work is this?": "Wie viel Arbeit ist das?", "Next: leave {n} empty.": "Dann: {n} leer lassen.", "Next: {name}.": "Dann: {name}.", "No strays — every stitch has a neighbour in its colour.": "Keine Einzelnen — jede Masche hat eine Nachbarin in ihrer Farbe.", "One stray stitch": "Eine einzelne Masche", "Show the strays": "Einzelne zeigen", "Steady — a good evening or two.": "Gleichmäßig — ein oder zwei gute Abende.", "Strays: single stitches ringed on the chart, each one costing a colour change and two ends for almost nothing. One tap matches them to their neighbours; one undo puts them back.": "Einzelne Maschen: auf dem Zählmuster umringt, jede kostet einen Farbwechsel und zwei Fäden für fast nichts. Ein Tipp gleicht sie den Nachbarn an; ein Rückgängig stellt sie zurück.", "Tidy them — match their neighbours": "Aufräumen — Nachbarfarbe übernehmen", "Weaving them in": "Zum Vernähen", "What the chart will ask of your hands: how often the colour changes, how many yarn ends you will have to weave in, and the stray stitches that cost you a change for almost nothing.": "Was das Zählmuster deinen Händen abverlangt: wie oft die Farbe wechselt, wie viele Fäden du vernähen musst und die einzelnen Maschen, die einen Wechsel kosten und kaum etwas bringen.", "Working a pattern now says what to reach for next, and whether to carry the yarn behind or cut it — the decision a crocheter actually makes at the end of every run.": "Beim Arbeiten nach Anleitung steht jetzt, nach welchem Garn du als Nächstes greifst und ob du es hinten mitführst oder abschneidest — die Entscheidung, die man am Ende jedes Abschnitts wirklich trifft.", "{n} stitches matched to their neighbours. Undo puts them back.": "{n} Maschen der Nachbarfarbe angeglichen. Rückgängig stellt sie zurück.", "{n} stray stitches": "{n} einzelne Maschen", "{n} stray stitches ringed.": "{n} einzelne Maschen umringt."}]);
 /* Changelog lines for the visual fixes. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -3844,6 +3907,7 @@ function draw(){
 
   drawSymbols(ox, oy, p, v, r);
   drawRules(ox, oy, gw, gh, p, v);
+  drawStrays(ox, oy, v);
 
   /* stitch and row numbers in the margin, once there's room */
   if(v.scale >= 9){
@@ -4026,6 +4090,7 @@ function endStroke(){
     if(p.cells[i]) placed++;
   });
   stroke = null;
+  S.strays = null;
   S.undoStack.push(entry);
   if(S.undoStack.length > 160) S.undoStack.shift();
   S.redoStack.length = 0;
@@ -4800,7 +4865,7 @@ function adoptProject(p){
   if(S.isolate) setIsolate(null);
   S.proj = p;
   S.undoStack = []; S.redoStack = [];
-  S.sel = null; S.selPreview = null;
+  S.sel = null; S.selPreview = null; S.strays = null;
   previewCells = null; anchor = null; lastCell = null;
   S.cursor = { x:0, y:Math.max(0, p.h - 1) };   /* row 1, stitch 1, where you start */
 }
@@ -5119,7 +5184,7 @@ function renderPresets(){
     if(unlocked){
       var all = el("button","btn quiet","Load the whole set into the basket");
       all.style.marginTop = "8px"; all.style.minHeight = "38px";
-      all.onclick = function(){ SET.basket = set.colors.slice(); saveSettings(); renderBasketGrid(); renderSkeins(); toast(set.name+" is in the basket."); };
+      all.onclick = function(){ SET.basket = set.colors.slice(); saveSettings(); renderBasketGrid(); renderSkeins(); toast(tf("{name} is in the basket.", { name:t(set.name) })); };
       wrap.appendChild(all);
     }
     box.appendChild(wrap);
@@ -5157,7 +5222,7 @@ function renderMotifs(){
     b.onclick = function(){
       if(!unlocked){ toast("A charm opens this motif."); return; }
       S.motif = m.id; S.stampKind = "motif";
-      renderMotifs(); closeSheet("sheet-motif"); toast(m.name+" loaded — tap the chart.");
+      renderMotifs(); closeSheet("sheet-motif"); toast(tf("{name} loaded — tap the chart.", { name:t(m.name) }));
     };
     g.appendChild(b);
   });
@@ -5278,7 +5343,7 @@ function renderPiece(){
   $("piece-plate").classList.toggle("gold", hasCharm("GOLDENHOOK"));
   var img = $("piece-img");
   img.src = pieceDataURL(piece, cells);
-  img.alt = piece.name + " — a " + piece.w + " by " + piece.h + " stitch chart";
+  img.alt = tf("{name} — a {w} by {h} stitch chart", { name:piece.name, w:piece.w, h:piece.h });
   var pat = piece.pattern ? patternById(piece.pattern) : null;
   $("piece-facts").innerHTML =
     '<div><b class="num">'+piece.stitches.toLocaleString()+'</b><span>Stitches worked</span></div>' +
@@ -5411,7 +5476,7 @@ function renderTemplates(){
       S.showGuide = true;
       rebuildBuffer(); invalidate(); saveProject(p);
       closeSheet("sheet-guide");
-      toast(t.name + " is under the chart.");
+      toast(tf("{name} is under the chart.", { name:t(tpl.name) }));
     };
     box.appendChild(b);
   });
@@ -5439,7 +5504,7 @@ function renderCharms(){
       body.appendChild(el("span","g", t(c.gives)));
       if(active && active.code === c.code){
         var tag = el("span","next", shown
-          ? shown + " of " + c.code.length + " turned over — the next thing you fasten off turns another."
+          ? tf("{a} of {b} turned over — the next thing you fasten off turns another.", { a:shown, b:c.code.length })
           : "The next thing you fasten off turns over a letter here.");
         body.appendChild(tag);
       }
@@ -5608,11 +5673,11 @@ var MIRROR_MODES = [
 function axisLabel(f, w){
   if(f % 2 === 0){
     var k = f/2;
-    if(k <= 0) return "before the first stitch";
-    if(k >= w) return "after the last stitch";
-    return "between " + k + " and " + (k+1);
+    if(k <= 0) return t("before the first stitch");
+    if(k >= w) return t("after the last stitch");
+    return tf("between {a} and {b}", { a:k, b:k+1 });
   }
-  return "down stitch " + ((f+1)/2);
+  return tf("down stitch {n}", { n:(f+1)/2 });
 }
 function setFold(which, val){
   var p = S.proj, max = (which === "fx" ? p.w : p.h) * 2;
@@ -5747,7 +5812,9 @@ function regauge(nw, nh){
     closeSheet("sheet-shape");
     toast("Now " + nw + "×" + nh + ".");
   }
-  if(lost) ask({ title:"That crops the work", msg: lost.toLocaleString() + " stitches fall outside a " + nw + "×" + nh + " chart and would be lost. Undo can't bring them back.",
+  if(lost) ask({ title:"That crops the work", msg: lost === 1
+       ? tf("One stitch falls outside a {w}×{h} chart and would be lost. Undo can't bring it back.", { w:nw, h:nh })
+       : tf("{n} stitches fall outside a {w}×{h} chart and would be lost. Undo can't bring them back.", { n:lost.toLocaleString(), w:nw, h:nh }),
                  ok:"Crop it anyway", danger:true }).then(function(ok){ if(ok) apply(); });
   else apply();
 }
@@ -6368,13 +6435,127 @@ function notePace(stitches){
   }
   runStartedAt = now;
 }
-function timeFor(stitches){
-  if(!SET.pace || !stitches) return null;
-  var mins = Math.round(SET.pace * stitches / 60);
-  if(mins < 1) return tf("{n} min", { n:1 });
+/* ---- effort: what a picture asks of the hands -------------------------
+   In colour-work the cost is not the stitches, it is the changes: every one is
+   a yarn end to weave in, and weaving in ends is the part everyone dreads.
+   A colour that comes back within CARRY_MAX stitches can be left along the
+   back and picked up again; further than that, cutting is tidier. Rows turn,
+   so the colour a row ends in is the one the next row starts with. */
+var CARRY_MAX = 6;
+function fmtMinutes(mins){
+  if(mins < 1) mins = 1;
   if(mins < 90) return tf("{n} min", { n:mins });
   var h = Math.floor(mins / 60), m = mins % 60;
   return m ? tf("{h} h {m}", { h:h, m:m }) : tf("{h} h", { h:h });
+}
+function effortOf(p){
+  var rows = patternRows(p.w, p.h, p.cells);
+  var changes = 0, coloured = 0, within = 0, across = 0, prevLast = null;
+  rows.forEach(function(row){
+    var runs = row.runs, first = null, last = null, count = 0, i, j, gap;
+    for(i = 0; i < runs.length; i++){
+      if(!runs[i].c) continue;
+      count++; coloured++;
+      if(first === null) first = runs[i].c;
+      last = runs[i].c;
+      gap = 0;
+      for(j = i + 1; j < runs.length; j++){
+        if(runs[j].c === runs[i].c){ within++; break; }
+        gap += runs[j].n;
+        if(gap > CARRY_MAX) break;
+      }
+    }
+    if(count > 1) changes += count - 1;
+    if(prevLast !== null && first !== null && prevLast === first) across++;
+    prevLast = count ? last : null;
+  });
+  var cut = Math.max(0, 2 * (coloured - across));
+  var carry = Math.max(0, 2 * (coloured - across - within));
+  return { changes:changes, cut:cut, carry:carry };
+}
+function findStrays(p){
+  var out = [], dirs = [[1,0],[-1,0],[0,1],[0,-1]], x, y, k, c, nc, nx, ny, filled, same, counts, best, bn;
+  for(y = 0; y < p.h; y++) for(x = 0; x < p.w; x++){
+    c = p.cells[y*p.w + x]; if(!c) continue;
+    filled = 0; same = 0; counts = {}; best = null; bn = 0;
+    for(k = 0; k < 4; k++){
+      nx = x + dirs[k][0]; ny = y + dirs[k][1];
+      if(nx < 0 || ny < 0 || nx >= p.w || ny >= p.h) continue;
+      nc = p.cells[ny*p.w + nx]; if(!nc) continue;
+      filled++;
+      if(nc === c) same++;
+      else { counts[nc] = (counts[nc] || 0) + 1; if(counts[nc] > bn){ bn = counts[nc]; best = nc; } }
+    }
+    /* Three sides or more worked, none of them its own colour. A lone dot
+       on bare ground is a deliberate dot, so that is left alone. */
+    if(filled >= 3 && same === 0) out.push({ i:y*p.w + x, to:best });
+  }
+  return out;
+}
+function renderEffort(){
+  var p = S.proj, e = effortOf(p), strays = findStrays(p);
+  var box = $("effort-facts");
+  box.innerHTML =
+    '<div><b class="num">' + e.changes.toLocaleString() + '</b><span>' + t("Colour changes") + '</span></div>' +
+    '<div><b class="num">' + e.cut.toLocaleString() + '</b><span>' + t("Ends — cutting at every change") + '</span></div>' +
+    '<div><b class="num">' + e.carry.toLocaleString() + '</b><span>' + t("Ends — carrying short gaps") + '</span></div>' +
+    '<div><b class="num">' + fmtMinutes(Math.round(e.carry * 40 / 60)) + '</b><span>' + t("Weaving them in") + '</span></div>';
+  var word = e.carry < 30 ? "Gentle — a calm one."
+           : e.carry < 100 ? "Steady — a good evening or two."
+           : e.carry < 250 ? "A long haul — put the kettle on."
+           : "An epic — pace yourself.";
+  $("effort-verdict").textContent = t(word);
+  $("effort-carry").textContent = tf(
+    "Carrying means leaving the yarn along the back and picking it up when the colour returns within {n} stitches. Past that, cutting is tidier.",
+    { n:CARRY_MAX });
+  $("effort-stray-head").textContent = strays.length === 0
+    ? t("No strays — every stitch has a neighbour in its colour.")
+    : (strays.length === 1 ? t("One stray stitch") : tf("{n} stray stitches", { n:strays.length }));
+  $("effort-stray-note").textContent = t("A stray is one stitch surrounded by other colours. Each costs a colour change and two ends for almost nothing on the finished piece.");
+  $("effort-show").hidden = $("effort-tidy").hidden = strays.length === 0;
+  $("effort-show").onclick = function(){
+    S.strays = strays; closeSheet("sheet-effort"); invalidate();
+    toast(tf("{n} stray stitches ringed.", { n:strays.length }));
+  };
+  $("effort-tidy").onclick = function(){
+    closeSheet("sheet-effort");
+    beginStroke();
+    strays.forEach(function(st){ if(st.to) put(st.i, st.to); });
+    endStroke(); S.strays = null; invalidate(); buzz(16);
+    toast(tf("{n} stitches matched to their neighbours. Undo puts them back.", { n:strays.length }));
+  };
+}
+function drawStrays(ox, oy, v){
+  if(!S.strays || !S.strays.length || !S.proj) return;
+  var w = S.proj.w, k, x, y, px, py, side = Math.max(v.scale, 5);
+  ctx.save();
+  for(k = 0; k < S.strays.length; k++){
+    x = S.strays[k].i % w; y = (S.strays[k].i - x) / w;
+    px = ox + (x + 0.5) * v.scale - side / 2; py = oy + (y + 0.5) * v.scale - side / 2;
+    ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 3.4; ctx.strokeRect(px - 1, py - 1, side + 2, side + 2);
+    ctx.strokeStyle = css("--accent") || "#f06"; ctx.lineWidth = 1.7; ctx.strokeRect(px - 1, py - 1, side + 2, side + 2);
+  }
+  ctx.restore();
+}
+function reachLine(W){
+  var row = W.rows[W.ri], runs = row.runs, run = runs[W.si];
+  if(!run || !run.c) return "";
+  if(W.si >= runs.length - 1) return t("End of the row — turn and start the next.");
+  var nm = t(nearestShade(run.c).name), nxt = runs[W.si + 1], lines = [], gap = 0, back = -1, j;
+  lines.push(nxt.c ? tf("Next: {name}.", { name:t(nearestShade(nxt.c).name) })
+                   : tf("Next: leave {n} empty.", { n:nxt.n }));
+  for(j = W.si + 1; j < runs.length; j++){
+    if(runs[j].c === run.c){ back = gap; break; }
+    gap += runs[j].n;
+    if(gap > CARRY_MAX) break;
+  }
+  lines.push(back >= 0 ? tf("Carry {name} along the back — it returns after {n} st.", { name:nm, n:back })
+                       : tf("Cut {name} — it does not come back this row.", { name:nm }));
+  return lines.join("\n");
+}
+function timeFor(stitches){
+  if(!SET.pace || !stitches) return null;
+  return fmtMinutes(Math.round(SET.pace * stitches / 60));
 }
 function workStep(dir){
   var W = S.work; if(!W) return;
@@ -6439,8 +6620,11 @@ function renderWork(){
   });
   var cur = row.runs[W.si];
   $("work-now").textContent = cur
-    ? (cur.c ? cur.n + " stitches in " + W.label[cur.c] + " \u2014 " + nearestShade(cur.c).name : "Skip " + cur.n + " squares")
+    ? (cur.c ? tf(cur.n === 1 ? "{n} stitch in {l} \u2014 {name}" : "{n} stitches in {l} \u2014 {name}",
+                  { n:cur.n, l:W.label[cur.c], name:t(nearestShade(cur.c).name) })
+             : tf(cur.n === 1 ? "Skip {n} square" : "Skip {n} squares", { n:cur.n }))
     : "—";
+  $("work-reach").textContent = reachLine(W);
   drawWorkChart();
   keepAwake(true);
 }
@@ -6448,7 +6632,7 @@ function renderWork(){
 function showReward(name, gained, wasLevel, turned){
   var L = levelFor(SET.xp), levelled = L.level > wasLevel;
   $("rw-head").textContent = levelled ? tf("Level {n}!", { n:L.level }) : t("Fastened off");
-  $("rw-sub").textContent = levelled ? name + " took you up a level." : name + " is on the shelf.";
+  $("rw-sub").textContent = tf(levelled ? "{name} took you up a level." : "{name} is on the shelf.", { name:name });
   $("rw-xp").textContent = "+" + gained.toLocaleString();
   $("rw-lv").textContent = String(L.level);
   $("rw-title").textContent = L.title;
@@ -6788,7 +6972,7 @@ function renderBlankets(){
     card.appendChild(c);
     var t = el("span");
     t.appendChild(el("span","t", b.name));
-    t.appendChild(el("span","h", b.cols + " across × " + b.rows + " down · " + filled + " of " + (b.cols*b.rows) + " filled"));
+    t.appendChild(el("span","h", tf("{a} across × {b} down · {n} of {m} filled", { a:b.cols, b:b.rows, n:filled, m:b.cols*b.rows })));
     card.appendChild(t);
     card.onclick = function(){ S.blanketId = b.id; show("blanket"); };
     list.appendChild(card);
@@ -6948,7 +7132,7 @@ function wire(){
   $("btn-redo").onclick = redo;
   $("btn-more").onclick = function(){
     var st = S.proj.cells.filter(Boolean).length;
-    $("more-sub").textContent = S.proj.name + " · " + S.proj.w + "×" + S.proj.h + " · " + st.toLocaleString() + " stitches worked";
+    $("more-sub").textContent = tf("{name} · {w}×{h} · {n} stitches worked", { name:S.proj.name, w:S.proj.w, h:S.proj.h, n:st.toLocaleString() });
     $("m-sheet").hidden = !canSaveFiles();
     refreshToggleLabels();
     openSheet("sheet-more");
@@ -7112,6 +7296,7 @@ function wire(){
     toast(added ? tf("{n} added \u2014 tap each to say how much.", { n:added })
                 : t("They are all on the list already."));
   };
+  $("m-effort").onclick = function(){ closeSheet("sheet-more"); renderEffort(); openSheet("sheet-effort"); };
   $("m-recolour").onclick = function(){ closeSheet("sheet-more"); renderRecolour(); openSheet("sheet-recolour"); };
   $("m-repeat").onclick = function(){ closeSheet("sheet-more"); renderRepeat(); openSheet("sheet-repeat"); };
 
@@ -7508,7 +7693,7 @@ function refreshStorage(){
     }, function(){ parts[0] = "unknown"; paint(); });
   } else parts[0] = "unknown";
   navigator.storage.estimate().then(function(e){
-    if(e && e.usage != null) parts[1] = (e.usage < 1048576 ? Math.round(e.usage/1024) + " KB" : (e.usage/1048576).toFixed(1) + " MB") + " used";
+    if(e && e.usage != null) parts[1] = tf("{size} used", { size:(e.usage < 1048576 ? Math.round(e.usage/1024) + " KB" : (e.usage/1048576).toFixed(1) + " MB") });
     paint();
   }, function(){});
   paint();

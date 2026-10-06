@@ -223,7 +223,7 @@ input,textarea{font:inherit;color:inherit}
 .ribbons{display:flex;flex-wrap:wrap;gap:7px}
 .ribbon{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 11px 5px 8px;font-size:12px;background:var(--paper)}
 .ribbon.locked{opacity:.42}
-.ribbon.more{border-style:dashed;color:var(--ink-2);font-weight:600;cursor:pointer}
+.ribbon.more{border-style:dashed;color:var(--ink-2);font-weight:600;cursor:pointer;min-height:44px;padding-left:14px;padding-right:14px}
 .ribbon .dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
 .ribbon.got .dot{background:var(--brass-bright)}
 .ribbon.got{border-color:var(--brass-bright)}
@@ -347,6 +347,7 @@ body.has-update .bar{padding-top:8px}
 .ver{display:block;width:100%;text-align:right;padding:2px 2px 4px;background:none;border:0;
   font-size:11px;letter-spacing:.09em;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .ver:active{color:var(--accent)}
+.ver{min-height:44px;padding-top:14px}
 .defn{font-size:12.5px;color:var(--ink-3);border-left:2px solid var(--accent);padding-left:10px;margin:10px 0 0!important}
 .defn b{color:var(--ink-2);letter-spacing:.02em}
 .daily{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px 14px;border:1px solid var(--accent);
@@ -411,7 +412,7 @@ body.has-update .bar{padding-top:8px}
 .gaugerow .gsep{width:1px;height:26px;background:var(--line);flex:none;margin:0 2px}
 .shadelist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .shaderow{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
-.shaderow i{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);flex:none;display:block}
+.shaderow > i{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);flex:none;display:block}
 .shaderow .nm2{flex:1;min-width:0;font-size:13.5px}
 .shaderow .nm2 b{display:block;font-family:var(--display);font-size:15px;font-weight:600}
 .shaderow .nm2 span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.04em}
@@ -420,8 +421,8 @@ body.has-update .bar{padding-top:8px}
 .shaderow .have.ok{color:var(--teal)}
 .shaderow .have.short{color:var(--accent)}
 .stashrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
-.stashrow i{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);flex:none;display:block}
-.stashrow .m{flex:1;min-width:0;text-align:left}
+.stashrow > i{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);flex:none;display:block}
+.stashrow .m{flex:1;min-width:0;text-align:left;border:0!important;background:none!important;height:auto!important;padding:2px 0!important;font-size:inherit!important}
 .stashrow .m b{display:block;font-family:var(--display);font-size:15px}
 .stashrow .m span{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .stashrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 12px;font-size:12.5px;background:var(--paper);flex:none}
@@ -1663,6 +1664,11 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.21", d:"6 Oct", items:[
+   "A ring was drawn round the first letter of any colour name set in italics. Gone.",
+   "The names in What I already have sat inside a box that clipped them. They are plain text you tap now.",
+   "The version stamp and the ribbons toggle were too thin to hit reliably. Both are a proper thumb's height now, and look the same."
+ ]},
  { v:"1.20", d:"30 Sep", items:[
    "What I already have: tell it how many metres of each yarn are really in the basket at home, and the shopping list only asks for what you are short of.",
    "Hands busy: while you follow a pattern row by row, the whole panel becomes the button and the run you are on is set large enough to read from your lap.",
@@ -3173,6 +3179,14 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Chaque bouton qui n'est qu'une image a désormais un nom : un téléphone qui lit l'écran à voix haute peut dire ce que c'est.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si votre téléphone demande moins d'animations, les panneaux et les boutons cessent de glisser.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La grille dit où est votre curseur et combien est fait, à voix haute, dans votre langue."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Cada botón que es solo un dibujo tiene ahora un nombre, así un teléfono que lee la pantalla en voz alta puede decir qué es.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Si tu teléfono pide menos movimiento, los paneles y los botones dejan de deslizarse.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "La cuadrícula dice dónde está tu cursor y cuánto llevas hecho, en voz alta y en tu idioma."},{"Every button that is only a picture now has a name, so a phone reading the screen aloud can say what it is.": "Jede Taste, die nur ein Bild ist, hat jetzt einen Namen — ein Telefon, das den Bildschirm vorliest, kann sagen, was sie ist.", "If your phone is set to keep movement down, the sheets and buttons stop sliding about.": "Wenn dein Telefon weniger Bewegung verlangt, hören Blätter und Tasten auf zu gleiten.", "The chart says where your cursor is and how much is worked, out loud, in your language.": "Das Zählmuster sagt laut und in deiner Sprache, wo dein Cursor steht und wie viel gearbeitet ist."}]);
+/* Changelog lines for the visual fixes. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A ring was drawn round the first letter of any colour name set in italics. Gone.": "Un cercle était dessiné autour de la première lettre de tout nom de couleur en italique. Disparu.", "The names in What I already have sat inside a box that clipped them. They are plain text you tap now.": "Les noms dans Ce que j'ai déjà étaient dans une boîte qui les rognait. C'est maintenant du texte simple à toucher.", "The version stamp and the ribbons toggle were too thin to hit reliably. Both are a proper thumb's height now, and look the same.": "Le cachet de version et le bouton des rubans étaient trop fins pour être touchés à coup sûr. Ils ont maintenant la hauteur d'un pouce, et le même aspect."},{"A ring was drawn round the first letter of any colour name set in italics. Gone.": "Se dibujaba un círculo alrededor de la primera letra de cualquier nombre de color en cursiva. Eliminado.", "The names in What I already have sat inside a box that clipped them. They are plain text you tap now.": "Los nombres de Lo que ya tengo estaban en una caja que los recortaba. Ahora son texto llano que se toca.", "The version stamp and the ribbons toggle were too thin to hit reliably. Both are a proper thumb's height now, and look the same.": "El sello de versión y el botón de las cintas eran demasiado finos para pulsarlos con seguridad. Ahora tienen la altura de un pulgar y se ven igual."},{"A ring was drawn round the first letter of any colour name set in italics. Gone.": "Um den ersten Buchstaben jedes kursiv gesetzten Farbnamens wurde ein Ring gezeichnet. Weg.", "The names in What I already have sat inside a box that clipped them. They are plain text you tap now.": "Die Namen in Was ich schon habe steckten in einem Kasten, der sie abschnitt. Jetzt sind sie einfacher Text zum Antippen.", "The version stamp and the ribbons toggle were too thin to hit reliably. Both are a proper thumb's height now, and look the same.": "Versionsstempel und Bänder-Schalter waren zu schmal, um sie sicher zu treffen. Beide haben jetzt Daumenhöhe und sehen gleich aus."}]);
 /* Changelog lines for them. */
 (function(extra){
   var ids = ["fr","es","de"];

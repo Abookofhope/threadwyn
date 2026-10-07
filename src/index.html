@@ -148,14 +148,23 @@ input,textarea{font:inherit;color:inherit}
 .tool .badge{position:absolute;bottom:3px;right:5px;font-size:9px;font-weight:700;letter-spacing:.02em}
 
 .basket{display:flex;gap:8px;align-items:center}
-.skeins{display:flex;gap:7px;overflow-x:auto;flex:1;padding:3px 2px;scrollbar-width:none}
+.skeins{display:flex;gap:7px;overflow-x:auto;flex:1;padding:7px 6px;margin:-4px -4px;scrollbar-width:none}
 .skeins::-webkit-scrollbar{display:none}
 .skein{width:34px;height:34px;border-radius:50%;flex:none;border:2px solid var(--line);position:relative}
 .skein.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.skein.want{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--accent);animation:skwant 1.5s ease-in-out infinite}
+.skein.want.on{animation:none;box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--ink)}
+.skein.want::after{content:attr(data-run);position:absolute;right:-4px;top:-4px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:9px;background:var(--accent);color:var(--on-accent);font:800 10px/17px system-ui,sans-serif;text-align:center;
+  box-sizing:border-box;border:1.5px solid var(--paper);pointer-events:none}
+.skein.inrow::before{content:"";position:absolute;left:50%;bottom:-4px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;
+  background:var(--accent);border:1.5px solid var(--paper);box-sizing:border-box;pointer-events:none}
+@keyframes skwant{50%{box-shadow:0 0 0 2px var(--paper),0 0 0 6px var(--accent)}}
 .skein.erase{background:repeating-linear-gradient(45deg,var(--cloth-a) 0 6px,var(--cloth-b) 6px 12px)}
 .skmark{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;pointer-events:none}
 .dye{width:46px;height:46px;border-radius:14px;flex:none;border:2px solid var(--line);display:grid;place-items:center;
   box-shadow:var(--shadow-1);position:relative;overflow:hidden}
+.dye.want{box-shadow:0 0 0 2px var(--paper),0 0 0 4px var(--accent);animation:skwant 1.5s ease-in-out infinite}
 .dye svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.5));color:#fff;mix-blend-mode:normal}
 
 /* nudge pad */
@@ -453,6 +462,18 @@ body.has-update .bar{padding-top:8px}
 .stashrow .m b{display:block;font-family:var(--display);font-size:15px}
 .stashrow .m span{font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .stashrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 12px;font-size:12.5px;background:var(--paper);flex:none}
+.wrow{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.wrow.best{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.wrow .wr-main{flex:1;min-width:0;text-align:left}
+.wrow .wr-main b{display:block;font-family:var(--display);font-size:15px;font-weight:600}
+.wrow .wr-main span{display:block;font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.wrow .wr-amt{text-align:right;font-size:12px;color:var(--ink-3);flex:none;font-variant-numeric:tabular-nums}
+.wrow .wr-amt b{display:block;font-size:14px;color:var(--ink)}
+.wrow button{border:1px solid var(--line);border-radius:10px;height:36px;padding:0 10px;font-size:12.5px;background:var(--raise);flex:none}
+.wrow .wr-main .wtags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.wrow .wr-main .wtag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:6px;padding:2px 7px}
+.wrow .wr-main .wtag.you{background:var(--accent-soft);color:var(--accent)}
+.wrow .wr-main .wtag.best{background:var(--accent);color:var(--on-accent)}
 .tilegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .tile{display:flex;flex-direction:column;gap:7px;align-items:center;justify-content:center;padding:12px 4px;
   border:1px solid var(--line);border-radius:15px;background:var(--raise);min-height:76px;
@@ -859,6 +880,7 @@ body.has-update .bar{padding-top:8px}
        <button data-g="rows+" aria-label="More rows per 10 cm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
      </div>
      <p class="note" style="margin:8px 2px 0">Work a 10&nbsp;cm square, count what you actually get, and put it in here. Everything below is then true to your hands.</p>
+     <button class="btn" id="fab-weight" style="margin-top:10px">Which yarn and hook?</button>
    </div>
    <div id="fabric-shades"></div>
    <button class="btn" id="fab-stash" style="margin-top:10px">What I already have</button>
@@ -1199,6 +1221,27 @@ body.has-update .bar{padding-top:8px}
  </div>
 </div>
 
+<div class="sheet" id="sheet-weight">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Which yarn and hook?</h2>
+   <p class="sub">Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.</p>
+   <div class="axis" style="margin-top:0">
+     <div class="lab">I want it about</div>
+     <div class="gaugerow">
+       <button id="wt-less" aria-label="Narrower"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+       <span class="gv"><b id="wt-goal-v">20</b> cm wide</span>
+       <button id="wt-more" aria-label="Wider"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+     </div>
+   </div>
+   <p class="note" id="wt-you" style="margin:10px 2px 0"></p>
+   <div class="stack" id="wt-list" style="gap:8px;margin-top:10px"></div>
+   <p class="note" id="wt-colour" hidden style="margin:10px 2px 0">With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.</p>
+   <button class="btn quiet" data-close style="margin-top:12px">Done</button>
+ </div>
+</div>
+
 <div class="sheet" id="sheet-bisect">
  <div class="scrim" data-close></div>
  <div class="sheet-in">
@@ -1363,6 +1406,7 @@ body.has-update .bar{padding-top:8px}
      <button class="btn" id="set-awake">Keep the screen awake: <b id="set-awake-state">on</b></button>
      <button class="btn" id="set-grid" data-notw>Chart lines: bold</button>
      <button class="btn" id="set-sym" data-notw>Stitch symbols: off</button>
+     <button class="btn" id="set-ahead">The basket looks ahead: <b id="set-ahead-state">on</b></button>
      <button class="btn" id="set-rule">Heavy chart line every: <b id="set-rule-state">10</b></button>
      <button class="btn" id="set-yarn">Yarn per stitch: <b id="set-yarn-state">5.5 cm</b></button>
      <button class="btn" id="set-store">Protect my work from cleanup: <b id="set-store-state">checking…</b></button>
@@ -1766,6 +1810,12 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.25", d:"7 Oct", items:[
+   "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension."
+ ]},
+ { v:"1.24", d:"7 Oct", items:[
+   "The basket looks ahead: with a guide showing, the yarn the pattern wants next is ringed and carries how many stitches in a row it owes, and a dot marks the colours still to come in the row. At the end of a row it already points at the yarn the next row starts with. There is a switch in Settings."
+ ]},
  { v:"1.23", d:"7 Oct", items:[
    "Reach for it: while you work a pattern, two big yarn swatches show the colour in your hand and the one to reach for next, so you match them by eye against the skeins without reading a word. At the end of a row it looks across the turn to the first yarn of the next.",
    "Where did it go wrong? Hold your piece beside the phone and answer yes or no to one row at a time, and it finds the first row that drifted by halving: a hundred rows takes seven answers, not a hundred rows of counting back.",
@@ -3333,6 +3383,22 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Row {r}": "Rang {r}", "of {n} · left to right": "sur {n} · de gauche à droite", "of {n} · right to left": "sur {n} · de droite à gauche"},{"Row {r}": "Vuelta {r}", "of {n} · left to right": "de {n} · de izquierda a derecha", "of {n} · right to left": "de {n} · de derecha a izquierda"},{"Row {r}": "Reihe {r}", "of {n} · left to right": "von {n} · von links nach rechts", "of {n} · right to left": "von {n} · von rechts nach links"}]);
+/* The basket looks ahead. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"The basket looks ahead:": "Le panier regarde devant :", "The basket looks ahead: with a guide showing, the yarn the pattern wants next is ringed and carries how many stitches in a row it owes, and a dot marks the colours still to come in the row. At the end of a row it already points at the yarn the next row starts with. There is a switch in Settings.": "Le panier regarde devant : quand un guide est affiché, le fil que le patron veut ensuite est cerclé et indique combien de mailles d'affilée il doit, et un point marque les couleurs encore à venir dans le rang. En fin de rang, il montre déjà le fil par lequel le rang suivant commence. Un interrupteur dans les Réglages.", "The pattern wants a colour that isn't in your basket — the dye button is ringed.": "Le patron veut une couleur absente de votre panier — le bouton de teinture est cerclé.", "Yarn {c}: the pattern wants it next, 1 stitch.": "Fil {c} : le patron le veut ensuite, 1 maille.", "Yarn {c}: the pattern wants it next, {n} stitches.": "Fil {c} : le patron le veut ensuite, {n} mailles."},{"The basket looks ahead:": "La cesta mira adelante:", "The basket looks ahead: with a guide showing, the yarn the pattern wants next is ringed and carries how many stitches in a row it owes, and a dot marks the colours still to come in the row. At the end of a row it already points at the yarn the next row starts with. There is a switch in Settings.": "La cesta mira adelante: con una guía visible, el hilo que el patrón quiere ahora lleva un aro y cuántos puntos seguidos debe, y un punto marca los colores que aún faltan en la vuelta. Al final de la vuelta ya señala el hilo con el que empieza la siguiente. Hay un interruptor en Ajustes.", "The pattern wants a colour that isn't in your basket — the dye button is ringed.": "El patrón quiere un color que no está en tu cesta: el botón de tinte lleva un aro.", "Yarn {c}: the pattern wants it next, 1 stitch.": "Hilo {c}: el patrón lo quiere ahora, 1 punto.", "Yarn {c}: the pattern wants it next, {n} stitches.": "Hilo {c}: el patrón lo quiere ahora, {n} puntos."},{"The basket looks ahead:": "Der Korb schaut voraus:", "The basket looks ahead: with a guide showing, the yarn the pattern wants next is ringed and carries how many stitches in a row it owes, and a dot marks the colours still to come in the row. At the end of a row it already points at the yarn the next row starts with. There is a switch in Settings.": "Der Korb schaut voraus: Ist eine Hilfsebene sichtbar, trägt das Garn, das die Vorlage als Nächstes will, einen Ring und die Zahl der Maschen am Stück, und ein Punkt markiert die Farben, die in der Reihe noch kommen. Am Reihenende zeigt er schon das Garn, mit dem die nächste Reihe beginnt. Ein Schalter in den Einstellungen.", "The pattern wants a colour that isn't in your basket — the dye button is ringed.": "Die Vorlage möchte eine Farbe, die nicht in deinem Korb liegt — die Färbetaste ist umrandet.", "Yarn {c}: the pattern wants it next, 1 stitch.": "Garn {c}: die Vorlage will es als Nächstes, 1 Masche.", "Yarn {c}: the pattern wants it next, {n} stitches.": "Garn {c}: die Vorlage will es als Nächstes, {n} Maschen."}]);
+/* Which yarn and hook. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Bulky (chunky)": "Bulky (épais)", "DK (light)": "DK (léger)", "Fingering (4-ply)": "Fin (4 fils)", "Hook {h} mm": "Crochet {h} mm", "I want it about": "Je le veux d'environ", "Narrower": "Plus étroit", "Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.": "Dites quelle largeur vous voulez et voyez quelle grosseur de fil y mène, avec le crochet qui l'accompagne d'ordinaire et le fil qu'il faudrait.", "Sport (5-ply)": "Sport (5 fils)", "Super bulky (super chunky)": "Super bulky (très épais)", "Tension set to {s} stitches and {r} rows per 10 cm.": "Échantillon réglé à {s} mailles et {r} rangs pour 10 cm.", "Use the {name} tension": "Utiliser l'échantillon {name}", "Use this": "Utiliser", "Which yarn and hook?": "Quel fil et quel crochet ?", "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension.": "Quel fil et quel crochet ? Dites quelle largeur vous voulez et voyez ce que donnerait chaque grosseur de fil, du fin au très épais : la taille finie, le crochet qui l'accompagne d'ordinaire, les mètres qu'il faudrait. La ligne la plus proche de votre taille est marquée, ainsi que votre propre échantillon, et un geste adopte l'échantillon d'une grosseur.", "Wider": "Plus large", "With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.": "Quand plusieurs couleurs courent à l'envers, la plupart des crocheteuses descendent d'une taille de crochet pour garder un tissu ferme : visez le bas de la fourchette.", "Worsted (aran)": "Worsted (aran)", "Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.": "Votre échantillon de {s} mailles pour 10 cm est hors de ce que donne n'importe quel fil courant. Recomptez sur un carré de 10 cm bien mesuré.", "Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.": "Vos {s} mailles pour 10 cm se rapprochent le plus de {name}, d'ordinaire avec un crochet de {h} mm.", "closest fit": "au plus près", "cm wide": "cm de large", "your tension": "votre échantillon", "{lo}–{hi} sts per 10 cm": "{lo}–{hi} mailles pour 10 cm"},{"Bulky (chunky)": "Bulky (grueso)", "DK (light)": "DK (ligero)", "Fingering (4-ply)": "Fino (4 cabos)", "Hook {h} mm": "Ganchillo {h} mm", "I want it about": "Lo quiero de unos", "Narrower": "Más estrecho", "Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.": "Di cuánto de ancho lo quieres y mira qué grosor de hilo te lleva allí, con el ganchillo que suele acompañarlo y el hilo que necesitarías.", "Sport (5-ply)": "Sport (5 cabos)", "Super bulky (super chunky)": "Super bulky (extragrueso)", "Tension set to {s} stitches and {r} rows per 10 cm.": "Tensión fijada en {s} puntos y {r} vueltas por 10 cm.", "Use the {name} tension": "Usar la tensión de {name}", "Use this": "Usar", "Which yarn and hook?": "¿Qué hilo y qué ganchillo?", "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension.": "¿Qué hilo y qué ganchillo? Di cuánto de ancho quieres una imagen y mira qué haría cada grosor de hilo, del fino al extragrueso: el tamaño final, el ganchillo que suele acompañarlo, los metros que necesitarías. Se marca la fila más cercana a tu medida y también tu propia tensión, y un toque adopta la tensión de un grosor.", "Wider": "Más ancho", "With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.": "Con varios colores llevados por detrás, casi todas bajan una talla de ganchillo para que el tejido quede firme: apunta al extremo bajo del rango.", "Worsted (aran)": "Worsted (aran)", "Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.": "Tu tensión de {s} puntos por 10 cm queda fuera de lo que da cualquier hilo común. Vuelve a contar en un cuadrado de 10 cm bien medido.", "Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.": "Tus {s} puntos por 10 cm se parecen más a {name}, normalmente con un ganchillo de {h} mm.", "closest fit": "la más cercana", "cm wide": "cm de ancho", "your tension": "tu tensión", "{lo}–{hi} sts per 10 cm": "{lo}–{hi} puntos por 10 cm"},{"Bulky (chunky)": "Bulky (dick)", "DK (light)": "DK (leicht)", "Fingering (4-ply)": "Fingering (4-fach)", "Hook {h} mm": "Häkelnadel {h} mm", "I want it about": "Ich möchte es etwa", "Narrower": "Schmaler", "Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.": "Sag, wie breit das Stück werden soll, und sieh, welche Garnstärke dich dorthin bringt, mit der Nadel, die meist dazugehört, und dem Garn, das du brauchen würdest.", "Sport (5-ply)": "Sport (5-fach)", "Super bulky (super chunky)": "Super Bulky (extradick)", "Tension set to {s} stitches and {r} rows per 10 cm.": "Maschenprobe auf {s} Maschen und {r} Reihen je 10 cm gesetzt.", "Use the {name} tension": "Maschenprobe von {name} übernehmen", "Use this": "Übernehmen", "Which yarn and hook?": "Welches Garn, welche Nadel?", "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension.": "Welches Garn, welche Nadel? Sag, wie breit ein Bild werden soll, und sieh, was jede Garnstärke von fein bis extradick daraus macht: die fertige Größe, die Nadel, die meist dazugehört, die nötigen Meter. Die Zeile, die deiner Größe am nächsten kommt, ist markiert, deine eigene Maschenprobe auch, und ein Tippen übernimmt die Maschenprobe einer Stärke.", "Wider": "Breiter", "With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.": "Werden mehrere Farben hinten mitgeführt, gehen die meisten eine Nadelstärke herunter, damit die Fläche fest bleibt: Nimm das untere Ende des Bereichs.", "Worsted (aran)": "Worsted (Aran)", "Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.": "Deine Maschenprobe von {s} Maschen auf 10 cm liegt außerhalb dessen, was ein gängiges Garn ergibt. Zähle noch einmal an einem genau gemessenen 10-cm-Quadrat.", "Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.": "Deine {s} Maschen auf 10 cm passen am ehesten zu {name}, meist mit einer {h}-mm-Nadel.", "closest fit": "am nächsten", "cm wide": "cm breit", "your tension": "deine Maschenprobe", "{lo}–{hi} sts per 10 cm": "{lo}–{hi} Maschen auf 10 cm"}]);
 /* Effort, strays and carry-or-cut. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -4146,6 +4212,8 @@ function updateGauge(){
     { name:S.proj.name, w:S.proj.w, h:S.proj.h,
       r:(S.proj.h - S.cursor.y), s:(S.cursor.x + 1),
       n:S.proj.cells.filter(Boolean).length }));
+  /* Mid-stroke the square under the finger is still owed; wait for the stitch. */
+  if(gesture !== "paint") refreshYarnHints();
 }
 
 /* ==========================================================================
@@ -4230,6 +4298,7 @@ function refreshUndoButtons(){
   var u = $("btn-undo"), r = $("btn-redo");
   if(u) u.disabled = !S.undoStack.length;
   if(r) r.disabled = !S.redoStack.length;
+  refreshYarnHints();      /* a stitch landed or went: so did what comes next */
 }
 
 function lineCells(x0,y0,x1,y1){
@@ -5196,6 +5265,80 @@ function setYarn(hex, quiet){
   for(var i=0;i<s.length;i++) s[i].classList.toggle("on", s[i].getAttribute("data-c") === S.yarn);
   if(S.tool === "unpick" || S.tool === "match") setTool("stitch");
 }
+/* ==========================================================================
+   THE BASKET LOOKS AHEAD
+   A guide layer says what each square should be, but you still hunt the
+   basket for the right yarn every time the colour changes. Crochet works a
+   row in one direction and turns at the end, so the next stitch owed is
+   knowable: it is the first square, going the way this row runs, that the
+   guide wants and the chart does not yet have. Its skein is ringed and
+   carries a count of how many stitches in that yarn come together; a dot
+   marks the colours still to come in the row. When the row is finished the
+   ring already points at the yarn the next row begins with — the turn.
+   ========================================================================== */
+var lastWant = null, toldMissing = {};
+function lookahead(){
+  var p = S.proj;
+  if(!p || !p.guide || !S.showGuide || SET.lookahead === false) return null;
+  var w = p.w, row, y, rr, dir, x, i, ahead, want, run, later;
+  for(row = 0; row < 2; row++){
+    y = S.cursor.y - row;
+    if(y < 0) break;
+    rr = p.h - y;                          /* rows count from the bottom */
+    dir = (rr % 2 === 1) ? -1 : 1;         /* odd rows run right to left */
+    x = row === 0 ? S.cursor.x : (dir < 0 ? w - 1 : 0);
+    ahead = [];
+    for(; x >= 0 && x < w; x += dir){
+      i = y * w + x;
+      if(p.guide[i] && p.cells[i] !== p.guide[i]) ahead.push(p.guide[i]);
+    }
+    if(!ahead.length) continue;
+    want = ahead[0]; run = 1; later = {};
+    while(run < ahead.length && ahead[run] === want) run++;
+    ahead.forEach(function(c){ if(c !== want) later[c] = 1; });
+    return { want:want, run:run, later:later, turn:(row === 1) };
+  }
+  return null;
+}
+function refreshYarnHints(force){
+  var tray = document.querySelectorAll("#skeins .skein");
+  if(!tray.length) return;
+  var la = lookahead(), seen = false, i, b, c, isWant, key = la ? la.want : null;
+  for(i = 0; i < tray.length; i++){
+    b = tray[i]; c = b.getAttribute("data-c");
+    isWant = !!(la && c === la.want);
+    if(isWant) seen = true;
+    b.classList.toggle("want", isWant);
+    b.classList.toggle("inrow", !!(la && la.later[c]));
+    if(isWant){
+      b.setAttribute("data-run", la.run);
+      b.setAttribute("aria-label", tf(la.run === 1
+        ? "Yarn {c}: the pattern wants it next, 1 stitch."
+        : "Yarn {c}: the pattern wants it next, {n} stitches.", { c:c, n:la.run }));
+    } else {
+      b.removeAttribute("data-run");
+      b.setAttribute("aria-label", "Yarn " + c);
+    }
+  }
+  /* A colour the pattern wants that is not in the basket: ring the dye button
+     instead, and say so once per colour. */
+  var dye = $("dye");
+  if(dye) dye.classList.toggle("want", !!(la && !seen));
+  if(la && !seen && !toldMissing[la.want]){
+    toldMissing[la.want] = 1;
+    toast("The pattern wants a colour that isn't in your basket — the dye button is ringed.");
+  }
+  /* Bring the wanted skein into view once per change, never fighting a thumb. */
+  if(force || key !== lastWant){
+    lastWant = key;
+    var sk = key && document.querySelector("#skeins .skein.want");
+    if(sk){
+      var box = $("skeins"), br = box.getBoundingClientRect(), sr = sk.getBoundingClientRect();
+      if(sr.left < br.left + 6) box.scrollLeft += sr.left - br.left - 10;
+      else if(sr.right > br.right - 6) box.scrollLeft += sr.right - br.right + 10;
+    }
+  }
+}
 function renderSkeins(){
   var box = $("skeins"); box.innerHTML = "";
   SET.basket.forEach(function(c){
@@ -5221,6 +5364,7 @@ function renderSkeins(){
     box.appendChild(b);
   });
   $("dye").style.background = S.yarn;
+  lastWant = null; refreshYarnHints();
 }
 function updateMirrorBadge(){
   var b = $("mirror-badge"), t = $("btn-mirror");
@@ -6367,6 +6511,7 @@ function renderSettings(){
   $("set-theme-state").textContent = SET.theme === null ? "follows your phone" : (SET.theme === "light" ? "daylight" : "lamplight");
   $("set-buzz-state").textContent = SET.buzz ? "on" : "off";
   $("set-awake-state").textContent = SET.awake ? "on" : "off";
+  $("set-ahead-state").textContent = SET.lookahead === false ? "off" : "on";
   $("set-rule-state").textContent = String(SET.rule);
   refreshToggleLabels();
   $("set-yarn-state").textContent = SET.cmPerStitch + " cm";
@@ -7122,6 +7267,99 @@ function nudgeGauge(what){
 }
 
 /* ==========================================================================
+   WHICH YARN AND HOOK?
+   Every pattern site gives you the yarn it was written in. This goes the other
+   way: say how wide you want this picture and it shows what each yarn weight
+   would make of it — finished size, hook, metres — and which one lands closest.
+   Single-crochet gauges are the Craft Yarn Council's, per 10 cm. Your hands
+   do not change with the yarn, so each weight is read at the tension inside
+   its usual range that is nearest to yours: a weight whose range holds your
+   tension shows exactly the size the rest of the app already gives you, and
+   the others show where your hands would sit at the edge of theirs. The
+   picture keeps your own stitch-to-row proportion, and yarn per stitch scales
+   from the number you measured, so the metres agree too.
+   ========================================================================== */
+var WEIGHTS = [
+  { name:"Fingering (4-ply)",          lo:21, hi:31, hook:"2.25–3.5" },
+  { name:"Sport (5-ply)",              lo:16, hi:20, hook:"3.5–4.5" },
+  { name:"DK (light)",                 lo:12, hi:17, hook:"4.5–5.5" },
+  { name:"Worsted (aran)",             lo:11, hi:14, hook:"5.5–6.5" },
+  { name:"Bulky (chunky)",             lo:8,  hi:11, hook:"6.5–9" },
+  { name:"Super bulky (super chunky)", lo:7,  hi:9,  hook:"9–15" }
+];
+var wtGoal = 20;
+function stepCm(v, dir){
+  var st = v < 30 ? 1 : (v < 100 ? 5 : 10);
+  return Math.max(4, Math.min(300, v + dir * st));
+}
+function holdsTension(w, sts){ return sts >= w.lo && sts <= w.hi; }
+function nearestWeight(sts){
+  /* inside a range counts as nothing to travel; among ties the middle wins */
+  var best = null, bd = 1e9, bm = 1e9;
+  WEIGHTS.forEach(function(w){
+    var d = holdsTension(w, sts) ? 0 : Math.min(Math.abs(sts - w.lo), Math.abs(sts - w.hi));
+    var m = Math.abs(sts - (w.lo + w.hi) / 2);
+    if(d < bd || (d === bd && m < bm)){ bd = d; bm = m; best = w; }
+  });
+  return best;
+}
+function weightRows(F, gs, gr, goal){
+  var ratio = gr / gs, cen = chartCensus(F.cells), total = 0, bd = 1e9;
+  cen.order.forEach(function(c){ total += cen.counts[c]; });
+  var rows = WEIGHTS.map(function(w){
+    var st = Math.min(w.hi, Math.max(w.lo, gs)), cmW = F.w / st * 10, cmH = F.h / (st * ratio) * 10;
+    bd = Math.min(bd, Math.abs(cmW - goal));
+    return { w:w, st:st, cmW:cmW, cmH:cmH, metres:metresFor(total * gs / st), yours:holdsTension(w, gs) };
+  });
+  /* every weight within a hair of the closest is closest: equal sizes tie */
+  rows.forEach(function(r){ r.best = Math.abs(r.cmW - goal) <= bd + 0.05; });
+  return { rows:rows, total:total, colours:cen.order.length };
+}
+function renderWeights(){
+  var F = S.fabric; if(!F) return;
+  var gs = SET.gaugeSts || 16, gr = SET.gaugeRows || 18;
+  var R = weightRows(F, gs, gr, wtGoal), you = nearestWeight(gs);
+  $("wt-goal-v").textContent = String(wtGoal);
+  $("wt-you").textContent = (gs < 6.5 || gs > 33)
+    ? tf("Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.", { s:gs })
+    : tf("Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.", { s:gs, name:t(you.name), h:you.hook });
+  $("wt-colour").hidden = R.colours < 2;
+  var box = $("wt-list"); box.innerHTML = "";
+  R.rows.forEach(function(r){
+    var row = el("div", "wrow" + (r.best ? " best" : ""));
+    var main = el("div", "wr-main");
+    main.appendChild(el("b", null, t(r.w.name)));
+    main.appendChild(el("span", null, tf("Hook {h} mm", { h:r.w.hook })));
+    main.appendChild(el("span", null, tf("{lo}–{hi} sts per 10 cm", { lo:r.w.lo, hi:r.w.hi })));
+    if(r.yours || r.best){
+      var tags = el("span", "wtags");
+      if(r.yours) tags.appendChild(el("span", "wtag you", t("your tension")));
+      if(r.best) tags.appendChild(el("span", "wtag best", t("closest fit")));
+      main.appendChild(tags);
+    }
+    var amt = el("div", "wr-amt");
+    amt.appendChild(el("b", null, niceCm(r.cmW) + " × " + niceCm(r.cmH) + " cm"));
+    amt.appendChild(el("span", null, "~" + r.metres + " m"));
+    var use = el("button", null, t("Use this"));
+    use.setAttribute("aria-label", tf("Use the {name} tension", { name:t(r.w.name) }));
+    use.onclick = function(){
+      SET.gaugeSts = Math.max(6, Math.min(60, Math.round(r.st)));
+      SET.gaugeRows = Math.max(6, Math.min(60, Math.round(r.st * gr / gs)));
+      saveSettings(); renderFabricScreen(); renderWeights();
+      toast(tf("Tension set to {s} stitches and {r} rows per 10 cm.", { s:SET.gaugeSts, r:SET.gaugeRows }));
+    };
+    row.appendChild(main); row.appendChild(amt); row.appendChild(use);
+    box.appendChild(row);
+  });
+}
+function openWeights(){
+  if(!S.fabric) return;
+  wtGoal = Math.max(4, Math.min(300, Math.round(cmSize(S.fabric.w, S.fabric.h).w)));
+  renderWeights();
+  openSheet("sheet-weight");
+}
+
+/* ==========================================================================
    TRACING A PHOTO
    ========================================================================== */
 var PH = { img:null, mode:"fit", src:"photo", k:8, cells:null, pal:[] };
@@ -7618,6 +7856,7 @@ function wire(){
     toast(added ? tf("{n} added to the basket.", { n:added }) : t("They are all in the basket already."));
   };
   $("set-grid").onclick  = function(){ SET.grid = ((SET.grid | 0) + 1) % 3; saveSettings(); renderSettings(); invalidate(); };
+  $("set-ahead").onclick = function(){ SET.lookahead = (SET.lookahead === false); saveSettings(); renderSettings(); refreshYarnHints(true); };
   $("set-sym").onclick   = function(){ SET.symbols = !SET.symbols; saveSettings(); renderSettings(); invalidate(); };
   $("set-tips").onclick  = function(){ SET.tipsSeen = false; saveSettings(); closeSheet("sheet-settings"); toast("They'll show next time you open a chart."); };
 
@@ -7656,6 +7895,9 @@ function wire(){
     else toast("Press and hold the picture instead.");
   };
   $("fab-stash").onclick = function(){ renderStash(); openSheet("sheet-stash"); };
+  $("fab-weight").onclick = openWeights;
+  $("wt-less").onclick = function(){ wtGoal = stepCm(wtGoal, -1); renderWeights(); };
+  $("wt-more").onclick = function(){ wtGoal = stepCm(wtGoal, 1); renderWeights(); };
   $("stash-add").onclick = function(){
     var cells = S.fabric ? S.fabric.cells : (S.proj ? S.proj.cells : null);
     if(!cells){ toast(t("Open a chart first.")); return; }
@@ -7796,7 +8038,7 @@ function wire(){
   $("g-show").onclick = function(){
     S.showGuide = !S.showGuide;
     $("g-show-state").textContent = t(S.showGuide ? "showing" : "hidden");
-    rebuildBuffer(); invalidate();
+    rebuildBuffer(); invalidate(); refreshYarnHints();
   };
   $("g-copy").onclick = function(){
     S.proj.guide = S.proj.cells.slice();

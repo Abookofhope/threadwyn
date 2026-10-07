@@ -168,6 +168,36 @@ many stitches — and puts the row-by-row helper back at that row. Checked
 exhaustively: every count of finished rows from 1 to 22 against every possible
 first-bad row, 253 cases, found correctly every time in at most six questions.
 
+## The basket looks ahead
+
+A guide layer says what each square should be, but you still hunt the basket
+for the right yarn every time the colour changes. Crochet works a row in one
+direction and turns at the end, so the next stitch owed is knowable: it is the
+first square, going the way this row runs (odd rows right to left), that the
+guide wants and the chart does not yet have. Its skein is ringed and wears a
+count of how many stitches in that yarn come together; a dot marks colours that
+are still to come in the row. When the row is finished the ring is already on
+the yarn the next row begins with — the turn. If the pattern wants a colour that
+is not in the basket, the dye button is ringed instead and it says so once.
+The basket scrolls the wanted skein into view but never fights your thumb.
+There is a switch in Settings (*The basket looks ahead*).
+
+## Which yarn and hook?
+
+Every pattern site tells you the yarn it was written in. The Worked-up screen
+goes the other way: say how wide you want the picture and it shows what each yarn
+weight, from fingering to super bulky, would make of it — the finished size, the
+hook that usually goes with it, the metres you would need — and marks the closest
+fit. Single-crochet gauges are the Craft Yarn Council's, per 10 cm. Your hands do
+not change with the yarn, so each weight is read at the tension inside its usual
+range that is **nearest to yours**: a weight whose range holds your tension shows
+exactly the size the rest of the app already gives you, and the others show where
+your hands would sit at the edge of theirs. The picture keeps your own
+stitch-to-row proportion, and yarn per stitch scales from the number you
+measured, so the metres agree with *What to buy* to the metre. *Use this* adopts
+a weight's tension; with more than one colour carried it also reminds you that
+most makers go down a hook size.
+
 ## A tag to go with it
 
 Handmade things go out with a tag on a loop of yarn. **Make a gift tag** (on any

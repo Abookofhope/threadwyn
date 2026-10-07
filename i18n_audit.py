@@ -106,3 +106,16 @@ for i, ln in enumerate(code_lines):
         stack.pop()
 print("t.property where t is the translator: %d" % len(strays_t))
 for ln, txt in strays_t: print("  line", ln, "|", txt)
+
+# Counts joined to a unit word in code ("... + " stitches") are English in every
+# language and cannot take a plural; they have to be tf() templates. The runtime
+# sweep found a dozen of these that no literal-shaped check could see.
+UNIT = r'(stitches|stitch|sts|yarns?|rows?|pieces?|squares?|days?|hours?|minutes?|ago)'
+concat = []
+for i, ln in enumerate(code_lines):
+    if ln.strip().startswith(("/*", "*", "//")): continue
+    if re.search(r'\+\s*"\s?' + UNIT + r'\b[^"]*"', ln) or re.search(r'"[^"\n]*\b' + UNIT + r'\s?"\s*\+', ln):
+        if re.search(r'(?<![\w.$])tf?\(\s*"', ln) or 'el("button","piece"' in ln: continue
+        concat.append((i + 1, ln.strip()[:110]))
+print("counts joined to unit words in code: %d" % len(concat))
+for ln, txt in concat: print("  line", ln, "|", txt)

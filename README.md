@@ -23,8 +23,15 @@ uploaded anywhere.
 - **Trace a photo** — an image is reduced to whole stitches at the chart's
   gauge (k-means, 2–16 yarns, from the photo or from your own basket). Trace
   over it, or stitch it straight in.
+- **Read a finished piece** — photograph crochet that already exists and it
+  counts the stitches (width and height separately), reads each one's colour and
+  makes a chart you can edit. Say how wide the piece is and the same photo
+  measures your tension.
 - **Yarn** — a full colour dyer, five skein sets, and a live census of the
-  chart that can swap one yarn for another everywhere at once.
+  chart that can swap one yarn for another everywhere at once. With a guide
+  showing, the basket rings the yarn the pattern wants next.
+- **Which yarn and hook?** — say how wide you want a picture and see what each
+  yarn weight would make of it: size, hook and metres.
 - **Written patterns** — any chart becomes real row-by-row instructions, with
   a yarn legend, RS/WS direction and metre estimates.
 - **Working mode** — walks those rows while you crochet, and remembers where
@@ -197,6 +204,41 @@ stitch-to-row proportion, and yarn per stitch scales from the number you
 measured, so the metres agree with *What to buy* to the metre. *Use this* adopts
 a weight's tension; with more than one colour carried it also reminds you that
 most makers go down a hook size.
+
+## Read a finished piece
+
+*Trace a photo* turns a picture into pixel art. This goes the other way: it reads
+crochet that already exists. In the Photo sheet, choose **Read a finished piece
+instead**, photograph a finished picture flat and square-on, and drag a box right
+round it, edge to edge. Threadwyn counts the stitches across and the rows up,
+reads the colour of each stitch and makes a new chart you can edit; the lines
+drawn over your photo show whether they sit on the stitches, and steppers nudge
+the count.
+
+How it counts: a stitch grid repeats, so the number of stitches across a photo can
+be found from the picture alone. Lay a comb with N teeth on how strongly the image
+bends along each axis (a second difference, which peaks in the middle of a dark
+seam and half-way up a colour change); the right N is the one whose teeth fall on
+the seams and whose gaps fall inside the stitches. The score is a Welch t brought
+to a common scale, so a count with many agreeing teeth beats a handful that line
+up by luck, and a doubled or tripled count loses to the true one. Width and height
+are counted separately, because a crochet stitch is not square. Each stitch's
+colour is the median of its middle half, so a shadow in the seam or a fleck of
+fluff does not vote, and yarns that came out as near-twins are merged back.
+
+Measured on synthetic photographs with jittered stitches, seam shading, a lighting
+gradient, noise, blur and half a degree of tilt: with the box tight on the piece the
+count is exactly right on about 99% of widths and 96% of heights, and the colours
+of every stitch are right on a median 100% of pictures. A box with a margin of a
+fifth of a stitch still gets within one stitch nearly always. Real crochet is lumpier
+than a chart, so treat the count as a very good first guess; the overlay and the
+steppers are there for the rest. I tried finding the piece in the photo
+automatically, and it helped on only a quarter of messy photos, so it is left out:
+a box you drew is better than a guess you have to undo.
+
+Say how wide the piece is and the same photo is also a **tension measurement**:
+stitches and rows per 10 cm, one tap to adopt as your tension. The photo's own
+proportions give the height, so one number is enough.
 
 ## A tag to go with it
 

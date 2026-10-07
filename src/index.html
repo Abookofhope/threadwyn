@@ -499,6 +499,11 @@ body.has-update .bar{padding-top:8px}
 .selbar button{flex:none;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--raise);font-size:12.5px;font-weight:600}
 .selbar button[data-sel="done"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .selinfo{flex:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-right:2px}
+#read-prev{display:block;max-width:100%;max-height:44vh;margin:12px auto 0;border-radius:12px;touch-action:none;border:1px solid var(--line);background:var(--cloth-a);cursor:crosshair}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.pair .axis .stepper{gap:4px}
+.pair .axis .stepper button{width:38px;flex:none}
+#read-chart{width:100%;height:auto;max-height:44vh;object-fit:contain;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:12px;background:var(--cloth-a);margin-top:12px}
 #photo-prev{width:100%;height:auto;display:block;image-rendering:pixelated;border:1px solid var(--line);border-radius:12px;background:var(--cloth-a);margin-top:12px}
 .bslots{display:grid;gap:5px;margin-top:8px}
 .bslot{aspect-ratio:1;border:1px dashed var(--line);border-radius:6px;background:var(--paper);display:grid;place-items:center;padding:2px;overflow:hidden}
@@ -1183,6 +1188,7 @@ body.has-update .bar{padding-top:8px}
    <h2>Trace a photo</h2>
    <p class="sub">The picture gets boiled down to whole stitches at this chart's gauge. Put it on the guide and work over it, or stitch it straight in.</p>
    <input type="file" id="photoin" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+   <button class="btn" id="ph-read" style="margin-bottom:8px">Read a finished piece instead</button>
    <label class="btn go" for="photoin" id="photo-pick" style="cursor:pointer">Choose a photo</label>
    <div id="photo-stage" hidden>
      <canvas id="photo-prev"></canvas>
@@ -1204,6 +1210,63 @@ body.has-update .bar{padding-top:8px}
        <button class="btn go" id="ph-guide">Put it on the guide to trace</button>
        <button class="btn" id="ph-stitch">Stitch it straight onto the chart</button>
      </div>
+   </div>
+   <button class="btn quiet" data-close style="margin-top:14px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-read">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Read a finished piece</h2>
+   <p class="sub">Photograph a finished crochet picture flat and square-on. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.</p>
+   <input type="file" id="readin" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+   <label class="btn go" for="readin" id="read-pick" style="cursor:pointer">Choose a photo</label>
+   <div id="read-stage" hidden>
+     <canvas id="read-prev" aria-label="Your photo, with the stitches it counted"></canvas>
+     <p class="note" style="margin:8px 2px 0">Drag a box right round the piece, edge to edge. The lines show the stitches it counted; when they sit on the stitches, you are done.</p>
+     <div class="row" style="margin-top:8px"><button class="btn" id="rd-reset">Whole photo</button></div>
+     <div class="pair">
+     <div class="axis" style="margin-top:0">
+       <div class="lab">Stitches across</div>
+       <div class="stepper">
+         <button id="rd-nx-less" aria-label="Fewer stitches across"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+         <div class="val" id="rd-nx">12</div>
+         <button id="rd-nx-more" aria-label="More stitches across"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       </div>
+     </div>
+     <div class="axis" style="margin-top:0">
+       <div class="lab">Rows up</div>
+       <div class="stepper">
+         <button id="rd-ny-less" aria-label="Fewer rows up"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+         <div class="val" id="rd-ny">12</div>
+         <button id="rd-ny-more" aria-label="More rows up"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       </div>
+     </div>
+     </div>
+     <p class="note" id="read-counts" style="margin:10px 2px 0">&nbsp;</p>
+     <canvas id="read-chart" aria-label="The chart it made"></canvas>
+     <p class="note" style="margin:8px 2px 0">Real crochet is lumpier than a chart, so take the count as a very good first guess and nudge it until the lines sit on the stitches.</p>
+     <div class="axis" style="margin-top:8px">
+       <div class="lab">Most yarns to look for</div>
+       <div class="stepper">
+         <button id="rd-k-less" aria-label="Fewer yarns"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+         <div class="val" id="rd-k">6</div>
+         <button id="rd-k-more" aria-label="More yarns"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       </div>
+     </div>
+     <div class="axis" style="margin-top:8px">
+       <div class="lab">How wide is the piece? (optional)</div>
+       <div class="stepper">
+         <button id="rd-w-less" aria-label="Narrower"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5.5 12h13"/></svg></button>
+         <div class="val" id="rd-w">—</div>
+         <button id="rd-w-more" aria-label="Wider"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg></button>
+       </div>
+     </div>
+     <p class="note" id="rd-tension" hidden style="margin:8px 2px 0"></p>
+     <button class="btn" id="rd-use" hidden style="margin-top:8px">Use it as my tension</button>
+     <button class="btn go" id="rd-make" style="margin-top:12px">Make a chart from it</button>
    </div>
    <button class="btn quiet" data-close style="margin-top:14px">Done</button>
  </div>
@@ -1810,6 +1873,9 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.26", d:"7 Oct", items:[
+   "Read a finished piece: photograph crochet that already exists and Threadwyn counts its stitches, width and height separately because a stitch is not square, reads the colour of each one and makes a chart you can edit. Lines are drawn over your photo so you can see whether they sit on the stitches, and steppers nudge the count. Say how wide the piece is and the same photo also measures your tension."
+ ]},
  { v:"1.25", d:"7 Oct", items:[
    "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension."
  ]},
@@ -3399,6 +3465,14 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Bulky (chunky)": "Bulky (épais)", "DK (light)": "DK (léger)", "Fingering (4-ply)": "Fin (4 fils)", "Hook {h} mm": "Crochet {h} mm", "I want it about": "Je le veux d'environ", "Narrower": "Plus étroit", "Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.": "Dites quelle largeur vous voulez et voyez quelle grosseur de fil y mène, avec le crochet qui l'accompagne d'ordinaire et le fil qu'il faudrait.", "Sport (5-ply)": "Sport (5 fils)", "Super bulky (super chunky)": "Super bulky (très épais)", "Tension set to {s} stitches and {r} rows per 10 cm.": "Échantillon réglé à {s} mailles et {r} rangs pour 10 cm.", "Use the {name} tension": "Utiliser l'échantillon {name}", "Use this": "Utiliser", "Which yarn and hook?": "Quel fil et quel crochet ?", "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension.": "Quel fil et quel crochet ? Dites quelle largeur vous voulez et voyez ce que donnerait chaque grosseur de fil, du fin au très épais : la taille finie, le crochet qui l'accompagne d'ordinaire, les mètres qu'il faudrait. La ligne la plus proche de votre taille est marquée, ainsi que votre propre échantillon, et un geste adopte l'échantillon d'une grosseur.", "Wider": "Plus large", "With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.": "Quand plusieurs couleurs courent à l'envers, la plupart des crocheteuses descendent d'une taille de crochet pour garder un tissu ferme : visez le bas de la fourchette.", "Worsted (aran)": "Worsted (aran)", "Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.": "Votre échantillon de {s} mailles pour 10 cm est hors de ce que donne n'importe quel fil courant. Recomptez sur un carré de 10 cm bien mesuré.", "Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.": "Vos {s} mailles pour 10 cm se rapprochent le plus de {name}, d'ordinaire avec un crochet de {h} mm.", "closest fit": "au plus près", "cm wide": "cm de large", "your tension": "votre échantillon", "{lo}–{hi} sts per 10 cm": "{lo}–{hi} mailles pour 10 cm"},{"Bulky (chunky)": "Bulky (grueso)", "DK (light)": "DK (ligero)", "Fingering (4-ply)": "Fino (4 cabos)", "Hook {h} mm": "Ganchillo {h} mm", "I want it about": "Lo quiero de unos", "Narrower": "Más estrecho", "Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.": "Di cuánto de ancho lo quieres y mira qué grosor de hilo te lleva allí, con el ganchillo que suele acompañarlo y el hilo que necesitarías.", "Sport (5-ply)": "Sport (5 cabos)", "Super bulky (super chunky)": "Super bulky (extragrueso)", "Tension set to {s} stitches and {r} rows per 10 cm.": "Tensión fijada en {s} puntos y {r} vueltas por 10 cm.", "Use the {name} tension": "Usar la tensión de {name}", "Use this": "Usar", "Which yarn and hook?": "¿Qué hilo y qué ganchillo?", "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension.": "¿Qué hilo y qué ganchillo? Di cuánto de ancho quieres una imagen y mira qué haría cada grosor de hilo, del fino al extragrueso: el tamaño final, el ganchillo que suele acompañarlo, los metros que necesitarías. Se marca la fila más cercana a tu medida y también tu propia tensión, y un toque adopta la tensión de un grosor.", "Wider": "Más ancho", "With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.": "Con varios colores llevados por detrás, casi todas bajan una talla de ganchillo para que el tejido quede firme: apunta al extremo bajo del rango.", "Worsted (aran)": "Worsted (aran)", "Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.": "Tu tensión de {s} puntos por 10 cm queda fuera de lo que da cualquier hilo común. Vuelve a contar en un cuadrado de 10 cm bien medido.", "Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.": "Tus {s} puntos por 10 cm se parecen más a {name}, normalmente con un ganchillo de {h} mm.", "closest fit": "la más cercana", "cm wide": "cm de ancho", "your tension": "tu tensión", "{lo}–{hi} sts per 10 cm": "{lo}–{hi} puntos por 10 cm"},{"Bulky (chunky)": "Bulky (dick)", "DK (light)": "DK (leicht)", "Fingering (4-ply)": "Fingering (4-fach)", "Hook {h} mm": "Häkelnadel {h} mm", "I want it about": "Ich möchte es etwa", "Narrower": "Schmaler", "Say how wide you want this piece, and see which yarn weight gets you there, with the hook that usually goes with it and the yarn you would need.": "Sag, wie breit das Stück werden soll, und sieh, welche Garnstärke dich dorthin bringt, mit der Nadel, die meist dazugehört, und dem Garn, das du brauchen würdest.", "Sport (5-ply)": "Sport (5-fach)", "Super bulky (super chunky)": "Super Bulky (extradick)", "Tension set to {s} stitches and {r} rows per 10 cm.": "Maschenprobe auf {s} Maschen und {r} Reihen je 10 cm gesetzt.", "Use the {name} tension": "Maschenprobe von {name} übernehmen", "Use this": "Übernehmen", "Which yarn and hook?": "Welches Garn, welche Nadel?", "Which yarn and hook? Say how wide you want a picture and see what each yarn weight, from fingering to super bulky, would make of it: the finished size, the hook that usually goes with it, the metres you would need. The row closest to your size is marked, your own tension is marked too, and one tap adopts a weight's tension.": "Welches Garn, welche Nadel? Sag, wie breit ein Bild werden soll, und sieh, was jede Garnstärke von fein bis extradick daraus macht: die fertige Größe, die Nadel, die meist dazugehört, die nötigen Meter. Die Zeile, die deiner Größe am nächsten kommt, ist markiert, deine eigene Maschenprobe auch, und ein Tippen übernimmt die Maschenprobe einer Stärke.", "Wider": "Breiter", "With more than one colour carried along the back, most makers go down a hook size to keep the fabric firm, so aim for the lower end of the hook range.": "Werden mehrere Farben hinten mitgeführt, gehen die meisten eine Nadelstärke herunter, damit die Fläche fest bleibt: Nimm das untere Ende des Bereichs.", "Worsted (aran)": "Worsted (Aran)", "Your tension of {s} stitches per 10 cm is outside what any common yarn gives. Try counting a measured 10 cm square again.": "Deine Maschenprobe von {s} Maschen auf 10 cm liegt außerhalb dessen, was ein gängiges Garn ergibt. Zähle noch einmal an einem genau gemessenen 10-cm-Quadrat.", "Your {s} stitches per 10 cm is closest to {name}, usually on a {h} mm hook.": "Deine {s} Maschen auf 10 cm passen am ehesten zu {name}, meist mit einer {h}-mm-Nadel.", "closest fit": "am nächsten", "cm wide": "cm breit", "your tension": "deine Maschenprobe", "{lo}–{hi} sts per 10 cm": "{lo}–{hi} Maschen auf 10 cm"}]);
+/* Read a finished piece. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"A chart from your piece. It is yours to edit.": "Une grille tirée de votre ouvrage. À vous de la retoucher.", "Counted {w} stitches across and {h} rows up, in 1 yarn.": "{w} mailles en largeur et {h} rangs en hauteur comptés, en 1 fil.", "Counted {w} stitches across and {h} rows up, in {n} yarns.": "{w} mailles en largeur et {h} rangs en hauteur comptés, en {n} fils.", "Drag a box right round the piece, edge to edge. The lines show the stitches it counted; when they sit on the stitches, you are done.": "Tracez un cadre tout autour de l'ouvrage, bord à bord. Les lignes montrent les mailles comptées ; quand elles tombent sur les mailles, c'est bon.", "Fewer rows up": "Moins de rangs en hauteur", "Fewer stitches across": "Moins de mailles en largeur", "How wide is the piece? (optional)": "Quelle largeur fait l'ouvrage ? (facultatif)", "Make a chart from it": "En faire une grille", "More rows up": "Plus de rangs en hauteur", "More stitches across": "Plus de mailles en largeur", "Most yarns to look for": "Nombre maximal de fils", "Photograph a finished crochet picture flat and square-on. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.": "Photographiez un ouvrage terminé bien à plat, de face. Threadwyn compte les mailles, lit la couleur de chacune et en fait une grille que vous pouvez retoucher.", "Read a finished piece": "Lire un ouvrage terminé", "Read a finished piece instead": "Lire plutôt un ouvrage terminé", "Read a finished piece: photograph crochet that already exists and Threadwyn counts its stitches, width and height separately because a stitch is not square, reads the colour of each one and makes a chart you can edit. Lines are drawn over your photo so you can see whether they sit on the stitches, and steppers nudge the count. Say how wide the piece is and the same photo also measures your tension.": "Lire un ouvrage terminé : photographiez un crochet qui existe déjà et Threadwyn compte ses mailles, largeur et hauteur séparément car une maille n'est pas carrée, lit la couleur de chacune et en fait une grille à retoucher. Des lignes sont tracées sur la photo pour voir si elles tombent sur les mailles, et des boutons ajustent le compte. Indiquez la largeur de l'ouvrage et la même photo mesure aussi votre échantillon.", "Reading the stitches…": "Lecture des mailles…", "Real crochet is lumpier than a chart, so take the count as a very good first guess and nudge it until the lines sit on the stitches.": "Le vrai crochet est plus irrégulier qu'une grille : prenez le compte comme une très bonne première estimation et ajustez-le jusqu'à ce que les lignes tombent sur les mailles.", "Rows up": "Rangs en hauteur", "Stitches across": "Mailles en largeur", "That is about {s} stitches and {r} rows per 10 cm.": "Cela fait environ {s} mailles et {r} rangs pour 10 cm.", "The chart it made": "La grille obtenue", "Use it as my tension": "En faire mon échantillon", "Whole photo": "Toute la photo", "Your photo, with the stitches it counted": "Votre photo, avec les mailles comptées"},{"A chart from your piece. It is yours to edit.": "Una cuadrícula de tu pieza. Es tuya para editar.", "Counted {w} stitches across and {h} rows up, in 1 yarn.": "Contados {w} puntos de ancho y {h} vueltas de alto, en 1 hilo.", "Counted {w} stitches across and {h} rows up, in {n} yarns.": "Contados {w} puntos de ancho y {h} vueltas de alto, en {n} hilos.", "Drag a box right round the piece, edge to edge. The lines show the stitches it counted; when they sit on the stitches, you are done.": "Dibuja un recuadro justo alrededor de la pieza, de borde a borde. Las líneas muestran los puntos contados; cuando caen sobre los puntos, ya está.", "Fewer rows up": "Menos vueltas de alto", "Fewer stitches across": "Menos puntos de ancho", "How wide is the piece? (optional)": "¿Cuánto mide de ancho la pieza? (opcional)", "Make a chart from it": "Hacer una cuadrícula con ella", "More rows up": "Más vueltas de alto", "More stitches across": "Más puntos de ancho", "Most yarns to look for": "Máximo de hilos", "Photograph a finished crochet picture flat and square-on. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.": "Fotografía una pieza terminada plana y de frente. Threadwyn cuenta los puntos, lee el color de cada uno y crea una cuadrícula que puedes editar.", "Read a finished piece": "Leer una pieza terminada", "Read a finished piece instead": "Leer mejor una pieza terminada", "Read a finished piece: photograph crochet that already exists and Threadwyn counts its stitches, width and height separately because a stitch is not square, reads the colour of each one and makes a chart you can edit. Lines are drawn over your photo so you can see whether they sit on the stitches, and steppers nudge the count. Say how wide the piece is and the same photo also measures your tension.": "Leer una pieza terminada: fotografía ganchillo que ya existe y Threadwyn cuenta sus puntos, ancho y alto por separado porque un punto no es cuadrado, lee el color de cada uno y crea una cuadrícula editable. Se dibujan líneas sobre tu foto para ver si caen sobre los puntos, y unos botones ajustan la cuenta. Di cuánto mide de ancho la pieza y la misma foto mide también tu tensión.", "Reading the stitches…": "Leyendo los puntos…", "Real crochet is lumpier than a chart, so take the count as a very good first guess and nudge it until the lines sit on the stitches.": "El ganchillo real es más irregular que una cuadrícula: toma la cuenta como una muy buena primera estimación y ajústala hasta que las líneas caigan sobre los puntos.", "Rows up": "Vueltas de alto", "Stitches across": "Puntos de ancho", "That is about {s} stitches and {r} rows per 10 cm.": "Son unos {s} puntos y {r} vueltas por 10 cm.", "The chart it made": "La cuadrícula resultante", "Use it as my tension": "Usarla como mi tensión", "Whole photo": "Toda la foto", "Your photo, with the stitches it counted": "Tu foto, con los puntos contados"},{"A chart from your piece. It is yours to edit.": "Ein Zählmuster aus deinem Stück. Es gehört dir zum Bearbeiten.", "Counted {w} stitches across and {h} rows up, in 1 yarn.": "{w} Maschen in der Breite und {h} Reihen in der Höhe gezählt, in 1 Garn.", "Counted {w} stitches across and {h} rows up, in {n} yarns.": "{w} Maschen in der Breite und {h} Reihen in der Höhe gezählt, in {n} Garnen.", "Drag a box right round the piece, edge to edge. The lines show the stitches it counted; when they sit on the stitches, you are done.": "Zieh einen Rahmen genau um das Stück, von Rand zu Rand. Die Linien zeigen die gezählten Maschen; liegen sie auf den Maschen, bist du fertig.", "Fewer rows up": "Weniger Reihen in der Höhe", "Fewer stitches across": "Weniger Maschen in der Breite", "How wide is the piece? (optional)": "Wie breit ist das Stück? (optional)", "Make a chart from it": "Ein Zählmuster daraus machen", "More rows up": "Mehr Reihen in der Höhe", "More stitches across": "Mehr Maschen in der Breite", "Most yarns to look for": "Höchstens so viele Garne", "Photograph a finished crochet picture flat and square-on. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.": "Fotografiere ein fertiges Häkelbild flach und von vorn. Threadwyn zählt die Maschen, liest die Farbe jeder einzelnen und macht daraus ein Zählmuster, das du bearbeiten kannst.", "Read a finished piece": "Ein fertiges Stück lesen", "Read a finished piece instead": "Stattdessen ein fertiges Stück lesen", "Read a finished piece: photograph crochet that already exists and Threadwyn counts its stitches, width and height separately because a stitch is not square, reads the colour of each one and makes a chart you can edit. Lines are drawn over your photo so you can see whether they sit on the stitches, and steppers nudge the count. Say how wide the piece is and the same photo also measures your tension.": "Ein fertiges Stück lesen: Fotografiere Häkelarbeit, die es schon gibt, und Threadwyn zählt ihre Maschen, Breite und Höhe getrennt, weil eine Masche nicht quadratisch ist, liest die Farbe jeder einzelnen und macht daraus ein bearbeitbares Zählmuster. Linien über deinem Foto zeigen, ob sie auf den Maschen liegen, und Knöpfe korrigieren die Zählung. Sag, wie breit das Stück ist, und dasselbe Foto misst auch deine Maschenprobe.", "Reading the stitches…": "Maschen werden gelesen…", "Real crochet is lumpier than a chart, so take the count as a very good first guess and nudge it until the lines sit on the stitches.": "Echtes Häkeln ist unregelmäßiger als ein Zählmuster: Nimm die Zählung als sehr gute erste Schätzung und korrigiere sie, bis die Linien auf den Maschen liegen.", "Rows up": "Reihen in der Höhe", "Stitches across": "Maschen in der Breite", "That is about {s} stitches and {r} rows per 10 cm.": "Das sind etwa {s} Maschen und {r} Reihen auf 10 cm.", "The chart it made": "Das entstandene Zählmuster", "Use it as my tension": "Als meine Maschenprobe übernehmen", "Whole photo": "Ganzes Foto", "Your photo, with the stitches it counted": "Dein Foto mit den gezählten Maschen"}]);
 /* Effort, strays and carry-or-cut. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -5276,10 +5350,26 @@ function setYarn(hex, quiet){
    marks the colours still to come in the row. When the row is finished the
    ring already points at the yarn the next row begins with — the turn.
    ========================================================================== */
-var lastWant = null, toldMissing = {};
+var lastWant = null, toldMissing = {}, gyRef = null, gyBasket = "", gyVal = false;
+/* A layout guide (granny rings, thirds, a border) names squares, not yarns, and
+   its colours are nobody's basket. Only a guide whose yarns are mostly the ones
+   in your basket - a traced photo, or a template you have dyed to - is a
+   pattern to reach for. Worked out once per guide and basket, not per move. */
+function guideIsYarn(p){
+  var key = SET.basket.join("");
+  if(gyRef === p.guide && gyBasket === key) return gyVal;
+  var have = {}, seen = {}, tot = 0, hit = 0, i, c;
+  SET.basket.forEach(function(b){ have[b] = 1; });
+  for(i = 0; i < p.guide.length; i++){
+    c = p.guide[i];
+    if(c && !seen[c]){ seen[c] = 1; tot++; if(have[c]) hit++; }
+  }
+  gyRef = p.guide; gyBasket = key; gyVal = tot > 0 && hit >= 0.6 * tot;
+  return gyVal;
+}
 function lookahead(){
   var p = S.proj;
-  if(!p || !p.guide || !S.showGuide || SET.lookahead === false) return null;
+  if(!p || !p.guide || !S.showGuide || SET.lookahead === false || !guideIsYarn(p)) return null;
   var w = p.w, row, y, rr, dir, x, i, ahead, want, run, later;
   for(row = 0; row < 2; row++){
     y = S.cursor.y - row;
@@ -7360,6 +7450,288 @@ function openWeights(){
 }
 
 /* ==========================================================================
+   READING A FINISHED PIECE
+   Tracing a photo makes pixel art of a picture. This goes the other way: it
+   reads crochet that already exists. A stitch grid repeats, so the number of
+   stitches across a photo of a flat piece can be found from the picture alone:
+   lay a comb with N teeth on how strongly the image bends along each axis, and
+   the right N is the one whose teeth fall on the seams between stitches and
+   whose gaps fall inside them (scored as a Welch t, so a count with many agreeing
+   teeth beats a few that line up by luck, and a doubled or tripled count loses
+   to the true one). Width and height are counted separately because a crochet
+   stitch is not square. Each stitch's colour is the median of its middle, so a
+   shadow in the seam or a fleck of fluff does not vote. Yarns that came out as
+   near-twins are pulled back together. If you say how wide the piece is, the
+   count is also a tension measurement, taken from the photo.
+   ========================================================================== */
+/* Along one axis, how strongly does the picture bend at each position? A second
+   difference at a small lag peaks in the middle of a dark seam between stitches and
+   half-way up a colour change, and stays quiet inside a stitch. (A first difference
+   would be silent at a seam's centre and loud on both sides of it.) The lag is
+   chosen to suit the stitch size being tried. */
+function bendProfiles(d, W, H, lag){
+  var gx = new Float32Array(W), gy = new Float32Array(H), x, y, i, j, k, c, s;
+  for(y = 0; y < H; y++){
+    i = y * W * 4;
+    for(x = lag; x < W - lag; x++){
+      j = i + x * 4; s = 0;
+      for(c = 0; c < 3; c++) s += Math.abs(d[j - lag*4 + c] + d[j + lag*4 + c] - 2 * d[j + c]);
+      gx[x] += s;
+    }
+  }
+  for(y = lag; y < H - lag; y++){
+    i = (y - lag) * W * 4; j = y * W * 4; k = (y + lag) * W * 4;
+    for(x = 0; x < W; x++){
+      s = 0;
+      for(c = 0; c < 3; c++) s += Math.abs(d[i + x*4 + c] + d[k + x*4 + c] - 2 * d[j + x*4 + c]);
+      gy[y] += s;
+    }
+  }
+  return { gx: gx, gy: gy };
+}
+function winMax(P, x, w){
+  var m = 0, i, a = Math.max(0, x - w), b = Math.min(P.length - 1, x + w);
+  for(i = a; i <= b; i++) if(P[i] > m) m = P[i];
+  return m;
+}
+/* A comb with N teeth laid on the profile: is the profile taller on the teeth than
+   half-way between them, and by more than chance allows? Teeth on every seam and
+   gaps in between make a large, consistent difference; a wrong count puts teeth on
+   seams and gaps alike. The score is a Welch t, so a count with plenty of teeth
+   that all agree beats a handful that happen to line up, and a comb with every
+   third tooth (or twice as many) scores less than the true one. */
+function combScore(P, N, phi){
+  var L = P.length, p = L / N, w = Math.max(0, Math.round(p / 6)), k, x, v;
+  var sh = 0, sh2 = 0, nh = 0, sl = 0, sl2 = 0, nl = 0;
+  for(k = 0; k <= N; k++){
+    x = Math.round((k + phi) * p);
+    if(x >= 0 && x < L){ v = winMax(P, x, w); sh += v; sh2 += v * v; nh++; }
+    x = Math.round((k + 0.5 + phi) * p);
+    if(x >= 0 && x < L){ v = winMax(P, x, w); sl += v; sl2 += v * v; nl++; }
+  }
+  if(nh < 3 || nl < 3) return 0;
+  var mh = sh / nh, ml = sl / nl;
+  var vh = Math.max(0, sh2 / nh - mh * mh) * nh / (nh - 1), vl = Math.max(0, sl2 / nl - ml * ml) * nl / (nl - 1);
+  var se = Math.sqrt(vh / nh + vl / nl) + 1e-6 * (mh + ml) + 1e-9;
+  /* a t from a few teeth is weaker evidence than the same t from many: bring it
+     to a common scale (a normal-equivalent score) before counts are compared */
+  var tv = (mh - ml) / se, df = Math.max(1, Math.min(nh, nl) - 1);
+  return tv * (1 - 1 / (4 * df)) / Math.sqrt(1 + tv * tv / (2 * df));
+}
+function bestCount(profileFor, L, minN, maxN){
+  var best = null, N, s, phi, bs, bp, P;
+  maxN = Math.min(maxN, Math.floor(L / 4));
+  for(N = minN; N <= maxN; N++){
+    P = profileFor(Math.max(1, Math.round(L / N / 10)));
+    bs = -1e9; bp = 0;
+    for(phi = -0.4; phi <= 0.41; phi += 0.1){
+      s = combScore(P, N, phi);
+      if(s > bs){ bs = s; bp = phi; }
+    }
+    if(!best || bs > best.s) best = { n:N, s:bs, phi:bp };
+  }
+  return best;
+}
+function sampleGrid(d, W, H, nx, ny, phx, phy){
+  var out = new Uint8ClampedArray(nx * ny * 4), px = W / nx, py = H / ny, cx, cy, x, y, xa, xb, ya, yb, n, r, g, b, sx, sy, o, idx;
+  function med(a){ a.sort(function(u, v){ return u - v; }); return a[a.length >> 1]; }
+  for(cy = 0; cy < ny; cy++){
+    for(cx = 0; cx < nx; cx++){
+      xa = Math.max(0, Math.round((cx + phx + 0.25) * px)); xb = Math.min(W - 1, Math.round((cx + phx + 0.75) * px));
+      ya = Math.max(0, Math.round((cy + phy + 0.25) * py)); yb = Math.min(H - 1, Math.round((cy + phy + 0.75) * py));
+      if(xb < xa){ xa = xb = Math.min(W - 1, Math.max(0, Math.round((cx + phx + 0.5) * px))); }
+      if(yb < ya){ ya = yb = Math.min(H - 1, Math.max(0, Math.round((cy + phy + 0.5) * py))); }
+      sx = Math.max(1, Math.ceil((xb - xa + 1) / 12)); sy = Math.max(1, Math.ceil((yb - ya + 1) / 12));
+      r = []; g = []; b = [];
+      for(y = ya; y <= yb; y += sy) for(x = xa; x <= xb; x += sx){
+        idx = (y * W + x) * 4; r.push(d[idx]); g.push(d[idx+1]); b.push(d[idx+2]);
+      }
+      o = (cy * nx + cx) * 4;
+      out[o] = med(r); out[o+1] = med(g); out[o+2] = med(b); out[o+3] = 255;
+    }
+  }
+  return out;
+}
+/* Asked for more yarns than the piece really has, a clustering splits one colour
+   into near-twins. Pull together any two whose centres are closer than minD (in RGB),
+   weighting by how many stitches each holds, until every yarn left is its own. */
+function mergeClose(cells, pal, minD){
+  var n = cells.length / 4, cent = pal.map(function(c){ return c.slice(); }), cnt, i, j, a, best, bd, dr, dg, db, d2, merged = true;
+  function recount(){
+    cnt = cent.map(function(){ return 0; });
+    for(i = 0; i < n; i++){
+      best = 0; bd = Infinity;
+      for(j = 0; j < cent.length; j++){
+        dr = cells[i*4] - cent[j][0]; dg = cells[i*4+1] - cent[j][1]; db = cells[i*4+2] - cent[j][2];
+        d2 = dr*dr + dg*dg + db*db;
+        if(d2 < bd){ bd = d2; best = j; }
+      }
+      cnt[best]++;
+    }
+  }
+  recount();
+  while(merged && cent.length > 1){
+    merged = false; a = -1; best = -1; bd = minD * minD;
+    for(i = 0; i < cent.length; i++) for(j = i + 1; j < cent.length; j++){
+      dr = cent[i][0] - cent[j][0]; dg = cent[i][1] - cent[j][1]; db = cent[i][2] - cent[j][2];
+      d2 = dr*dr + dg*dg + db*db;
+      if(d2 < bd){ bd = d2; a = i; best = j; }
+    }
+    if(a >= 0){
+      var wa = cnt[a] || 1, wb = cnt[best] || 1;
+      cent[a] = [0, 1, 2].map(function(c){ return (cent[a][c] * wa + cent[best][c] * wb) / (wa + wb); });
+      cnt[a] = wa + wb;
+      cent.splice(best, 1); cnt.splice(best, 1);
+      merged = true;
+    }
+  }
+  return cent;
+}
+
+var RD = { img:null, cs:1, crop:null, W:0, H:0, d:null, nx:0, ny:0, phx:0, phy:0, k:6, cm:0, cells:null, pal:[], drag:null, timer:null };
+var RD_WORK = 640, RD_SHOW = 720;
+function readLoad(file){
+  if(!file) return;
+  var fr = new FileReader();
+  fr.onerror = function(){ toast("Couldn't read that file."); };
+  fr.onload = function(){
+    var im = new Image();
+    im.onload = function(){
+      RD.img = im;
+      RD.crop = { x0:0, y0:0, x1:im.naturalWidth, y1:im.naturalHeight };
+      $("read-stage").hidden = false;
+      readAnalyse(true);
+    };
+    im.onerror = function(){ toast("That doesn't look like a picture."); };
+    im.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+function readWork(){
+  var c = RD.crop, cw = c.x1 - c.x0, ch = c.y1 - c.y0, sc = Math.min(1, RD_WORK / Math.max(cw, ch));
+  var W = Math.max(8, Math.round(cw * sc)), H = Math.max(8, Math.round(ch * sc));
+  var cvs = document.createElement("canvas"); cvs.width = W; cvs.height = H;
+  var g = cvs.getContext("2d");
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
+  g.drawImage(RD.img, c.x0, c.y0, cw, ch, 0, 0, W, H);
+  RD.W = W; RD.H = H; RD.d = g.getImageData(0, 0, W, H).data;
+}
+function readDetect(){
+  var cache = {};
+  function prof(lag){ return cache[lag] || (cache[lag] = bendProfiles(RD.d, RD.W, RD.H, lag)); }
+  var bx = bestCount(function(l){ return prof(l).gx; }, RD.W, 4, 100);
+  var by = bestCount(function(l){ return prof(l).gy; }, RD.H, 4, 100);
+  RD.nx = bx ? bx.n : 12; RD.phx = bx ? bx.phi : 0;
+  RD.ny = by ? by.n : 12; RD.phy = by ? by.phi : 0;
+}
+function readSample(){
+  var cells = sampleGrid(RD.d, RD.W, RD.H, RD.nx, RD.ny, RD.phx, RD.phy);
+  var cent = mergeClose(cells, quantise(cells, RD.k).map(function(h){ return hexToRGB(h); }), 30);
+  var hex = [], seen = {}, prgb = [];
+  cent.forEach(function(c){
+    var h = rgbToHex(c[0], c[1], c[2]);
+    if(!seen[h]){ seen[h] = 1; hex.push(h); prgb.push([c[0], c[1], c[2]]); }
+  });
+  var n = RD.nx * RD.ny, out = new Array(n), i, j, best, bd, dr, dg, db, dist;
+  for(i = 0; i < n; i++){
+    best = 0; bd = Infinity;
+    for(j = 0; j < prgb.length; j++){
+      dr = cells[i*4] - prgb[j][0]; dg = cells[i*4+1] - prgb[j][1]; db = cells[i*4+2] - prgb[j][2];
+      dist = dr*dr + dg*dg + db*db;
+      if(dist < bd){ bd = dist; best = j; }
+    }
+    out[i] = hex[best];
+  }
+  RD.cells = out; RD.pal = hex;
+}
+function readAnalyse(detect){
+  if(!RD.img) return;
+  $("read-counts").textContent = t("Reading the stitches…");
+  clearTimeout(RD.timer);
+  RD.timer = setTimeout(function(){
+    readWork();
+    if(detect) readDetect();
+    readRefresh();
+  }, 30);
+}
+function readRefresh(){
+  RD.nx = Math.max(4, Math.min(100, RD.nx)); RD.ny = Math.max(4, Math.min(100, RD.ny));
+  readSample();
+  readDrawPhoto();
+  var cv = $("read-chart"), small = smallCanvas(RD.nx, RD.ny, RD.cells, false);
+  cv.width = RD.nx; cv.height = RD.ny;
+  cv.getContext("2d").drawImage(small, 0, 0);
+  $("rd-nx").textContent = String(RD.nx);
+  $("rd-ny").textContent = String(RD.ny);
+  $("rd-k").textContent = String(RD.k);
+  $("read-counts").textContent = tf(RD.pal.length === 1
+    ? "Counted {w} stitches across and {h} rows up, in 1 yarn."
+    : "Counted {w} stitches across and {h} rows up, in {n} yarns.", { w:RD.nx, h:RD.ny, n:RD.pal.length });
+  readTension();
+}
+function readDrawPhoto(){
+  var cv = $("read-prev"), im = RD.img; if(!im) return;
+  var iw = im.naturalWidth, ih = im.naturalHeight, cs = Math.min(1, RD_SHOW / Math.max(iw, ih));
+  RD.cs = cs;
+  cv.width = Math.round(iw * cs); cv.height = Math.round(ih * cs);
+  var g = cv.getContext("2d");
+  g.drawImage(im, 0, 0, cv.width, cv.height);
+  var c = RD.drag ? { x0:Math.min(RD.drag.a.x, RD.drag.b.x), y0:Math.min(RD.drag.a.y, RD.drag.b.y),
+                      x1:Math.max(RD.drag.a.x, RD.drag.b.x), y1:Math.max(RD.drag.a.y, RD.drag.b.y) } : RD.crop;
+  var x0 = c.x0 * cs, y0 = c.y0 * cs, x1 = c.x1 * cs, y1 = c.y1 * cs, k, x, y;
+  g.fillStyle = "rgba(20,12,30,.52)";
+  g.fillRect(0, 0, cv.width, y0); g.fillRect(0, y1, cv.width, cv.height - y1);
+  g.fillRect(0, y0, x0, y1 - y0); g.fillRect(x1, y0, cv.width - x1, y1 - y0);
+  if(!RD.drag && RD.nx && RD.ny){
+    var px = (x1 - x0) / RD.nx, py = (y1 - y0) / RD.ny;
+    var sx = px < 7 ? 2 : 1, sy = py < 7 ? 2 : 1;
+    g.save(); g.beginPath(); g.rect(x0, y0, x1 - x0, y1 - y0); g.clip();
+    [["rgba(0,0,0,.55)", 3], ["rgba(255,255,255,.92)", 1]].forEach(function(pen){
+      g.strokeStyle = pen[0]; g.lineWidth = pen[1]; g.beginPath();
+      for(k = 0; k <= RD.nx; k += sx){ x = x0 + (k + RD.phx) * px; g.moveTo(x, y0); g.lineTo(x, y1); }
+      for(k = 0; k <= RD.ny; k += sy){ y = y0 + (k + RD.phy) * py; g.moveTo(x0, y); g.lineTo(x1, y); }
+      g.stroke();
+    });
+    g.restore();
+  }
+  g.strokeStyle = css("--accent") || "#B62A63"; g.lineWidth = 2.5; g.strokeRect(x0, y0, x1 - x0, y1 - y0);
+}
+function readTension(){
+  var show = RD.cm > 0, note = $("rd-tension"), use = $("rd-use");
+  $("rd-w").textContent = RD.cm > 0 ? RD.cm + " cm" : "—";
+  note.hidden = !show; use.hidden = !show;
+  if(!show) return;
+  var hCm = RD.cm * RD.H / RD.W;
+  RD.sts = Math.round(RD.nx / RD.cm * 100) / 10;
+  RD.rows = Math.round(RD.ny / hCm * 100) / 10;
+  note.textContent = tf("That is about {s} stitches and {r} rows per 10 cm.", { s:RD.sts, r:RD.rows });
+}
+function readStepW(dir){
+  if(RD.cm === 0){ RD.cm = dir > 0 ? 20 : 0; }
+  else if(dir < 0 && RD.cm <= 4){ RD.cm = 0; }
+  else RD.cm = stepCm(RD.cm, dir);
+  readTension();
+}
+function readMake(){
+  if(!RD.cells){ return; }
+  if(S.proj) saveProject(S.proj);        /* the chart you were on is kept, not swapped out unsaved */
+  var p = newProject(RD.nx, RD.ny, niceName(), null);
+  p.cells = RD.cells.slice();
+  saveProject(p);
+  adoptProject(p);
+  SET.basket = RD.pal.slice(0, 30); saveSettings();
+  closeSheet("sheet-read");
+  S.stack = ["hearth"];
+  show("loom", true);
+  toast("A chart from your piece. It is yours to edit.");
+}
+function readPoint(ev){
+  var cv = $("read-prev"), r = cv.getBoundingClientRect(), im = RD.img;
+  var x = (ev.clientX - r.left) / r.width * cv.width / RD.cs, y = (ev.clientY - r.top) / r.height * cv.height / RD.cs;
+  return { x:Math.max(0, Math.min(im.naturalWidth, x)), y:Math.max(0, Math.min(im.naturalHeight, y)) };
+}
+
+/* ==========================================================================
    TRACING A PHOTO
    ========================================================================== */
 var PH = { img:null, mode:"fit", src:"photo", k:8, cells:null, pal:[] };
@@ -7868,6 +8240,50 @@ function wire(){
     openSheet("sheet-photo");
   };
   $("photoin").addEventListener("change", function(){ photoLoad(this.files && this.files[0]); });
+  /* read a finished piece */
+  $("ph-read").onclick = function(){ closeSheet("sheet-photo"); openSheet("sheet-read"); };
+  $("readin").addEventListener("change", function(){ readLoad(this.files && this.files[0]); });
+  var rv = $("read-prev");
+  rv.addEventListener("pointerdown", function(ev){
+    if(!RD.img) return;
+    try{ rv.setPointerCapture(ev.pointerId); }catch(e){}
+    var pt = readPoint(ev); RD.drag = { a:pt, b:pt }; readDrawPhoto();
+  });
+  rv.addEventListener("pointermove", function(ev){
+    if(!RD.drag) return;
+    RD.drag.b = readPoint(ev); readDrawPhoto();
+  });
+  function readEnd(){
+    if(!RD.drag) return;
+    var a = RD.drag.a, b = RD.drag.b, big = Math.abs(a.x - b.x) > 24 && Math.abs(a.y - b.y) > 24;
+    RD.drag = null;
+    if(big){
+      RD.crop = { x0:Math.min(a.x, b.x), y0:Math.min(a.y, b.y), x1:Math.max(a.x, b.x), y1:Math.max(a.y, b.y) };
+      readAnalyse(true);
+    } else readDrawPhoto();
+  }
+  rv.addEventListener("pointerup", readEnd);
+  rv.addEventListener("pointercancel", function(){ RD.drag = null; readDrawPhoto(); });
+  $("rd-reset").onclick = function(){
+    if(!RD.img) return;
+    RD.crop = { x0:0, y0:0, x1:RD.img.naturalWidth, y1:RD.img.naturalHeight };
+    readAnalyse(true);
+  };
+  $("rd-nx-less").onclick = function(){ if(RD.img){ RD.nx--; readRefresh(); } };
+  $("rd-nx-more").onclick = function(){ if(RD.img){ RD.nx++; readRefresh(); } };
+  $("rd-ny-less").onclick = function(){ if(RD.img){ RD.ny--; readRefresh(); } };
+  $("rd-ny-more").onclick = function(){ if(RD.img){ RD.ny++; readRefresh(); } };
+  $("rd-k-less").onclick  = function(){ if(RD.img){ RD.k = Math.max(2, RD.k - 1); readRefresh(); } };
+  $("rd-k-more").onclick  = function(){ if(RD.img){ RD.k = Math.min(12, RD.k + 1); readRefresh(); } };
+  $("rd-w-less").onclick  = function(){ readStepW(-1); };
+  $("rd-w-more").onclick  = function(){ readStepW(1); };
+  $("rd-use").onclick = function(){
+    SET.gaugeSts = Math.max(6, Math.min(60, Math.round(RD.sts)));
+    SET.gaugeRows = Math.max(6, Math.min(60, Math.round(RD.rows)));
+    saveSettings();
+    toast(tf("Tension set to {s} stitches and {r} rows per 10 cm.", { s:SET.gaugeSts, r:SET.gaugeRows }));
+  };
+  $("rd-make").onclick = readMake;
   $("ph-fitmode").onclick = function(){ PH.mode = PH.mode === "fit" ? "fill" : "fit"; photoRender(); };
   $("ph-source").onclick  = function(){ PH.src = PH.src === "photo" ? "basket" : "photo"; photoRender(); };
   $("ph-less").onclick    = function(){ PH.k = Math.max(2, PH.k - 1); photoRender(); };

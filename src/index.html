@@ -500,6 +500,8 @@ body.has-update .bar{padding-top:8px}
 .selbar button[data-sel="done"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .selinfo{flex:none;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding-right:2px}
 #read-prev{display:block;max-width:100%;max-height:44vh;margin:12px auto 0;border-radius:12px;touch-action:none;border:1px solid var(--line);background:var(--cloth-a);cursor:crosshair}
+#read-loupe{position:fixed;z-index:400;width:120px;height:120px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden;pointer-events:none;background:#222}
+#read-loupe canvas{width:100%;height:100%;display:block}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .pair .axis .stepper{gap:4px}
 .pair .axis .stepper button{width:38px;flex:none}
@@ -1220,12 +1222,12 @@ body.has-update .bar{padding-top:8px}
  <div class="sheet-in">
    <div class="grab"></div>
    <h2>Read a finished piece</h2>
-   <p class="sub">Photograph a finished crochet picture flat and square-on. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.</p>
+   <p class="sub">Photograph a finished crochet picture, as flat as you can. If it was taken at an angle, pin its four corners and it is straightened first. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.</p>
    <input type="file" id="readin" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
    <label class="btn go" for="readin" id="read-pick" style="cursor:pointer">Choose a photo</label>
    <div id="read-stage" hidden>
      <canvas id="read-prev" aria-label="Your photo, with the stitches it counted"></canvas>
-     <p class="note" style="margin:8px 2px 0">Drag a box right round the piece, edge to edge. The lines show the stitches it counted; when they sit on the stitches, you are done.</p>
+     <p class="note" style="margin:8px 2px 0">Drag the four corner dots onto the corners of the piece, or drag a fresh box round it. The lines show the stitches it counted; when they sit on the stitches, you are done.</p>
      <div class="row" style="margin-top:8px"><button class="btn" id="rd-reset">Whole photo</button></div>
      <div class="pair">
      <div class="axis" style="margin-top:0">
@@ -1532,6 +1534,7 @@ body.has-update .bar{padding-top:8px}
 
 <div class="toast" id="toast"></div>
 
+<div id="read-loupe" hidden aria-hidden="true"><canvas width="240" height="240"></canvas></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <script>
 /* ==========================================================================
@@ -1873,6 +1876,9 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.28", d:"7 Oct", items:[
+   "Pin the four corners: a photo of crochet taken at an angle is straightened first, by dragging four corner dots onto the piece with a magnifier above your finger. And the stitch count no longer needs a tight box: the spacing is found continuously and the piece is told from the table by its own seams, so a margin of up to a stitch, or a corner placed a little off, still gives the right count."
+ ]},
  { v:"1.27", d:"7 Oct", items:[
    "Everything now speaks your language: counts like “92 sts” and “6 yarns”, the Cabinet total, the empty Blankets list, the storage status, the screen-reader labels on the yarns and the printable chart sheet (its footnote, heading, colour names and date) were still English in French, Spanish and German. They are translated, with real singulars. The New screen also says thirty-two patterns, not sixteen.",
    "The basket's look-ahead now ignores layout guides such as rings and thirds, which name squares rather than yarns. Only a guide whose yarns are in your basket, like a traced photo, points the way."
@@ -3525,6 +3531,14 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Everything now speaks your language: counts like “92 sts” and “6 yarns”, the Cabinet total, the empty Blankets list, the storage status, the screen-reader labels on the yarns and the printable chart sheet (its footnote, heading, colour names and date) were still English in French, Spanish and German. They are translated, with real singulars. The New screen also says thirty-two patterns, not sixteen.": "Tout parle maintenant votre langue : les totaux comme « 92 m. » et « 6 fils », le nombre d'ouvrages de la vitrine, la liste vide des couvertures, l'état du stockage, les libellés des fils pour les lecteurs d'écran et la fiche imprimable (note de bas de page, titre, noms des couleurs et date) étaient encore en anglais en français, espagnol et allemand. Ils sont traduits, avec de vrais singuliers. L'écran Nouveau annonce aussi trente-deux motifs, et non seize.", "The basket's look-ahead now ignores layout guides such as rings and thirds, which name squares rather than yarns. Only a guide whose yarns are in your basket, like a traced photo, points the way.": "L'anticipation du panier ignore désormais les guides de mise en page comme les anneaux et les tiers, qui désignent des carrés et non des fils. Seul un guide dont les fils sont dans votre panier, comme une photo décalquée, montre le chemin."},{"Everything now speaks your language: counts like “92 sts” and “6 yarns”, the Cabinet total, the empty Blankets list, the storage status, the screen-reader labels on the yarns and the printable chart sheet (its footnote, heading, colour names and date) were still English in French, Spanish and German. They are translated, with real singulars. The New screen also says thirty-two patterns, not sixteen.": "Todo habla ahora tu idioma: los totales como «92 pts» y «6 hilos», el número de piezas de la vitrina, la lista vacía de mantas, el estado del almacenamiento, las etiquetas de los hilos para lectores de pantalla y la hoja imprimible (nota al pie, título, nombres de colores y fecha) seguían en inglés en francés, español y alemán. Ya están traducidos, con singulares de verdad. La pantalla Nuevo también dice treinta y dos patrones, no dieciséis.", "The basket's look-ahead now ignores layout guides such as rings and thirds, which name squares rather than yarns. Only a guide whose yarns are in your basket, like a traced photo, points the way.": "La anticipación de la cesta ahora ignora las guías de maquetación como los anillos y los tercios, que nombran cuadros y no hilos. Solo señala el camino una guía cuyos hilos estén en tu cesta, como una foto calcada."},{"Everything now speaks your language: counts like “92 sts” and “6 yarns”, the Cabinet total, the empty Blankets list, the storage status, the screen-reader labels on the yarns and the printable chart sheet (its footnote, heading, colour names and date) were still English in French, Spanish and German. They are translated, with real singulars. The New screen also says thirty-two patterns, not sixteen.": "Jetzt spricht alles deine Sprache: Zahlen wie „92 M.“ und „6 Garne“, die Zahl der Stücke in der Vitrine, die leere Deckenliste, der Speicherstatus, die Bildschirmleser-Beschriftungen der Garne und das druckbare Blatt (Fußnote, Überschrift, Farbnamen und Datum) waren auf Französisch, Spanisch und Deutsch noch englisch. Sie sind übersetzt, mit echten Einzahlformen. Der Bildschirm Neu nennt außerdem zweiunddreißig Muster, nicht sechzehn.", "The basket's look-ahead now ignores layout guides such as rings and thirds, which name squares rather than yarns. Only a guide whose yarns are in your basket, like a traced photo, points the way.": "Die Vorschau des Korbs ignoriert jetzt Layout-Hilfen wie Ringe und Drittel, die Kästchen benennen statt Garne. Nur eine Hilfsebene, deren Garne in deinem Korb liegen, etwa ein nachgezeichnetes Foto, weist den Weg."}]);
+/* Pin the four corners. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Drag the four corner dots onto the corners of the piece, or drag a fresh box round it. The lines show the stitches it counted; when they sit on the stitches, you are done.": "Faites glisser les quatre points d'angle sur les coins de l'ouvrage, ou tracez un nouveau cadre autour. Les lignes montrent les mailles comptées ; quand elles tombent sur les mailles, c'est bon.", "Photograph a finished crochet picture, as flat as you can. If it was taken at an angle, pin its four corners and it is straightened first. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.": "Photographiez un ouvrage terminé, aussi à plat que possible. S'il a été pris de biais, placez ses quatre coins et il est d'abord redressé. Threadwyn compte les mailles, lit la couleur de chacune et en fait une grille que vous pouvez retoucher.", "Pin the four corners: a photo of crochet taken at an angle is straightened first, by dragging four corner dots onto the piece with a magnifier above your finger. And the stitch count no longer needs a tight box: the spacing is found continuously and the piece is told from the table by its own seams, so a margin of up to a stitch, or a corner placed a little off, still gives the right count.": "Placer les quatre coins : une photo de crochet prise de biais est d'abord redressée, en glissant quatre points d'angle sur l'ouvrage avec une loupe au-dessus du doigt. Et le compte des mailles n'exige plus un cadre serré : l'espacement est trouvé en continu et l'ouvrage se distingue de la table par ses propres coutures, si bien qu'une marge allant jusqu'à une maille, ou un coin légèrement décalé, donne encore le bon compte."},{"Drag the four corner dots onto the corners of the piece, or drag a fresh box round it. The lines show the stitches it counted; when they sit on the stitches, you are done.": "Arrastra los cuatro puntos de las esquinas hasta las esquinas de la pieza, o dibuja un recuadro nuevo alrededor. Las líneas muestran los puntos contados; cuando caen sobre los puntos, ya está.", "Photograph a finished crochet picture, as flat as you can. If it was taken at an angle, pin its four corners and it is straightened first. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.": "Fotografía una pieza terminada, lo más plana que puedas. Si se tomó en ángulo, fija sus cuatro esquinas y se endereza primero. Threadwyn cuenta los puntos, lee el color de cada uno y crea una cuadrícula que puedes editar.", "Pin the four corners: a photo of crochet taken at an angle is straightened first, by dragging four corner dots onto the piece with a magnifier above your finger. And the stitch count no longer needs a tight box: the spacing is found continuously and the piece is told from the table by its own seams, so a margin of up to a stitch, or a corner placed a little off, still gives the right count.": "Fijar las cuatro esquinas: una foto de ganchillo tomada en ángulo se endereza primero, arrastrando cuatro puntos de esquina sobre la pieza con una lupa sobre el dedo. Y la cuenta de puntos ya no necesita un recuadro ajustado: el espaciado se halla de forma continua y la pieza se distingue de la mesa por sus propias costuras, así que un margen de hasta un punto, o una esquina algo desplazada, sigue dando la cuenta correcta."},{"Drag the four corner dots onto the corners of the piece, or drag a fresh box round it. The lines show the stitches it counted; when they sit on the stitches, you are done.": "Zieh die vier Eckpunkte auf die Ecken des Stücks oder zieh einen neuen Rahmen darum. Die Linien zeigen die gezählten Maschen; liegen sie auf den Maschen, bist du fertig.", "Photograph a finished crochet picture, as flat as you can. If it was taken at an angle, pin its four corners and it is straightened first. Threadwyn counts the stitches, reads the colour of each one and makes a chart you can edit.": "Fotografiere ein fertiges Häkelbild, so flach wie möglich. Wurde es schräg aufgenommen, setze seine vier Ecken, dann wird es zuerst begradigt. Threadwyn zählt die Maschen, liest die Farbe jeder einzelnen und macht daraus ein Zählmuster, das du bearbeiten kannst.", "Pin the four corners: a photo of crochet taken at an angle is straightened first, by dragging four corner dots onto the piece with a magnifier above your finger. And the stitch count no longer needs a tight box: the spacing is found continuously and the piece is told from the table by its own seams, so a margin of up to a stitch, or a corner placed a little off, still gives the right count.": "Die vier Ecken setzen: Ein schräg aufgenommenes Foto von Häkelarbeit wird zuerst begradigt, indem du vier Eckpunkte mit einer Lupe über dem Finger auf das Stück ziehst. Und die Maschenzählung braucht keinen engen Rahmen mehr: Der Abstand wird stufenlos gefunden und das Stück wird an seinen eigenen Nähten vom Tisch unterschieden, sodass ein Rand von bis zu einer Masche oder eine leicht verrutschte Ecke noch die richtige Zahl ergibt."}]);
 /* Effort, strays and carry-or-cut. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -7506,17 +7520,21 @@ function openWeights(){
 /* ==========================================================================
    READING A FINISHED PIECE
    Tracing a photo makes pixel art of a picture. This goes the other way: it
-   reads crochet that already exists. A stitch grid repeats, so the number of
-   stitches across a photo of a flat piece can be found from the picture alone:
-   lay a comb with N teeth on how strongly the image bends along each axis, and
-   the right N is the one whose teeth fall on the seams between stitches and
-   whose gaps fall inside them (scored as a Welch t, so a count with many agreeing
-   teeth beats a few that line up by luck, and a doubled or tripled count loses
-   to the true one). Width and height are counted separately because a crochet
-   stitch is not square. Each stitch's colour is the median of its middle, so a
-   shadow in the seam or a fleck of fluff does not vote. Yarns that came out as
-   near-twins are pulled back together. If you say how wide the piece is, the
-   count is also a tension measurement, taken from the photo.
+   reads crochet that already exists. A stitch grid repeats, so the stitch
+   count can be found from the picture alone: lay a comb on how strongly the
+   image bends along each axis, and the right spacing is the one whose teeth
+   fall on the seams between stitches and whose gaps fall inside them (scored
+   as a Welch t, so a spacing with many agreeing teeth beats a few that line up
+   by luck). Width and height are counted separately because a crochet stitch
+   is not square. The spacing is searched continuously, and which cells are the
+   piece is read from the seams themselves, so a margin of table round the
+   piece, or a corner placed a little off, does not change the count. A photo
+   taken at an angle is straightened first: pin the piece's four corners and the
+   picture between them is stretched back to a rectangle. Each stitch's colour
+   is the median of its middle, so a shadow in the seam or a fleck of fluff does
+   not vote, and yarns that came out as near-twins are pulled back together. If
+   you say how wide the piece is, the count is also a tension measurement,
+   taken from the photo.
    ========================================================================== */
 /* Along one axis, how strongly does the picture bend at each position? A second
    difference at a small lag peaks in the middle of a dark seam between stitches and
@@ -7641,9 +7659,227 @@ function mergeClose(cells, pal, minD){
   }
   return cent;
 }
+/* A photo of a flat piece taken from an angle is a trapezoid, and stitches in a
+   trapezoid are not on a grid. Pin the four corners of the piece and the picture
+   between them is stretched back to a rectangle (a homography: unit square to
+   quadrilateral, Heckbert's closed form), sampled bilinearly with a few sub-samples
+   per pixel so shrinking it does not alias. Corners go TL, TR, BR, BL. */
+function quadHomography(q){
+  var x0 = q[0][0], y0 = q[0][1], x1 = q[1][0], y1 = q[1][1], x2 = q[2][0], y2 = q[2][1], x3 = q[3][0], y3 = q[3][1];
+  var dx1 = x1 - x2, dx2 = x3 - x2, dx3 = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, dy3 = y0 - y1 + y2 - y3;
+  var a, b, g, h, d, e, den;
+  if(Math.abs(dx3) < 1e-9 && Math.abs(dy3) < 1e-9){
+    return [x1 - x0, x3 - x0, x0, y1 - y0, y3 - y0, y0, 0, 0];
+  }
+  den = dx1 * dy2 - dy1 * dx2;
+  g = (dx3 * dy2 - dy3 * dx2) / den; h = (dx1 * dy3 - dy1 * dx3) / den;
+  a = x1 - x0 + g * x1; b = x3 - x0 + h * x3; d = y1 - y0 + g * y1; e = y3 - y0 + h * y3;
+  return [a, b, x0, d, e, y0, g, h];
+}
+function mapUV(M, u, v){
+  var w = M[6] * u + M[7] * v + 1;
+  return [(M[0] * u + M[1] * v + M[2]) / w, (M[3] * u + M[4] * v + M[5]) / w];
+}
+function quadSize(q){
+  function len(a, b){ return Math.hypot(a[0] - b[0], a[1] - b[1]); }
+  return { w:(len(q[0], q[1]) + len(q[3], q[2])) / 2, h:(len(q[0], q[3]) + len(q[1], q[2])) / 2 };
+}
+/* all four turns the same way, and a sensible area: no bow-ties, no folded corners */
+function quadOk(q, minArea){
+  var i, s = 0, c, area = 0, a, b, d;
+  for(i = 0; i < 4; i++){
+    a = q[i]; b = q[(i + 1) % 4]; d = q[(i + 2) % 4];
+    c = (b[0] - a[0]) * (d[1] - b[1]) - (b[1] - a[1]) * (d[0] - b[0]);
+    if(Math.abs(c) < 1e-6) return false;
+    if(s === 0) s = c > 0 ? 1 : -1; else if((c > 0 ? 1 : -1) !== s) return false;
+    area += a[0] * b[1] - b[0] * a[1];
+  }
+  return Math.abs(area) / 2 >= (minArea || 0);
+}
+/* the corners must run clockwise on screen (TL, TR, BR, BL), or the piece would be mirrored */
+function quadCW(q){
+  var i, a = 0;
+  for(i = 0; i < 4; i++) a += q[i][0] * q[(i + 1) % 4][1] - q[(i + 1) % 4][0] * q[i][1];
+  return a > 0;
+}
+function warpQuad(d, sw, sh, q, W, H, ss){
+  var M = quadHomography(q), out = new Uint8ClampedArray(W * H * 4), n = ss * ss, inv = 1 / n, x, y, a, b, u, v, w, px, py, r, g, bl, i;
+  var fx, fy, x0, y0, tx, ty, i00, i10, i01, i11, wa, wb, wc, wd, mx = sw - 2, my = sh - 2;
+  for(y = 0; y < H; y++) for(x = 0; x < W; x++){
+    r = g = bl = 0;
+    for(a = 0; a < ss; a++) for(b = 0; b < ss; b++){
+      u = (x + (b + 0.5) / ss) / W; v = (y + (a + 0.5) / ss) / H;
+      w = M[6] * u + M[7] * v + 1;
+      px = (M[0] * u + M[1] * v + M[2]) / w; py = (M[3] * u + M[4] * v + M[5]) / w;
+      fx = px - 0.5; fy = py - 0.5;
+      x0 = Math.floor(fx); y0 = Math.floor(fy);
+      if(x0 < 0) x0 = 0; else if(x0 > mx) x0 = mx;
+      if(y0 < 0) y0 = 0; else if(y0 > my) y0 = my;
+      tx = fx - x0; ty = fy - y0;
+      if(tx < 0) tx = 0; else if(tx > 1) tx = 1;
+      if(ty < 0) ty = 0; else if(ty > 1) ty = 1;
+      i00 = (y0 * sw + x0) * 4; i10 = i00 + 4; i01 = i00 + sw * 4; i11 = i01 + 4;
+      wa = (1 - tx) * (1 - ty); wb = tx * (1 - ty); wc = (1 - tx) * ty; wd = tx * ty;
+      r += d[i00] * wa + d[i10] * wb + d[i01] * wc + d[i11] * wd;
+      g += d[i00 + 1] * wa + d[i10 + 1] * wb + d[i01 + 1] * wc + d[i11 + 1] * wd;
+      bl += d[i00 + 2] * wa + d[i10 + 2] * wb + d[i01 + 2] * wc + d[i11 + 2] * wd;
+    }
+    i = (y * W + x) * 4;
+    out[i] = r * inv; out[i + 1] = g * inv; out[i + 2] = bl * inv; out[i + 3] = 255;
+  }
+  return out;
+}
+/* ---- real-valued pitch, and the piece's own extent ----
+   The integer comb above assumes the crop is the piece. Real boxes and corner pins leave a
+   sliver of table round it, and then the true pitch is not width over a whole number.
+   So the pitch is searched continuously, and which cells are the piece is read from the seams
+   themselves: a column that crosses the piece has the other axis's seams running across it, a
+   column of table does not. That evidence is periodic, so it does not depend on how noisy
+   the photo is. */
+function teethScore(P, p, x0){
+  var L = P.length, w = Math.max(0, Math.round(p / 6)), sh = 0, sh2 = 0, nh = 0, sl = 0, sl2 = 0, nl = 0, k, x, v;
+  for(k = 0; ; k++){
+    x = Math.round(x0 + k * p); if(x >= L) break;
+    if(x >= 0){ v = winMax(P, x, w); sh += v; sh2 += v * v; nh++; }
+    x = Math.round(x0 + (k + 0.5) * p);
+    if(x >= 0 && x < L){ v = winMax(P, x, w); sl += v; sl2 += v * v; nl++; }
+  }
+  if(nh < 3 || nl < 3) return -1e9;
+  var mh = sh / nh, ml = sl / nl, vh = Math.max(0, sh2 / nh - mh * mh) * nh / (nh - 1), vl = Math.max(0, sl2 / nl - ml * ml) * nl / (nl - 1);
+  var se = Math.sqrt(vh / nh + vl / nl) + 1e-6 * (mh + ml) + 1e-9, tv = (mh - ml) / se, df = Math.max(1, Math.min(nh, nl) - 1);
+  return tv * (1 - 1 / (4 * df)) / Math.sqrt(1 + tv * tv / (2 * df));
+}
+function polishPitch(profileFor, p0, span){
+  var P = profileFor(Math.max(1, Math.round(p0 / 10))), best = null, f, ph, p, x0, s;
+  for(f = 1 - span; f <= 1 + span + 1e-9; f += span / 8) for(ph = 0; ph < 12; ph++){
+    p = p0 * f; x0 = -p + ph * p / 12; s = teethScore(P, p, x0);
+    if(!best || s > best.s) best = { s:s, p:p, x0:x0 };
+  }
+  return best;
+}
+/* the strongest few distinct pitches on one axis, each with its best phase */
+function pitchCandidates(profileFor, L, K){
+  var scan = [], p, lag, P, b, ph, x0, s, i, j, top, peaks = [];
+  for(p = L / 4; p >= L / 100; p /= 1.004){
+    P = profileFor(Math.max(1, Math.round(p / 10))); b = null;
+    for(ph = 0; ph < 12; ph++){
+      x0 = -p + ph * p / 12; s = teethScore(P, p, x0);
+      if(!b || s > b.s) b = { s:s, p:p, x0:x0 };
+    }
+    scan.push(b);
+  }
+  for(i = 0; i < scan.length; i++){
+    top = true;
+    for(j = Math.max(0, i - 12); j <= Math.min(scan.length - 1, i + 12); j++) if(scan[j].s > scan[i].s){ top = false; break; }
+    if(top) peaks.push(scan[i]);
+  }
+  peaks.sort(function(a, c){ return c.s - a.s; });
+  return peaks.slice(0, K).map(function(c){ var q = polishPitch(profileFor, c.p, 0.012); return q.s >= c.s ? q : c; });
+}
+/* The two axes must agree on the stitch: its height is somewhere near its width. */
+function bestPitchPair(cx, cy){
+  var best = null, i, j, r, s;
+  for(i = 0; i < cx.length; i++) for(j = 0; j < cy.length; j++){
+    r = cy[j].p / cx[i].p;
+    if(r < 0.55 || r > 1.6) continue;
+    s = cx[i].s + cy[j].s;
+    if(!best || s > best.s) best = { x:cx[i], y:cy[j], s:s };
+  }
+  return best || { x:cx[0], y:cy[0], s:0 };
+}
+function gridEvidence(P, p, x0, lag){
+  var L = P.length, w = Math.max(0, Math.round(p / 6)), z = 0, n = 0, k, x, xm, s, m;
+  for(k = -1; ; k++){
+    x = Math.round(x0 + k * p); if(x > L) break;
+    if(x < lag + 1 || x > L - lag - 2) continue;
+    xm = Math.round(x0 + (k + 0.5) * p); if(xm < 0 || xm >= L) continue;
+    s = winMax(P, x, w); m = winMax(P, xm, w);
+    z += (s - m) / (s + m + 1e-9); n++;
+  }
+  return n >= 3 ? z / n : 0;
+}
+/* cells along one axis: the other axis's profile, taken only through each cell's own middle */
+function cellEvidence(d, W, H, g, other, alongX){
+  var lag = Math.max(1, Math.round(other.p / 10)), L = alongX ? W : H, M = alongX ? H : W, out = [], k, xa, xb, a1, a2, P, y, x, i, j, q, s, c;
+  for(k = -2; ; k++){
+    xa = g.x0 + k * g.p; xb = xa + g.p;
+    if(xa >= L) break;
+    if(Math.min(L, xb) - Math.max(0, xa) < 0.4 * g.p) continue;
+    a1 = Math.max(0, Math.round(xa + 0.2 * g.p)); a2 = Math.min(L - 1, Math.round(xb - 0.2 * g.p));
+    P = new Float32Array(M);
+    if(alongX){
+      for(y = lag; y < H - lag; y++){
+        i = (y - lag) * W * 4; j = y * W * 4; q = (y + lag) * W * 4; s = 0;
+        for(x = a1; x <= a2; x++) for(c = 0; c < 3; c++) s += Math.abs(d[i + x*4 + c] + d[q + x*4 + c] - 2 * d[j + x*4 + c]);
+        P[y] = s;
+      }
+    } else {
+      for(y = a1; y <= a2; y++){
+        i = y * W * 4;
+        for(x = lag; x < W - lag; x++){
+          s = 0; for(c = 0; c < 3; c++) s += Math.abs(d[i + (x-lag)*4 + c] + d[i + (x+lag)*4 + c] - 2 * d[i + x*4 + c]);
+          P[x] += s;
+        }
+      }
+    }
+    out.push({ k:k, z:gridEvidence(P, other.p, other.x0, lag) });
+  }
+  return out;
+}
+/* runs of piece cells separated by at most two weak ones are one piece; the biggest wins */
+function pieceExtent(cells, g, thr){
+  var clusters = [], cur = null, i, best;
+  for(i = 0; i < cells.length; i++){
+    if(cells[i].z >= thr){
+      if(cur && i - cur.b <= 3){ cur.b = i; cur.count++; } else { cur = { a:i, b:i, count:1 }; clusters.push(cur); }
+    }
+  }
+  if(!clusters.length) return null;
+  best = clusters.reduce(function(u, v){ return v.count > u.count ? v : u; });
+  return { n:best.b - best.a + 1, p:g.p, x0:g.x0 + cells[best.a].k * g.p };
+}
+/* base: the plain integer counts {x:{n,phi}, y:{n,phi}} from bestCount, kept as the fallback.
+   acc: how much of the crop the evidence must claim before it is believed. A box is drawn by
+   eye and may leave a margin; a corner pin is placed with more care and a ragged edge is more
+   likely to be a fault in the evidence than a margin. */
+function readGrid(d, W, H, profX, profY, base, acc){
+  var pair = bestPitchPair(pitchCandidates(profX, W, 6), pitchCandidates(profY, H, 6)), gx = pair.x, gy = pair.y;
+  var cx = cellEvidence(d, W, H, gx, gy, true), cy = cellEvidence(d, W, H, gy, gx, false);
+  var ex = pieceExtent(cx, gx, 0.1), ey = pieceExtent(cy, gy, 0.1);
+  function pick(e, cells, L, b){
+    if(e && e.n >= acc * cells.length && e.n * e.p >= 0.6 * L) return e;
+    return { n:b.n, p:L / b.n, x0:b.phi * L / b.n };
+  }
+  return { x:pick(ex, cx, W, base.x), y:pick(ey, cy, H, base.y) };
+}
+/* a stitch's colour is the median of its middle, on a grid given by pitch and origin */
+function sampleGridAt(d, W, H, gx, gy){
+  var nx = gx.n, ny = gy.n, out = new Uint8ClampedArray(nx * ny * 4), cx, cy, x, y, xa, xb, ya, yb, r, g, b, sx, sy, o, idx;
+  function med(a){ a.sort(function(u, v){ return u - v; }); return a[a.length >> 1]; }
+  for(cy = 0; cy < ny; cy++){
+    for(cx = 0; cx < nx; cx++){
+      xa = Math.max(0, Math.min(W - 1, Math.round(gx.x0 + (cx + 0.25) * gx.p))); xb = Math.max(0, Math.min(W - 1, Math.round(gx.x0 + (cx + 0.75) * gx.p)));
+      ya = Math.max(0, Math.min(H - 1, Math.round(gy.x0 + (cy + 0.25) * gy.p))); yb = Math.max(0, Math.min(H - 1, Math.round(gy.x0 + (cy + 0.75) * gy.p)));
+      if(xb < xa){ x = xa; xa = xb; xb = x; } if(yb < ya){ y = ya; ya = yb; yb = y; }
+      sx = Math.max(1, Math.ceil((xb - xa + 1) / 12)); sy = Math.max(1, Math.ceil((yb - ya + 1) / 12));
+      r = []; g = []; b = [];
+      for(y = ya; y <= yb; y += sy) for(x = xa; x <= xb; x += sx){
+        idx = (y * W + x) * 4; r.push(d[idx]); g.push(d[idx+1]); b.push(d[idx+2]);
+      }
+      o = (cy * nx + cx) * 4;
+      out[o] = med(r); out[o+1] = med(g); out[o+2] = med(b); out[o+3] = 255;
+    }
+  }
+  return out;
+}
 
-var RD = { img:null, cs:1, crop:null, W:0, H:0, d:null, nx:0, ny:0, phx:0, phy:0, k:6, cm:0, cells:null, pal:[], drag:null, timer:null };
-var RD_WORK = 640, RD_SHOW = 720;
+var RD = { pid:-1, pending:false, img:null, src:null, cs:1, quad:null, handle:-1, W:0, H:0, d:null, gx:null, gy:null, nx:0, ny:0, k:6, cm:0, cells:null, pal:[], drag:null, timer:null, sts:0, rows:0 };
+var RD_WORK = 640, RD_SHOW = 720, RD_SRC = 1600, RD_PAD = 22;   /* a frame round the photo, so a corner dot on its edge is whole */
+function readFullQuad(im){ var w = im.naturalWidth, h = im.naturalHeight; return [[0, 0], [w, 0], [w, h], [0, h]]; }
+function quadIsRect(q){
+  var e = 0.75;
+  return Math.abs(q[0][1] - q[1][1]) < e && Math.abs(q[3][1] - q[2][1]) < e && Math.abs(q[0][0] - q[3][0]) < e && Math.abs(q[1][0] - q[2][0]) < e;
+}
 function readLoad(file){
   if(!file) return;
   var fr = new FileReader();
@@ -7651,8 +7887,8 @@ function readLoad(file){
   fr.onload = function(){
     var im = new Image();
     im.onload = function(){
-      RD.img = im;
-      RD.crop = { x0:0, y0:0, x1:im.naturalWidth, y1:im.naturalHeight };
+      RD.img = im; RD.src = null; RD.handle = -1; RD.drag = null;
+      RD.quad = readFullQuad(im);
       $("read-stage").hidden = false;
       readAnalyse(true);
     };
@@ -7661,25 +7897,48 @@ function readLoad(file){
   };
   fr.readAsDataURL(file);
 }
+/* the photo's pixels, at most RD_SRC across, kept for warping */
+function readSource(){
+  if(RD.src) return RD.src;
+  var iw = RD.img.naturalWidth, ih = RD.img.naturalHeight, sc = Math.min(1, RD_SRC / Math.max(iw, ih));
+  var c = document.createElement("canvas"); c.width = Math.max(2, Math.round(iw * sc)); c.height = Math.max(2, Math.round(ih * sc));
+  var g = c.getContext("2d");
+  g.imageSmoothingQuality = "high"; g.drawImage(RD.img, 0, 0, c.width, c.height);
+  RD.src = { d:g.getImageData(0, 0, c.width, c.height).data, w:c.width, h:c.height, sc:sc };
+  return RD.src;
+}
 function readWork(){
-  var c = RD.crop, cw = c.x1 - c.x0, ch = c.y1 - c.y0, sc = Math.min(1, RD_WORK / Math.max(cw, ch));
-  var W = Math.max(8, Math.round(cw * sc)), H = Math.max(8, Math.round(ch * sc));
-  var cvs = document.createElement("canvas"); cvs.width = W; cvs.height = H;
-  var g = cvs.getContext("2d");
-  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
-  g.drawImage(RD.img, c.x0, c.y0, cw, ch, 0, 0, W, H);
-  RD.W = W; RD.H = H; RD.d = g.getImageData(0, 0, W, H).data;
+  var q = RD.quad, sz = quadSize(q), sc = Math.min(1, RD_WORK / Math.max(sz.w, sz.h));
+  var W = Math.max(8, Math.round(sz.w * sc)), H = Math.max(8, Math.round(sz.h * sc));
+  if(quadIsRect(q)){
+    var cvs = document.createElement("canvas"); cvs.width = W; cvs.height = H;
+    var g = cvs.getContext("2d");
+    g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
+    g.drawImage(RD.img, q[0][0], q[0][1], q[1][0] - q[0][0], q[3][1] - q[0][1], 0, 0, W, H);
+    RD.d = g.getImageData(0, 0, W, H).data;
+  } else {
+    var src = readSource(), q2 = q.map(function(p){ return [p[0] * src.sc, p[1] * src.sc]; });
+    var s2 = quadSize(q2), ratio = Math.max(s2.w / W, s2.h / H);
+    RD.d = warpQuad(src.d, src.w, src.h, q2, W, H, ratio > 2.5 ? 3 : (ratio > 1.4 ? 2 : 1));
+  }
+  RD.W = W; RD.H = H;
 }
 function readDetect(){
   var cache = {};
   function prof(lag){ return cache[lag] || (cache[lag] = bendProfiles(RD.d, RD.W, RD.H, lag)); }
-  var bx = bestCount(function(l){ return prof(l).gx; }, RD.W, 4, 100);
-  var by = bestCount(function(l){ return prof(l).gy; }, RD.H, 4, 100);
-  RD.nx = bx ? bx.n : 12; RD.phx = bx ? bx.phi : 0;
-  RD.ny = by ? by.n : 12; RD.phy = by ? by.phi : 0;
+  var bx = bestCount(function(l){ return prof(l).gx; }, RD.W, 4, 100) || { n:12, phi:0 };
+  var by = bestCount(function(l){ return prof(l).gy; }, RD.H, 4, 100) || { n:12, phi:0 };
+  var g = { x:{ n:bx.n, p:RD.W / bx.n, x0:bx.phi * RD.W / bx.n }, y:{ n:by.n, p:RD.H / by.n, x0:by.phi * RD.H / by.n } };
+  if(RD.W >= 48 && RD.H >= 48){
+    try{
+      g = readGrid(RD.d, RD.W, RD.H, function(l){ return prof(l).gx; }, function(l){ return prof(l).gy; },
+                   { x:bx, y:by }, quadIsRect(RD.quad) ? 0.7 : 0.9);
+    }catch(e){ /* keep the plain count */ }
+  }
+  RD.gx = g.x; RD.gy = g.y;
 }
 function readSample(){
-  var cells = sampleGrid(RD.d, RD.W, RD.H, RD.nx, RD.ny, RD.phx, RD.phy);
+  var cells = sampleGridAt(RD.d, RD.W, RD.H, RD.gx, RD.gy);
   var cent = mergeClose(cells, quantise(cells, RD.k).map(function(h){ return hexToRGB(h); }), 30);
   var hex = [], seen = {}, prgb = [];
   cent.forEach(function(c){
@@ -7701,15 +7960,18 @@ function readSample(){
 function readAnalyse(detect){
   if(!RD.img) return;
   $("read-counts").textContent = t("Reading the stitches…");
+  RD.pending = true;
   clearTimeout(RD.timer);
   RD.timer = setTimeout(function(){
     readWork();
     if(detect) readDetect();
     readRefresh();
+    RD.pending = false;
   }, 30);
 }
 function readRefresh(){
-  RD.nx = Math.max(4, Math.min(100, RD.nx)); RD.ny = Math.max(4, Math.min(100, RD.ny));
+  RD.gx.n = Math.max(4, Math.min(100, RD.gx.n)); RD.gy.n = Math.max(4, Math.min(100, RD.gy.n));
+  RD.nx = RD.gx.n; RD.ny = RD.gy.n;
   readSample();
   readDrawPhoto();
   var cv = $("read-chart"), small = smallCanvas(RD.nx, RD.ny, RD.cells, false);
@@ -7723,33 +7985,84 @@ function readRefresh(){
     : "Counted {w} stitches across and {h} rows up, in {n} yarns.", { w:RD.nx, h:RD.ny, n:RD.pal.length });
   readTension();
 }
+/* the photo, the four corners, and the stitches it counted laid over the piece */
 function readDrawPhoto(){
   var cv = $("read-prev"), im = RD.img; if(!im) return;
   var iw = im.naturalWidth, ih = im.naturalHeight, cs = Math.min(1, RD_SHOW / Math.max(iw, ih));
   RD.cs = cs;
-  cv.width = Math.round(iw * cs); cv.height = Math.round(ih * cs);
-  var g = cv.getContext("2d");
-  g.drawImage(im, 0, 0, cv.width, cv.height);
-  var c = RD.drag ? { x0:Math.min(RD.drag.a.x, RD.drag.b.x), y0:Math.min(RD.drag.a.y, RD.drag.b.y),
-                      x1:Math.max(RD.drag.a.x, RD.drag.b.x), y1:Math.max(RD.drag.a.y, RD.drag.b.y) } : RD.crop;
-  var x0 = c.x0 * cs, y0 = c.y0 * cs, x1 = c.x1 * cs, y1 = c.y1 * cs, k, x, y;
+  cv.width = Math.round(iw * cs) + 2 * RD_PAD; cv.height = Math.round(ih * cs) + 2 * RD_PAD;
+  var g = cv.getContext("2d"), r = cv.getBoundingClientRect(), pxr = r.width ? cv.width / r.width : 1, i, k;
+  g.fillStyle = "#2B2433"; g.fillRect(0, 0, cv.width, cv.height);
+  g.drawImage(im, RD_PAD, RD_PAD, Math.round(iw * cs), Math.round(ih * cs));
+  var q = RD.quad;
+  if(RD.drag){
+    var x0 = Math.min(RD.drag.a.x, RD.drag.b.x), x1 = Math.max(RD.drag.a.x, RD.drag.b.x), y0 = Math.min(RD.drag.a.y, RD.drag.b.y), y1 = Math.max(RD.drag.a.y, RD.drag.b.y);
+    q = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+  }
+  var qc = q.map(function(p){ return [p[0] * cs + RD_PAD, p[1] * cs + RD_PAD]; });
   g.fillStyle = "rgba(20,12,30,.52)";
-  g.fillRect(0, 0, cv.width, y0); g.fillRect(0, y1, cv.width, cv.height - y1);
-  g.fillRect(0, y0, x0, y1 - y0); g.fillRect(x1, y0, cv.width - x1, y1 - y0);
-  if(!RD.drag && RD.nx && RD.ny){
-    var px = (x1 - x0) / RD.nx, py = (y1 - y0) / RD.ny;
-    var sx = px < 7 ? 2 : 1, sy = py < 7 ? 2 : 1;
-    g.save(); g.beginPath(); g.rect(x0, y0, x1 - x0, y1 - y0); g.clip();
-    [["rgba(0,0,0,.55)", 3], ["rgba(255,255,255,.92)", 1]].forEach(function(pen){
+  g.beginPath(); g.rect(0, 0, cv.width, cv.height);
+  g.moveTo(qc[0][0], qc[0][1]); for(i = 3; i >= 0; i--) g.lineTo(qc[i][0], qc[i][1]);
+  g.closePath(); g.fill("evenodd");
+  if(!RD.drag && RD.handle < 0 && RD.gx && RD.gy && RD.W){
+    /* qc is already in canvas pixels, so a stitch is its working-pixel pitch scaled by how
+       long the piece's edge is on the canvas against how long it is in working pixels */
+    var M = quadHomography(qc), a, b, ux, vy, sx = RD.gx.p * (Math.hypot(qc[1][0] - qc[0][0], qc[1][1] - qc[0][1]) / RD.W) < 7 ? 2 : 1;
+    var sy = RD.gy.p * (Math.hypot(qc[3][0] - qc[0][0], qc[3][1] - qc[0][1]) / RD.H) < 7 ? 2 : 1;
+    [["rgba(0,0,0,.55)", 3 * Math.max(1, pxr * 0.6)], ["rgba(255,255,255,.92)", Math.max(1, pxr * 0.6)]].forEach(function(pen){
       g.strokeStyle = pen[0]; g.lineWidth = pen[1]; g.beginPath();
-      for(k = 0; k <= RD.nx; k += sx){ x = x0 + (k + RD.phx) * px; g.moveTo(x, y0); g.lineTo(x, y1); }
-      for(k = 0; k <= RD.ny; k += sy){ y = y0 + (k + RD.phy) * py; g.moveTo(x0, y); g.lineTo(x1, y); }
+      for(k = 0; k <= RD.gx.n; k += sx){
+        ux = (RD.gx.x0 + k * RD.gx.p) / RD.W; if(ux < 0 || ux > 1) continue;
+        a = mapUV(M, ux, 0); b = mapUV(M, ux, 1); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]);
+      }
+      for(k = 0; k <= RD.gy.n; k += sy){
+        vy = (RD.gy.x0 + k * RD.gy.p) / RD.H; if(vy < 0 || vy > 1) continue;
+        a = mapUV(M, 0, vy); b = mapUV(M, 1, vy); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]);
+      }
       g.stroke();
     });
-    g.restore();
   }
-  g.strokeStyle = css("--accent") || "#B62A63"; g.lineWidth = 2.5; g.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  var accent = css("--accent") || "#B62A63";
+  g.strokeStyle = accent; g.lineWidth = 2.5 * Math.max(1, pxr * 0.6); g.lineJoin = "round";
+  g.beginPath(); g.moveTo(qc[0][0], qc[0][1]); for(i = 1; i < 4; i++) g.lineTo(qc[i][0], qc[i][1]); g.closePath(); g.stroke();
+  if(!RD.drag){
+    for(i = 0; i < 4; i++){
+      g.beginPath(); g.arc(qc[i][0], qc[i][1], (i === RD.handle ? 12 : 9) * pxr, 0, 6.2832);
+      g.fillStyle = "#fff"; g.fill(); g.lineWidth = 3 * pxr * 0.8; g.strokeStyle = accent; g.stroke();
+    }
+  }
 }
+/* the corner under the finger, if any: handles are small, fingers are not */
+function readHit(ev){
+  var cv = $("read-prev"), r = cv.getBoundingClientRect(), i, best = -1, bd = 34, cx, cy, d;
+  for(i = 0; i < 4; i++){
+    cx = r.left + (RD.quad[i][0] * RD.cs + RD_PAD) * r.width / cv.width; cy = r.top + (RD.quad[i][1] * RD.cs + RD_PAD) * r.height / cv.height;
+    d = Math.hypot(ev.clientX - cx, ev.clientY - cy);
+    if(d < bd){ bd = d; best = i; }
+  }
+  return best;
+}
+/* a corner may move anywhere that keeps the four in order and the piece a sensible size */
+function readSetCorner(i, pt){
+  var q2 = RD.quad.map(function(p){ return p.slice(); }), im = RD.img;
+  q2[i] = [pt.x, pt.y];
+  if(quadCW(q2) && quadOk(q2, 0.02 * im.naturalWidth * im.naturalHeight)) RD.quad = q2;
+}
+function readLoupe(ev, pt){
+  var lp = $("read-loupe"), c = lp.firstElementChild, g = c.getContext("2d"), cv = $("read-prev"), r = cv.getBoundingClientRect();
+  var cssPerImg = (r.width / cv.width) * RD.cs, span = 40 / cssPerImg, W = c.width;
+  lp.hidden = false;
+  g.fillStyle = "#222"; g.fillRect(0, 0, W, W);
+  g.imageSmoothingEnabled = true;
+  g.drawImage(RD.img, pt.x - span / 2, pt.y - span / 2, span, span, 0, 0, W, W);
+  g.strokeStyle = "rgba(255,255,255,.95)"; g.lineWidth = 2; g.beginPath();
+  g.moveTo(W / 2, W / 2 - 22); g.lineTo(W / 2, W / 2 + 22); g.moveTo(W / 2 - 22, W / 2); g.lineTo(W / 2 + 22, W / 2); g.stroke();
+  g.strokeStyle = "rgba(0,0,0,.6)"; g.lineWidth = 1; g.stroke();
+  var left = Math.max(6, Math.min(window.innerWidth - 126, ev.clientX - 60)), top = ev.clientY - 170;
+  if(top < 6) top = ev.clientY + 50;
+  lp.style.left = left + "px"; lp.style.top = top + "px";
+}
+function readLoupeOff(){ var lp = $("read-loupe"); if(lp) lp.hidden = true; }
 function readTension(){
   var show = RD.cm > 0, note = $("rd-tension"), use = $("rd-use");
   $("rd-w").textContent = RD.cm > 0 ? RD.cm + " cm" : "—";
@@ -7767,7 +8080,7 @@ function readStepW(dir){
   readTension();
 }
 function readMake(){
-  if(!RD.cells){ return; }
+  if(!RD.cells || RD.pending){ return; }
   if(S.proj) saveProject(S.proj);        /* the chart you were on is kept, not swapped out unsaved */
   var p = newProject(RD.nx, RD.ny, niceName(), null);
   p.cells = RD.cells.slice();
@@ -7781,7 +8094,7 @@ function readMake(){
 }
 function readPoint(ev){
   var cv = $("read-prev"), r = cv.getBoundingClientRect(), im = RD.img;
-  var x = (ev.clientX - r.left) / r.width * cv.width / RD.cs, y = (ev.clientY - r.top) / r.height * cv.height / RD.cs;
+  var x = ((ev.clientX - r.left) / r.width * cv.width - RD_PAD) / RD.cs, y = ((ev.clientY - r.top) / r.height * cv.height - RD_PAD) / RD.cs;
   return { x:Math.max(0, Math.min(im.naturalWidth, x)), y:Math.max(0, Math.min(im.naturalHeight, y)) };
 }
 
@@ -8299,36 +8612,43 @@ function wire(){
   $("readin").addEventListener("change", function(){ readLoad(this.files && this.files[0]); });
   var rv = $("read-prev");
   rv.addEventListener("pointerdown", function(ev){
-    if(!RD.img) return;
+    if(!RD.img || RD.handle >= 0 || RD.drag) return;      /* a second finger does not take over */
+    RD.pid = ev.pointerId;
     try{ rv.setPointerCapture(ev.pointerId); }catch(e){}
-    var pt = readPoint(ev); RD.drag = { a:pt, b:pt }; readDrawPhoto();
+    var pt = readPoint(ev), h = readHit(ev);
+    if(h >= 0){ RD.handle = h; readSetCorner(h, pt); readDrawPhoto(); readLoupe(ev, pt); }
+    else { RD.drag = { a:pt, b:pt }; readDrawPhoto(); }
   });
   rv.addEventListener("pointermove", function(ev){
+    if(ev.pointerId !== RD.pid) return;
+    if(RD.handle >= 0){ var pt = readPoint(ev); readSetCorner(RD.handle, pt); readDrawPhoto(); readLoupe(ev, pt); return; }
     if(!RD.drag) return;
     RD.drag.b = readPoint(ev); readDrawPhoto();
   });
   function readEnd(){
+    if(RD.handle >= 0){ RD.handle = -1; readLoupeOff(); readAnalyse(true); return; }
     if(!RD.drag) return;
     var a = RD.drag.a, b = RD.drag.b, big = Math.abs(a.x - b.x) > 24 && Math.abs(a.y - b.y) > 24;
     RD.drag = null;
     if(big){
-      RD.crop = { x0:Math.min(a.x, b.x), y0:Math.min(a.y, b.y), x1:Math.max(a.x, b.x), y1:Math.max(a.y, b.y) };
+      var x0 = Math.min(a.x, b.x), x1 = Math.max(a.x, b.x), y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
+      RD.quad = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
       readAnalyse(true);
     } else readDrawPhoto();
   }
-  rv.addEventListener("pointerup", readEnd);
-  rv.addEventListener("pointercancel", function(){ RD.drag = null; readDrawPhoto(); });
+  rv.addEventListener("pointerup", function(ev){ if(ev.pointerId === RD.pid) readEnd(); });
+  rv.addEventListener("pointercancel", function(ev){ if(ev.pointerId !== RD.pid) return; RD.drag = null; RD.handle = -1; readLoupeOff(); readDrawPhoto(); });
   $("rd-reset").onclick = function(){
     if(!RD.img) return;
-    RD.crop = { x0:0, y0:0, x1:RD.img.naturalWidth, y1:RD.img.naturalHeight };
+    RD.quad = readFullQuad(RD.img);
     readAnalyse(true);
   };
-  $("rd-nx-less").onclick = function(){ if(RD.img){ RD.nx--; readRefresh(); } };
-  $("rd-nx-more").onclick = function(){ if(RD.img){ RD.nx++; readRefresh(); } };
-  $("rd-ny-less").onclick = function(){ if(RD.img){ RD.ny--; readRefresh(); } };
-  $("rd-ny-more").onclick = function(){ if(RD.img){ RD.ny++; readRefresh(); } };
-  $("rd-k-less").onclick  = function(){ if(RD.img){ RD.k = Math.max(2, RD.k - 1); readRefresh(); } };
-  $("rd-k-more").onclick  = function(){ if(RD.img){ RD.k = Math.min(12, RD.k + 1); readRefresh(); } };
+  $("rd-nx-less").onclick = function(){ if(RD.img && RD.gx){ RD.gx.n--; readRefresh(); } };
+  $("rd-nx-more").onclick = function(){ if(RD.img && RD.gx){ RD.gx.n++; readRefresh(); } };
+  $("rd-ny-less").onclick = function(){ if(RD.img && RD.gx){ RD.gy.n--; readRefresh(); } };
+  $("rd-ny-more").onclick = function(){ if(RD.img && RD.gx){ RD.gy.n++; readRefresh(); } };
+  $("rd-k-less").onclick  = function(){ if(RD.img && RD.gx){ RD.k = Math.max(2, RD.k - 1); readRefresh(); } };
+  $("rd-k-more").onclick  = function(){ if(RD.img && RD.gx){ RD.k = Math.min(12, RD.k + 1); readRefresh(); } };
   $("rd-w-less").onclick  = function(){ readStepW(-1); };
   $("rd-w-more").onclick  = function(){ readStepW(1); };
   $("rd-use").onclick = function(){

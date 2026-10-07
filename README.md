@@ -209,36 +209,54 @@ most makers go down a hook size.
 
 *Trace a photo* turns a picture into pixel art. This goes the other way: it reads
 crochet that already exists. In the Photo sheet, choose **Read a finished piece
-instead**, photograph a finished picture flat and square-on, and drag a box right
-round it, edge to edge. Threadwyn counts the stitches across and the rows up,
-reads the colour of each stitch and makes a new chart you can edit; the lines
-drawn over your photo show whether they sit on the stitches, and steppers nudge
-the count.
+instead** and photograph a finished picture, as flat as you can. Drag the four
+corner dots onto the corners of the piece (a magnifier floats above your finger
+while you do), or drag a fresh box round it. Threadwyn counts the stitches across
+and the rows up, reads the colour of each stitch and makes a new chart you can
+edit; the lines drawn over your photo show whether they sit on the stitches, and
+steppers nudge the count.
 
-How it counts: a stitch grid repeats, so the number of stitches across a photo can
-be found from the picture alone. Lay a comb with N teeth on how strongly the image
-bends along each axis (a second difference, which peaks in the middle of a dark
-seam and half-way up a colour change); the right N is the one whose teeth fall on
-the seams and whose gaps fall inside the stitches. The score is a Welch t brought
-to a common scale, so a count with many agreeing teeth beats a handful that line
-up by luck, and a doubled or tripled count loses to the true one. Width and height
-are counted separately, because a crochet stitch is not square. Each stitch's
-colour is the median of its middle half, so a shadow in the seam or a fleck of
-fluff does not vote, and yarns that came out as near-twins are merged back.
+**Corner pin.** A photo taken at an angle is a trapezoid, and stitches in a
+trapezoid are not on a grid. Pin the piece's four corners and the picture between
+them is stretched back to a rectangle (a homography, sampled bilinearly with a few
+sub-samples so shrinking does not alias) before anything is counted; the overlay
+lines follow the perspective. A corner may go anywhere that keeps the four in
+order and the piece a sensible size, so the piece can never be folded over or
+mirrored. On synthetic photos with keystone and a few degrees of rotation, a plain
+box round the piece reads the right count 1 time in 40; pinning gets 35 in 40 with
+corners 0.6% of the piece off, which is about what a fingertip with a magnifier
+manages.
+
+**How it counts.** A stitch grid repeats, so the number of stitches across a photo
+can be found from the picture alone. Lay a comb on how strongly the image bends
+along each axis (a second difference, which peaks in the middle of a dark seam and
+half-way up a colour change). The right spacing is the one whose teeth fall on the
+seams and whose gaps fall inside the stitches, scored as a Welch t brought to a
+common scale so a spacing with many agreeing teeth beats a handful that line up by
+luck. The spacing is searched *continuously*, not as a whole number of stitches
+across the crop, so a margin of table round the piece does not break it. Which
+cells are the piece is then read from the seams themselves: a column that crosses
+the piece has the other axis's seams running across it, and a column of table does
+not. That evidence is periodic, so it does not depend on how noisy the photo is.
+The two axes must agree on the stitch (its height is near its width), which
+removes most false counts. Width and height are counted separately, because a
+crochet stitch is not square. Each stitch's colour is the median of its middle
+half, so a shadow in the seam or a fleck of fluff does not vote, and yarns that
+came out as near-twins are merged back.
 
 Measured on synthetic photographs with jittered stitches, seam shading, a lighting
-gradient, noise, blur and half a degree of tilt: with the box tight on the piece the
-count is exactly right on about 99% of widths and 96% of heights, and the colours
-of every stitch are right on a median 100% of pictures. A box with a margin of a
-fifth of a stitch still gets within one stitch nearly always. Real crochet is lumpier
-than a chart, so treat the count as a very good first guess; the overlay and the
-steppers are there for the rest. I tried finding the piece in the photo
-automatically, and it helped on only a quarter of messy photos, so it is left out:
-a box you drew is better than a guess you have to undo.
+gradient, noise and blur: the count is exactly right on 198 of 200 pictures with a
+margin of table from nothing up to a whole stitch on each side (a tight-box-only
+version was right on none once the margin passed half a stitch), and the colour of
+every stitch is right on a median 100% of them. Real crochet is lumpier than a
+chart, so treat the count as a very good first guess; the overlay and the steppers
+are there for the rest. I tried finding the piece in the photo automatically from
+how busy it looks, and it helped on only a quarter of messy photos, so it is left
+out: corners you placed are better than a guess you have to undo.
 
 Say how wide the piece is and the same photo is also a **tension measurement**:
-stitches and rows per 10 cm, one tap to adopt as your tension. The photo's own
-proportions give the height, so one number is enough.
+stitches and rows per 10 cm, one tap to adopt as your tension. The straightened
+photo's own proportions give the height, so one number is enough.
 
 ## A tag to go with it
 

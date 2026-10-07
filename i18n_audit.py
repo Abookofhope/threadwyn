@@ -52,7 +52,19 @@ for m in re.finditer(r'(?<![\w.$])tf?\(\s*("(?:[^"\\\n]|\\.)*")', code):
     except Exception: continue
     if v.strip(): cands.add(v)
 
-missing = sorted(c for c in cands if c not in keys)
+# text written straight into the page: button labels, headings, notes. The
+# tree walk translates these by looking each one up, so each needs a key.
+import html as _html
+for m in re.finditer(r'>([^<>]{2,400})<', markup):
+    v = re.sub(r'\s+', ' ', _html.unescape(m.group(1))).strip()
+    if v and re.search(r'[A-Za-z]{2}', v) and not v.startswith(("{", "$")):
+        cands.add(v)
+
+# text that is never shown as written: brand names, the language's own name,
+# and placeholders the app overwrites the moment it renders
+ALLOW = {"5.5 cm", "English", "Row 1", "Thread", "right to left", "thread\u00b7wyn",
+         "wyn", "\u00b7 St", "\u2014 to the next"}
+missing = sorted(c for c in cands if c not in keys and c not in ALLOW)
 print("keys %d  scanned %d  MISSING %d" % (len(keys), len(cands), len(missing)))
 if "-v" in sys.argv:
     for m2 in missing: print(json.dumps(m2, ensure_ascii=False))

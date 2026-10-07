@@ -144,6 +144,43 @@ And when you work the pattern row by row, it says what to **reach for next**
 and whether to **carry the yarn behind or cut it** — the decision a crocheter
 actually makes at the end of every run, answered at the moment it comes up.
 
+## Reach for it
+
+Following a pattern, the thing you need to know is not a number, it is *which
+yarn*. Two thumb-sized swatches show the colour in your hand and the one to
+reach for next, so you match them by eye against the skeins in the basket
+without reading a word. The next one pulses gently. At the end of a row it
+looks across the turn to the first yarn of the following row, because rows turn
+and that yarn is wanted straight away. In **Hands busy** they grow to 62 px.
+
+## Where did it go wrong?
+
+The app cannot see your crochet, so it cannot compare it with the chart. What it
+can do is ask the question a person actually has to answer, and ask it
+cleverly. If the rows are right up to some point and drifted after it, the
+first bad row can be found by halving: it asks about the most recent row, then
+the middle, then the middle of whichever half is left, showing the piece as it
+should look at that row with the row boxed. A hundred rows takes seven answers,
+where counting back takes up to a hundred. It is `git bisect` for a blanket.
+
+When it finds the row it says what fixing it costs — how many rows, about how
+many stitches — and puts the row-by-row helper back at that row. Checked
+exhaustively: every count of finished rows from 1 to 22 against every possible
+first-bad row, 253 cases, found correctly every time in at most six questions.
+
+## A tag to go with it
+
+Handmade things go out with a tag on a loop of yarn. **Make a gift tag** (on any
+piece in the cabinet) draws one: a hole punched through the top with the loop
+threaded through it, in the first of the piece's yarns that is not near-black;
+the piece framed; who it is for and who made it; a line of your own; a row of
+running stitches; the **true finished size in centimetres** from your own
+tension; the yarns by name; a care label for the fibre (cotton, acrylic, wool,
+or "not sure", which gives the safe answer for any yarn); and, once the app has
+learned your pace, how many hours of crocheting went into it. It is written in
+the language the app is set to, shared through the phone's own share sheet where
+there is one, and saved as a picture where there is not.
+
 ## What I already have
 
 A shopping list that says "buy 40 m of teal" when there are 60 m of it in a

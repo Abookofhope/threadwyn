@@ -263,10 +263,30 @@ input,textarea{font:inherit;color:inherit}
 .charm .w{font-size:12.5px;color:var(--ink-2)}
 .charm .cbody{flex:1;min-width:0}
 .approx{font-style:italic;opacity:.9}
+#bisect-chart{display:block;margin:6px auto 0;width:100%;max-width:380px;height:auto;image-rendering:pixelated;border:1px solid var(--line);border-radius:10px;background:var(--cloth-a)}
+#gift-prev{display:block;width:100%;max-width:340px;height:auto;margin:6px auto 4px;border-radius:12px;border:1px solid var(--line);box-shadow:var(--shadow-1)}
+.giftin{width:100%;height:var(--tap);border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:0 14px;margin-top:8px;-webkit-user-select:text;user-select:text}
 .verdict{font-family:var(--display);font-size:19px;text-align:center;margin:14px 0 6px;line-height:1.25}
 .effortstray{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--paper)}
 .effortstray b{font-family:var(--display);font-size:16px}
 .effortstray .row{flex-direction:column;gap:8px}
+/* Two swatches the size of a thumb, so the yarn in your hand and the one to
+   reach for are matched by eye against the skeins in the basket — no reading,
+   no looking back at the phone for longer than a glance. */
+.hand{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
+.hnd{display:flex;align-items:center;gap:10px;padding:8px 12px 8px 8px;border:1px solid var(--line);border-radius:16px;background:var(--paper);min-width:0}
+.hnd i{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:700;font-size:15px;flex:none}
+.hnd small{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.hnd b{font-family:var(--display);font-size:15.5px;font-weight:600;display:block;line-height:1.15}
+.hnd.next{border-color:var(--accent);background:var(--accent-soft);animation:reachpulse 2s ease-in-out infinite}
+.hnd-arrow{color:var(--ink-3);font-size:20px}
+@keyframes reachpulse{0%,100%{box-shadow:0 0 0 0 rgba(182,42,99,0)}50%{box-shadow:0 0 0 5px rgba(182,42,99,.16)}}
+#scr-work.busy .hand{flex-direction:column;gap:8px}
+#scr-work.busy .hnd{padding:10px 18px 10px 10px;border-radius:20px}
+#scr-work.busy .hnd i{width:62px;height:62px;font-size:24px}
+#scr-work.busy .hnd b{font-size:22px}
+#scr-work.busy .hnd small{font-size:11.5px}
+#scr-work.busy .hnd-arrow{transform:rotate(90deg)}
 .reach{font-size:14px;color:var(--ink-2);text-align:center;white-space:pre-line;line-height:1.55;margin:0}
 .reach b{color:var(--ink)}
 #scr-work.busy .reach{font-size:clamp(16px,4.6vw,21px);padding:0 6px}
@@ -550,6 +570,7 @@ body.has-update .bar{padding-top:8px}
 <g id="i-ring"><circle cx="12" cy="12" r="8.2"/></g>
 <g id="i-disc"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="4.9"/><circle cx="12" cy="12" r="1.7"/></g>
 <g id="i-effort"><path d="M5 19V10M10 19V5M15 19v-6M20 19V8"/></g>
+<g id="i-look"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></g>
 <g id="i-play"><path d="M7 4.5l12 7.5-12 7.5z"/></g>
 <g id="i-copy"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 5.5h-11v11"/></g>
 <g id="i-fit"><path d="M4.5 9V4.5H9M15 4.5h4.5V9M19.5 15v4.5H15M9 19.5H4.5V15"/></g>
@@ -793,6 +814,7 @@ body.has-update .bar{padding-top:8px}
  <div class="pad stack">
    <div class="plate" id="piece-plate"><div class="frame"><img id="piece-img" alt=""></div></div>
    <p class="note" style="text-align:center;margin:0">Press and hold the picture to save it to your phone.</p>
+   <button class="btn go" id="piece-gift">Make a gift tag</button>
    <button class="btn" id="piece-png" hidden>Save the picture to this phone</button>
    <button class="btn" id="piece-sheet" hidden>Save a chart sheet to print</button>
    <p class="note-line" id="piece-note" hidden>—</p>
@@ -885,6 +907,7 @@ body.has-update .bar{padding-top:8px}
  <div class="bar">
    <button class="ib" data-back aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-back"/></svg></button>
    <h2 id="work-name">Working</h2>
+   <button class="ib" id="work-look" aria-label="Where did it go wrong?"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-look"/></svg></button>
    <button class="ib" id="work-busy" aria-label="Hands busy"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-hand"/></svg></button>
    <button class="ib" id="work-restart" aria-label="Start again"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-undo"/></svg></button>
  </div>
@@ -898,6 +921,11 @@ body.has-update .bar{padding-top:8px}
    <canvas id="work-chart"></canvas>
    <div class="runs" id="work-runs"></div>
    <div class="nowrun" id="work-now">—</div>
+   <div class="hand" id="work-hand" hidden>
+     <div class="hnd"><i id="hand-now"></i><span><small>In your hand</small><b id="hand-now-name">—</b></span></div>
+     <span class="hnd-arrow" id="hand-arrow" aria-hidden="true">→</span>
+     <div class="hnd next" id="hand-next-box"><i id="hand-next"></i><span><small>Reach for</small><b id="hand-next-name">—</b></span></div>
+   </div>
    <p class="reach" id="work-reach"></p>
    <p class="note busyhint" id="work-busyhint" hidden>Tap anywhere on this panel when that run is done.</p>
  </div>
@@ -1167,6 +1195,49 @@ body.has-update .bar{padding-top:8px}
    <p class="sub">Say how much of each yarn is really in the basket at home. The shopping list then asks only for what you are short of, and says nothing about the rest.</p>
    <div class="stack" id="stash-list" style="gap:8px"></div>
    <button class="btn" id="stash-add" style="margin-top:12px">Add this chart's yarns</button>
+   <button class="btn quiet" data-close style="margin-top:8px">Done</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-bisect">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>Where did it go wrong?</h2>
+   <p class="sub">Hold your piece beside the phone and tell me whether each row matches the picture. I will find the first row that drifted in a handful of answers, instead of you counting back through all of them.</p>
+   <div id="bisect-ask">
+     <p class="note" id="bisect-steps" style="margin:0 2px 4px">—</p>
+     <p class="verdict" id="bisect-q" style="margin-top:4px">—</p>
+     <canvas id="bisect-chart" role="img" aria-label="The chart as it should look at that row"></canvas>
+     <p class="note" id="bisect-dir" style="margin:8px 2px 6px">—</p>
+     <div class="runs" id="bisect-runs"></div>
+     <div class="row" style="margin-top:14px">
+       <button class="btn" id="bisect-no">It doesn't match</button>
+       <button class="btn go" id="bisect-yes">It matches</button>
+     </div>
+   </div>
+   <div id="bisect-done" hidden>
+     <p class="verdict" id="bisect-result">—</p>
+     <p class="note" id="bisect-cost" style="text-align:center">—</p>
+     <button class="btn go" id="bisect-go" style="margin-top:8px">Take me back to that row</button>
+   </div>
+   <button class="btn quiet" data-close style="margin-top:14px">Close</button>
+ </div>
+</div>
+
+<div class="sheet" id="sheet-gift">
+ <div class="scrim" data-close></div>
+ <div class="sheet-in">
+   <div class="grab"></div>
+   <h2>A tag to go with it</h2>
+   <p class="sub">The kind that ties on to a handmade gift: the piece, who it is for, how big it really is, what it is made of, and how to look after it.</p>
+   <canvas id="gift-prev" role="img" aria-label="The gift tag"></canvas>
+   <input class="giftin" id="gift-for" placeholder="Who is it for?" maxlength="28" autocomplete="off">
+   <input class="giftin" id="gift-by" placeholder="Made by" maxlength="28" autocomplete="off">
+   <input class="giftin" id="gift-note" placeholder="A line to go with it" maxlength="70" autocomplete="off">
+   <span class="eyebrow" style="display:block;margin-top:14px">What is the yarn?</span>
+   <div class="seg" id="gift-fibre" style="margin-top:8px"></div>
+   <button class="btn go" id="gift-share" style="margin-top:14px">Share the tag</button>
    <button class="btn quiet" data-close style="margin-top:8px">Done</button>
  </div>
 </div>
@@ -1695,6 +1766,12 @@ function buildParts(){
 
 /* Newest first. Written for the person playing, not for me. */
 var CHANGELOG = [
+ { v:"1.23", d:"7 Oct", items:[
+   "Reach for it: while you work a pattern, two big yarn swatches show the colour in your hand and the one to reach for next, so you match them by eye against the skeins without reading a word. At the end of a row it looks across the turn to the first yarn of the next.",
+   "Where did it go wrong? Hold your piece beside the phone and answer yes or no to one row at a time, and it finds the first row that drifted by halving: a hundred rows takes seven answers, not a hundred rows of counting back.",
+   "A gift tag for any piece in the cabinet, drawn like the ones that tie on to handmade gifts: a punched hole and a loop of yarn, the true size in centimetres, the yarns by name, a care label for the fibre and, once it has learned your pace, how many hours of crocheting went into it.",
+   "The Settings rows, the Install card and a few other labels were English in every language. They are translated now, and a non-breaking space no longer stops a label being found."
+ ]},
  { v:"1.22", d:"6 Oct", items:[
    "Applying a guide layer told you “undefined is under the chart”. It names the guide now.",
    "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.",
@@ -3164,15 +3241,20 @@ var I18N = { fr:{
  "you're here":"du bist hier",
  "your own size":"deine Größe",
 } };
+/* French sets a space before ? ! : ; and inside « », and that space must not
+   be where a line breaks, or a lone "?" ends up on a line of its own. */
+function typo(v){
+  return LANG === "fr" ? v.replace(/ ([?!:;»])/g, "\u00a0$1").replace(/(«) /g, "$1\u00a0") : v;
+}
 function t(k){
   if(LANG === "en") return k;
   var d = I18N[LANG];
-  return (d && d[k] !== undefined) ? d[k] : k;
+  return (d && d[k] !== undefined) ? typo(d[k]) : k;
 }
 function langLookup(k){
   if(LANG === "en") return k;
   var d = I18N[LANG];
-  return (d && d[k] !== undefined) ? d[k] : null;
+  return (d && d[k] !== undefined) ? typo(d[k]) : null;
 }
 /* Strings the app builds by hand rather than lifting straight from the
    markup; {braces} are filled in after the lookup. */
@@ -3234,6 +3316,23 @@ function langLookup(k){
     for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
   }
 })([{"Applying a guide layer told you “undefined is under the chart”. It names the guide now.": "Appliquer un calque de guidage affichait « undefined est sous la grille ». Il nomme maintenant le guide.", "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.": "En suivant un patron, une seule maille s'affichait « 1 stitches » et restait en anglais quelle que soit la langue. C'est correct et traduit, tout comme une douzaine d'autres phrases que l'appli compose en route."},{"Applying a guide layer told you “undefined is under the chart”. It names the guide now.": "Aplicar una capa guía decía «undefined está bajo la cuadrícula». Ahora nombra la guía.", "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.": "Al seguir un patrón, un solo punto ponía «1 stitches» y se quedaba en inglés sin importar el idioma. Ahora es correcto y está traducido, igual que una docena de frases más que la app arma sobre la marcha."},{"Applying a guide layer told you “undefined is under the chart”. It names the guide now.": "Eine Hilfsebene anzulegen meldete „undefined liegt unter dem Zählmuster“. Jetzt nennt es die Hilfsebene beim Namen.", "While working a pattern, a single stitch read “1 stitches” and stayed in English whatever the language. It is correct and translated now, along with a dozen other sentences the app builds as it goes.": "Beim Arbeiten nach Anleitung hieß eine einzelne Masche „1 stitches“ und blieb in jeder Sprache englisch. Jetzt stimmt es und ist übersetzt, ebenso ein Dutzend weiterer Sätze, die die App unterwegs zusammensetzt."}]);
+/* Reach for it, the row bisect, the gift tag, and the labels a runtime
+   check found still English in every language. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{") and it opens like an app.": ") et il s'ouvre comme une appli.", "A gift tag for any piece in the cabinet, drawn like the ones that tie on to handmade gifts: a punched hole and a loop of yarn, the true size in centimetres, the yarns by name, a care label for the fibre and, once it has learned your pace, how many hours of crocheting went into it.": "Une étiquette cadeau pour tout ouvrage de la vitrine, dessinée comme celles qu'on noue aux cadeaux faits main : un trou perforé et une boucle de fil, la vraie taille en centimètres, les fils par leur nom, une étiquette d'entretien selon la fibre et, une fois votre rythme appris, les heures de crochet que cela a demandé.", "A line to go with it": "Un mot pour l'accompagner", "A tag to go with it": "Une étiquette pour l'accompagner", "Acrylic": "Acrylique", "Add to Home screen": "Ajouter à l'écran d'accueil", "Back at row {r}.": "Retour au rang {r}.", "Buzz when a stitch lands:": "Vibrer quand une maille se pose :", "Close": "Fermer", "Cotton": "Coton", "Does row {r} of your piece match this?": "Le rang {r} de votre ouvrage ressemble-t-il à ceci ?", "Every row you have finished matches.": "Tous les rangs terminés correspondent.", "Finish a row first, then I can help you look back.": "Terminez d'abord un rang, je pourrai ensuite vous aider à regarder en arrière.", "Flip ↔": "Retourner ↔", "Flip ↕": "Retourner ↕", "For {name}": "Pour {name}", "Guide:": "Guide :", "Hand wash cool and dry flat: the safe choice for any yarn.": "Lavage à la main à froid et séchage à plat : le choix sûr pour tout fil.", "Hand wash cool with a mild soap. Press the water out — never wring. Dry flat.": "Lavage à la main à froid avec un savon doux. Presser l'eau — ne jamais tordre. Sécher à plat.", "Heavy chart line every:": "Ligne forte tous les :", "Hold your piece beside the phone and tell me whether each row matches the picture. I will find the first row that drifted in a handful of answers, instead of you counting back through all of them.": "Tenez votre ouvrage à côté du téléphone et dites-moi si chaque rang correspond à l'image. Je trouve le premier rang qui a dérivé en quelques réponses, au lieu de vous faire recompter tous les autres.", "If something looks off, it is in the row you are working on now.": "S'il y a un défaut, il est dans le rang en cours.", "In your hand": "Dans la main", "Install Threadwyn on this phone": "Installer Threadwyn sur ce téléphone", "It doesn't match": "Ça ne correspond pas", "It matches": "Ça correspond", "Keep the screen awake:": "Garder l'écran allumé :", "Language:": "Langue :", "Loading…": "Chargement…", "Look:": "Apparence :", "Looking after it": "Pour l'entretenir", "Machine wash cool on a gentle cycle. Dry flat, or tumble on low.": "Lavage en machine à froid, cycle délicat. Sécher à plat ou au sèche-linge doux.", "Machine wash cool on a gentle cycle. Lay flat to dry. Do not bleach.": "Lavage en machine à froid, cycle délicat. Sécher à plat. Pas d'eau de Javel.", "Made by": "Fait par", "Made by hand": "Fait main", "Made by {name}": "Fait par {name}", "Make a gift tag": "Faire une étiquette cadeau", "Not sure": "Je ne sais pas", "Of crocheting": "De crochet", "Press and hold the tag to save it.": "Appuyez longuement sur l'étiquette pour l'enregistrer.", "Protect my work from cleanup:": "Protéger mon travail du nettoyage :", "Question {a} of about {b}.": "Question {a} sur environ {b}.", "Reach for": "À prendre", "Reach for it: while you work a pattern, two big yarn swatches show the colour in your hand and the one to reach for next, so you match them by eye against the skeins without reading a word. At the end of a row it looks across the turn to the first yarn of the next.": "À prendre : en suivant un patron, deux grands échantillons montrent la couleur dans votre main et la suivante, pour les rapprocher des pelotes à l'œil sans rien lire. En fin de rang, il regarde par-delà le tour jusqu'à la première couleur du suivant.", "Row {r}: right side, worked right to left.": "Rang {r} : endroit, travaillé de droite à gauche.", "Row {r}: wrong side, worked left to right.": "Rang {r} : envers, travaillé de gauche à droite.", "Same link, forever. When the game gets updated, whoever scanned it just reopens it and the new version is there — nothing to reinstall. Add it to the home screen (browser menu →": "Toujours le même lien. Quand le jeu est mis à jour, la personne qui l'a scanné n'a qu'à le rouvrir : la nouvelle version est là, rien à réinstaller. Ajoutez-le à l'écran d'accueil (menu du navigateur →", "Share the tag": "Partager l'étiquette", "Skip {n}": "Sauter {n}", "Take me back to row {r}": "Ramenez-moi au rang {r}", "Take me back to that row": "Ramenez-moi à ce rang", "The Settings rows, the Install card and a few other labels were English in every language. They are translated now, and a non-breaking space no longer stops a label being found.": "Les lignes des Réglages, la carte d'installation et quelques autres libellés étaient en anglais dans toutes les langues. Ils sont traduits, et une espace insécable n'empêche plus de retrouver un libellé.", "The chart as it should look at that row": "La grille telle qu'elle doit être à ce rang", "The first row that differs is row {r}.": "Le premier rang qui diffère est le rang {r}.", "The gift tag": "L'étiquette cadeau", "The kind that ties on to a handmade gift: the piece, who it is for, how big it really is, what it is made of, and how to look after it.": "Celle qu'on noue à un cadeau fait main : l'ouvrage, pour qui il est, sa vraie taille, sa matière et comment l'entretenir.", "This browser could not make the tag.": "Ce navigateur n'a pas pu créer l'étiquette.", "To fix it you would undo {k} rows — about {s} stitches. Everything below row {r} is fine.": "Pour réparer, il faudrait défaire {k} rangs — environ {s} mailles. Tout ce qui est sous le rang {r} est bon.", "Undo just that one row — about {s} stitches. Everything below it is fine.": "Défaire ce seul rang — environ {s} mailles. Tout ce qui est dessous est bon.", "What is the yarn?": "Quel est le fil ?", "What it is made of": "De quoi il est fait", "Where did it go wrong?": "Où est-ce parti de travers ?", "Where did it go wrong? Hold your piece beside the phone and answer yes or no to one row at a time, and it finds the first row that drifted by halving: a hundred rows takes seven answers, not a hundred rows of counting back.": "Où est-ce parti de travers ? Tenez votre ouvrage à côté du téléphone et répondez oui ou non, un rang à la fois : il trouve le premier rang qui a dérivé en coupant en deux — cent rangs, c'est sept réponses, pas cent rangs à recompter.", "Who is it for?": "Pour qui ?", "Wool": "Laine", "Yarn per stitch:": "Fil par maille :", "and {n} more": "et {n} autres", "checking…": "vérification…", "hidden": "masqué", "rows": "rangs", "showing": "affiché", "sts": "m.", "tap to stop": "touchez pour arrêter"},{") and it opens like an app.": ") y se abre como una app.", "A gift tag for any piece in the cabinet, drawn like the ones that tie on to handmade gifts: a punched hole and a loop of yarn, the true size in centimetres, the yarns by name, a care label for the fibre and, once it has learned your pace, how many hours of crocheting went into it.": "Una etiqueta de regalo para cualquier pieza de la vitrina, dibujada como las que se atan a los regalos hechos a mano: un agujero y un lazo de hilo, el tamaño real en centímetros, los hilos por su nombre, una etiqueta de cuidados según la fibra y, cuando ha aprendido tu ritmo, las horas de ganchillo que llevó.", "A line to go with it": "Unas palabras para acompañarlo", "A tag to go with it": "Una etiqueta que lo acompañe", "Acrylic": "Acrílico", "Add to Home screen": "Añadir a la pantalla de inicio", "Back at row {r}.": "De vuelta en la vuelta {r}.", "Buzz when a stitch lands:": "Vibrar al colocar un punto:", "Close": "Cerrar", "Cotton": "Algodón", "Does row {r} of your piece match this?": "¿La vuelta {r} de tu pieza coincide con esto?", "Every row you have finished matches.": "Todas las vueltas terminadas coinciden.", "Finish a row first, then I can help you look back.": "Termina primero una vuelta y luego te ayudo a mirar atrás.", "Flip ↔": "Voltear ↔", "Flip ↕": "Voltear ↕", "For {name}": "Para {name}", "Guide:": "Guía:", "Hand wash cool and dry flat: the safe choice for any yarn.": "Lavar a mano en frío y secar en plano: la opción segura para cualquier hilo.", "Hand wash cool with a mild soap. Press the water out — never wring. Dry flat.": "Lavar a mano en frío con jabón suave. Presionar para sacar el agua, nunca retorcer. Secar en plano.", "Heavy chart line every:": "Línea gruesa cada:", "Hold your piece beside the phone and tell me whether each row matches the picture. I will find the first row that drifted in a handful of answers, instead of you counting back through all of them.": "Pon tu pieza junto al teléfono y dime si cada vuelta coincide con la imagen. Encuentro la primera que se desvió en pocas respuestas, en vez de que cuentes hacia atrás todas.", "If something looks off, it is in the row you are working on now.": "Si algo no cuadra, está en la vuelta que estás haciendo.", "In your hand": "En la mano", "Install Threadwyn on this phone": "Instalar Threadwyn en este teléfono", "It doesn't match": "No coincide", "It matches": "Coincide", "Keep the screen awake:": "Mantener la pantalla encendida:", "Language:": "Idioma:", "Loading…": "Cargando…", "Look:": "Aspecto:", "Looking after it": "Cómo cuidarlo", "Machine wash cool on a gentle cycle. Dry flat, or tumble on low.": "Lavar a máquina en frío, ciclo delicado. Secar en plano o en secadora a baja temperatura.", "Machine wash cool on a gentle cycle. Lay flat to dry. Do not bleach.": "Lavar a máquina en frío, ciclo delicado. Secar en plano. No usar lejía.", "Made by": "Hecho por", "Made by hand": "Hecho a mano", "Made by {name}": "Hecho por {name}", "Make a gift tag": "Hacer una etiqueta de regalo", "Not sure": "No estoy seguro", "Of crocheting": "De ganchillo", "Press and hold the tag to save it.": "Mantén pulsada la etiqueta para guardarla.", "Protect my work from cleanup:": "Proteger mi trabajo de la limpieza:", "Question {a} of about {b}.": "Pregunta {a} de unas {b}.", "Reach for": "Coge", "Reach for it: while you work a pattern, two big yarn swatches show the colour in your hand and the one to reach for next, so you match them by eye against the skeins without reading a word. At the end of a row it looks across the turn to the first yarn of the next.": "Coge: al seguir un patrón, dos muestras grandes enseñan el color que tienes en la mano y el siguiente, para compararlos a ojo con los ovillos sin leer nada. Al final de una vuelta mira más allá del giro hasta el primer hilo de la siguiente.", "Row {r}: right side, worked right to left.": "Vuelta {r}: derecho, trabajada de derecha a izquierda.", "Row {r}: wrong side, worked left to right.": "Vuelta {r}: revés, trabajada de izquierda a derecha.", "Same link, forever. When the game gets updated, whoever scanned it just reopens it and the new version is there — nothing to reinstall. Add it to the home screen (browser menu →": "El mismo enlace, siempre. Cuando se actualiza el juego, quien lo escaneó solo tiene que volver a abrirlo: la versión nueva ya está, sin reinstalar nada. Añádelo a la pantalla de inicio (menú del navegador →", "Share the tag": "Compartir la etiqueta", "Skip {n}": "Salta {n}", "Take me back to row {r}": "Llévame a la vuelta {r}", "Take me back to that row": "Llévame a esa vuelta", "The Settings rows, the Install card and a few other labels were English in every language. They are translated now, and a non-breaking space no longer stops a label being found.": "Las filas de Ajustes, la tarjeta de instalación y algunas etiquetas más estaban en inglés en todos los idiomas. Ahora están traducidas, y un espacio duro ya no impide encontrar una etiqueta.", "The chart as it should look at that row": "La cuadrícula como debe verse en esa vuelta", "The first row that differs is row {r}.": "La primera vuelta que difiere es la {r}.", "The gift tag": "La etiqueta de regalo", "The kind that ties on to a handmade gift: the piece, who it is for, how big it really is, what it is made of, and how to look after it.": "De las que se atan a un regalo hecho a mano: la pieza, para quién es, su tamaño real, de qué está hecha y cómo cuidarla.", "This browser could not make the tag.": "Este navegador no ha podido crear la etiqueta.", "To fix it you would undo {k} rows — about {s} stitches. Everything below row {r} is fine.": "Para arreglarlo tendrías que deshacer {k} vueltas: unos {s} puntos. Todo lo que está bajo la vuelta {r} está bien.", "Undo just that one row — about {s} stitches. Everything below it is fine.": "Deshaz solo esa vuelta: unos {s} puntos. Todo lo de abajo está bien.", "What is the yarn?": "¿Qué hilo es?", "What it is made of": "De qué est hecho", "Where did it go wrong?": "¿Dónde se torció?", "Where did it go wrong? Hold your piece beside the phone and answer yes or no to one row at a time, and it finds the first row that drifted by halving: a hundred rows takes seven answers, not a hundred rows of counting back.": "¿Dónde se torció? Pon tu pieza junto al teléfono y responde sí o no, una vuelta cada vez: encuentra la primera que se desvió partiendo por la mitad. Cien vueltas son siete respuestas, no cien vueltas contando hacia atrás.", "Who is it for?": "¿Para quién es?", "Wool": "Lana", "Yarn per stitch:": "Hilo por punto:", "and {n} more": "y {n} más", "checking…": "comprobando…", "hidden": "oculta", "rows": "vueltas", "showing": "visible", "sts": "pts", "tap to stop": "toca para parar"},{") and it opens like an app.": ") und es öffnet wie eine App.", "A gift tag for any piece in the cabinet, drawn like the ones that tie on to handmade gifts: a punched hole and a loop of yarn, the true size in centimetres, the yarns by name, a care label for the fibre and, once it has learned your pace, how many hours of crocheting went into it.": "Ein Geschenkanhänger für jedes Stück in der Vitrine, gezeichnet wie die, die man an Selbstgemachtes bindet: ein Loch und eine Garnschlaufe, die wahre Größe in Zentimetern, die Garne beim Namen, ein Pflegeetikett für die Faser und — sobald es dein Tempo kennt — wie viele Stunden Häkeln darin stecken.", "A line to go with it": "Eine Zeile dazu", "A tag to go with it": "Ein Anhänger dazu", "Acrylic": "Acryl", "Add to Home screen": "Zum Startbildschirm hinzufügen", "Back at row {r}.": "Zurück bei Reihe {r}.", "Buzz when a stitch lands:": "Vibrieren, wenn eine Masche sitzt:", "Close": "Schließen", "Cotton": "Baumwolle", "Does row {r} of your piece match this?": "Passt Reihe {r} deines Stücks dazu?", "Every row you have finished matches.": "Alle fertigen Reihen stimmen.", "Finish a row first, then I can help you look back.": "Beende zuerst eine Reihe, dann helfe ich dir beim Zurückschauen.", "Flip ↔": "Spiegeln ↔", "Flip ↕": "Spiegeln ↕", "For {name}": "Für {name}", "Guide:": "Hilfsebene:", "Hand wash cool and dry flat: the safe choice for any yarn.": "Kalt von Hand waschen und flach trocknen: die sichere Wahl für jedes Garn.", "Hand wash cool with a mild soap. Press the water out — never wring. Dry flat.": "Kalt mit mildem Waschmittel von Hand waschen. Wasser ausdrücken — nie wringen. Flach trocknen.", "Heavy chart line every:": "Kräftige Linie alle:", "Hold your piece beside the phone and tell me whether each row matches the picture. I will find the first row that drifted in a handful of answers, instead of you counting back through all of them.": "Halte dein Stück neben das Telefon und sag mir, ob jede Reihe zum Bild passt. Ich finde die erste abgewichene Reihe in wenigen Antworten, statt dass du alle zurückzählst.", "If something looks off, it is in the row you are working on now.": "Wenn etwas nicht stimmt, liegt es in der Reihe, an der du gerade arbeitest.", "In your hand": "In der Hand", "Install Threadwyn on this phone": "Threadwyn auf diesem Telefon installieren", "It doesn't match": "Passt nicht", "It matches": "Passt", "Keep the screen awake:": "Bildschirm wach halten:", "Language:": "Sprache:", "Loading…": "Lädt…", "Look:": "Darstellung:", "Looking after it": "Pflege", "Machine wash cool on a gentle cycle. Dry flat, or tumble on low.": "Maschinenwäsche kalt im Schonwaschgang. Flach trocknen oder im Trockner auf niedriger Stufe.", "Machine wash cool on a gentle cycle. Lay flat to dry. Do not bleach.": "Maschinenwäsche kalt im Schonwaschgang. Flach trocknen. Nicht bleichen.", "Made by": "Gemacht von", "Made by hand": "Handgemacht", "Made by {name}": "Gemacht von {name}", "Make a gift tag": "Geschenkanhänger machen", "Not sure": "Nicht sicher", "Of crocheting": "Häkeln", "Press and hold the tag to save it.": "Halte den Anhänger gedrückt, um ihn zu sichern.", "Protect my work from cleanup:": "Meine Arbeit vor dem Aufräumen schützen:", "Question {a} of about {b}.": "Frage {a} von etwa {b}.", "Reach for": "Als Nächstes", "Reach for it: while you work a pattern, two big yarn swatches show the colour in your hand and the one to reach for next, so you match them by eye against the skeins without reading a word. At the end of a row it looks across the turn to the first yarn of the next.": "Als Nächstes: beim Arbeiten nach Anleitung zeigen zwei große Garnfelder die Farbe in deiner Hand und die nächste, damit du sie ohne Lesen mit den Knäueln vergleichst. Am Reihenende schaut es über die Wende hinweg auf das erste Garn der nächsten.", "Row {r}: right side, worked right to left.": "Reihe {r}: Vorderseite, von rechts nach links gearbeitet.", "Row {r}: wrong side, worked left to right.": "Reihe {r}: Rückseite, von links nach rechts gearbeitet.", "Same link, forever. When the game gets updated, whoever scanned it just reopens it and the new version is there — nothing to reinstall. Add it to the home screen (browser menu →": "Immer derselbe Link. Wird das Spiel aktualisiert, öffnet man es einfach neu und die neue Fassung ist da — nichts muss neu installiert werden. Leg es auf den Startbildschirm (Browsermenü →", "Share the tag": "Anhänger teilen", "Skip {n}": "{n} auslassen", "Take me back to row {r}": "Bring mich zu Reihe {r} zurück", "Take me back to that row": "Bring mich zu dieser Reihe zurück", "The Settings rows, the Install card and a few other labels were English in every language. They are translated now, and a non-breaking space no longer stops a label being found.": "Die Zeilen der Einstellungen, die Installationskarte und einige weitere Beschriftungen waren in jeder Sprache englisch. Sie sind jetzt übersetzt, und ein geschütztes Leerzeichen verhindert nicht mehr, dass eine Beschriftung gefunden wird.", "The chart as it should look at that row": "Das Zählmuster, wie es in dieser Reihe aussehen soll", "The first row that differs is row {r}.": "Die erste abweichende Reihe ist Reihe {r}.", "The gift tag": "Der Geschenkanhänger", "The kind that ties on to a handmade gift: the piece, who it is for, how big it really is, what it is made of, and how to look after it.": "So einer, wie man ihn an ein selbstgemachtes Geschenk bindet: das Stück, für wen es ist, wie groß es wirklich ist, woraus es besteht und wie man es pflegt.", "This browser could not make the tag.": "Dieser Browser konnte den Anhänger nicht erstellen.", "To fix it you would undo {k} rows — about {s} stitches. Everything below row {r} is fine.": "Zum Beheben müsstest du {k} Reihen auftrennen — etwa {s} Maschen. Alles unter Reihe {r} ist in Ordnung.", "Undo just that one row — about {s} stitches. Everything below it is fine.": "Nur diese eine Reihe auftrennen — etwa {s} Maschen. Alles darunter ist in Ordnung.", "What is the yarn?": "Was für ein Garn ist es?", "What it is made of": "Woraus es gemacht ist", "Where did it go wrong?": "Wo ist es schiefgegangen?", "Where did it go wrong? Hold your piece beside the phone and answer yes or no to one row at a time, and it finds the first row that drifted by halving: a hundred rows takes seven answers, not a hundred rows of counting back.": "Wo ist es schiefgegangen? Halte dein Stück neben das Telefon und antworte mit Ja oder Nein zu je einer Reihe: Durch Halbieren findet es die erste abgewichene Reihe — hundert Reihen brauchen sieben Antworten, nicht hundert Reihen Zurückzählen.", "Who is it for?": "Für wen ist es?", "Wool": "Wolle", "Yarn per stitch:": "Garn pro Masche:", "and {n} more": "und {n} weitere", "checking…": "prüfe…", "hidden": "ausgeblendet", "rows": "Reihen", "showing": "sichtbar", "sts": "M.", "tap to stop": "tippen zum Beenden"}]);
+/* The working header. */
+(function(extra){
+  var ids = ["fr","es","de"];
+  for(var i=0;i<ids.length;i++){
+    var d = I18N[ids[i]], e = extra[i];
+    for(var k in e) if(e.hasOwnProperty(k)) d[k] = e[k];
+  }
+})([{"Row {r}": "Rang {r}", "of {n} · left to right": "sur {n} · de gauche à droite", "of {n} · right to left": "sur {n} · de droite à gauche"},{"Row {r}": "Vuelta {r}", "of {n} · left to right": "de {n} · de izquierda a derecha", "of {n} · right to left": "de {n} · de derecha a izquierda"},{"Row {r}": "Reihe {r}", "of {n} · left to right": "von {n} · von links nach rechts", "of {n} · right to left": "von {n} · von rechts nach links"}]);
 /* Effort, strays and carry-or-cut. */
 (function(extra){
   var ids = ["fr","es","de"];
@@ -3412,11 +3511,12 @@ function translateTree(root){
       if(par && par.hasAttribute && par.hasAttribute("data-notw")) continue;
       var orig = node.__tw;
       if(orig === undefined){ orig = node.nodeValue; node.__tw = orig; }
-      var key = orig.trim();
-      if(!key) continue;
+      var trimmed = orig.trim();
+      if(!trimmed) continue;
+      var key = trimmed.replace(/\u00a0/g, " ");
       var got = langLookup(key);
       if(got === null) continue;
-      var next = orig.replace(key, got);
+      var next = orig.replace(trimmed, got);
       if(node.nodeValue !== next) node.nodeValue = next;   /* idempotent: no loop */
     } else {
       if(node.hasAttribute && node.hasAttribute("data-notw")) continue;
@@ -4607,6 +4707,176 @@ function saveChartSheet(name, w, h, cells){
     } else toast("This browser wouldn't save it.");
   }catch(e){ toast("This chart was too big to draw out."); }
 }
+/* ---- the gift tag --------------------------------------------------------
+   Handmade things go out with a tag on a loop of yarn: who it is for, who made
+   it, what it is made of and how to wash it. This draws one, with a punched
+   hole and the loop in the piece's own main colour, from what the app already
+   knows — the true size from your tension, the yarns, and, once it has learned
+   your pace, how many hours of crocheting went into it. */
+var FIBRES = [
+  { id:"cotton",  name:"Cotton",   care:"Machine wash cool on a gentle cycle. Lay flat to dry. Do not bleach." },
+  { id:"acrylic", name:"Acrylic",  care:"Machine wash cool on a gentle cycle. Dry flat, or tumble on low." },
+  { id:"wool",    name:"Wool",     care:"Hand wash cool with a mild soap. Press the water out — never wring. Dry flat." },
+  { id:"unsure",  name:"Not sure", care:"Hand wash cool and dry flat: the safe choice for any yarn." }
+];
+function fibreById(id){ for(var i = 0; i < FIBRES.length; i++) if(FIBRES[i].id === id) return FIBRES[i]; return FIBRES[3]; }
+function wrapLines(g, text, maxW){
+  var words = String(text).split(/\s+/), lines = [], cur = "";
+  words.forEach(function(w){
+    var test = cur ? cur + " " + w : w;
+    if(g.measureText(test).width > maxW && cur){ lines.push(cur); cur = w; } else cur = test;
+  });
+  if(cur) lines.push(cur);
+  return lines;
+}
+function giftCanvas(piece, cells, o){
+  var W = 900, M = 70, UI = '"Karla",-apple-system,sans-serif', DS = '"Fraunces",Georgia,serif';
+  var tall = document.createElement("canvas"); tall.width = W; tall.height = 2600;
+  var g = tall.getContext("2d");
+  var cens = chartCensus(cells), main = cens.order[0] || "#B62A63";
+  var ink = "#2A2230", soft = "#6F657D", paper = "#FBF8F3", accent = "#B62A63";
+  g.fillStyle = paper; g.fillRect(0, 0, W, tall.height);
+
+  /* the hole is punched first and the loop drawn over it, so the yarn reads as
+     going through it. A near-black main colour makes a heavy loop, so take the
+     first yarn with some life in it. */
+  var loop = main, k;
+  for(k = 0; k < cens.order.length; k++){
+    var lc = hexToRGB(cens.order[k]);
+    if(lc[0]*0.299 + lc[1]*0.587 + lc[2]*0.114 >= 70){ loop = cens.order[k]; break; }
+  }
+  g.fillStyle = "#ffffff"; g.strokeStyle = "#CFC6DA"; g.lineWidth = 3;
+  g.beginPath(); g.arc(W/2, 126, 25, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.strokeStyle = loop; g.lineWidth = 9; g.lineCap = "round";
+  g.beginPath(); g.ellipse(W/2, 78, 46, 48, 0, 0, Math.PI * 2); g.stroke();
+
+  var y = 210;
+  /* the piece, framed */
+  var cell = Math.max(4, Math.floor(600 / Math.max(piece.w, piece.h)));
+  var pw = piece.w * cell, ph = piece.h * cell, px = (W - pw) / 2;
+  g.save(); g.shadowColor = "rgba(40,30,50,.22)"; g.shadowBlur = 26; g.shadowOffsetY = 10;
+  g.fillStyle = "#ffffff"; g.fillRect(px - 22, y - 22, pw + 44, ph + 44); g.restore();
+  g.strokeStyle = "#E4DDEC"; g.lineWidth = 2; g.strokeRect(px - 22, y - 22, pw + 44, ph + 44);
+  g.imageSmoothingEnabled = false;
+  g.drawImage(smallCanvas(piece.w, piece.h, cells, false, true), px, y, pw, ph);
+  y += ph + 80;
+
+  g.textAlign = "center"; g.textBaseline = "alphabetic";
+  g.fillStyle = ink; g.font = "600 56px " + DS;
+  wrapLines(g, piece.name, W - M * 2).slice(0, 2).forEach(function(ln){ g.fillText(ln, W/2, y); y += 64; });
+  if(o.forWho){
+    y += 8; g.fillStyle = accent; g.font = "500 36px " + UI;
+    g.fillText(tf("For {name}", { name:o.forWho }), W/2, y); y += 52;
+  }
+  if(o.note){
+    y += 6; g.fillStyle = soft; g.font = "italic 400 31px " + DS;
+    wrapLines(g, "“" + o.note + "”", W - M * 2 - 80).slice(0, 3).forEach(function(ln){ g.fillText(ln, W/2, y); y += 42; });
+  }
+
+  /* a row of running stitches rather than a rule */
+  y += 30; g.strokeStyle = main; g.lineWidth = 5; g.setLineDash([16, 12]); g.lineCap = "round";
+  g.beginPath(); g.moveTo(M, y); g.lineTo(W - M, y); g.stroke(); g.setLineDash([]);
+  y += 70;
+
+  /* three facts across */
+  var size = cmSize(piece.w, piece.h), stitches = cens.order.reduce(function(a, k){ return a + cens.counts[k]; }, 0);
+  var facts = [
+    { v:niceCm(size.w) + " × " + niceCm(size.h) + " cm", l:t("Finished size") },
+    { v:stitches.toLocaleString(), l:t("Stitches") }
+  ];
+  facts.push(SET.pace
+    ? { v:fmtMinutes(Math.round(SET.pace * stitches / 60)), l:t("Of crocheting") }
+    : { v:String(cens.order.length), l:t("Yarns") });
+  var colW = (W - M * 2) / 3;
+  facts.forEach(function(f, i){
+    var cx = M + colW * i + colW / 2;
+    g.fillStyle = ink; g.font = "600 40px " + DS; g.fillText(f.v, cx, y);
+    g.fillStyle = soft; g.font = "500 22px " + UI; g.fillText(f.l.toUpperCase(), cx, y + 36);
+  });
+  y += 110;
+
+  /* the yarns, by name */
+  g.textAlign = "left";
+  g.fillStyle = ink; g.font = "600 30px " + DS; g.fillText(t("What it is made of"), M, y); y += 20;
+  var shown = cens.order.slice(0, 8), per = 2, rowH = 54;
+  shown.forEach(function(hex, i){
+    var cx = M + (i % per) * ((W - M * 2) / per), cy = y + Math.floor(i / per) * rowH + 30;
+    g.fillStyle = hex; g.beginPath(); g.arc(cx + 18, cy - 8, 18, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = "rgba(40,30,50,.28)"; g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = ink; g.font = "400 28px " + UI; g.fillText(t(nearestShade(hex).name), cx + 48, cy);
+  });
+  y += Math.ceil(shown.length / per) * rowH + 22;
+  if(cens.order.length > shown.length){
+    g.fillStyle = soft; g.font = "italic 400 24px " + UI;
+    g.fillText(tf("and {n} more", { n:cens.order.length - shown.length }), M, y); y += 36;
+  }
+
+  /* how to look after it */
+  y += 24; g.fillStyle = ink; g.font = "600 30px " + DS; g.fillText(t("Looking after it"), M, y); y += 14;
+  var fibre = fibreById(o.fibre);
+  g.fillStyle = soft; g.font = "400 27px " + UI;
+  wrapLines(g, t(fibre.care), W - M * 2).forEach(function(ln){ y += 40; g.fillText(ln, M, y); });
+  y += 50;
+
+  /* who made it */
+  g.textAlign = "center"; g.fillStyle = soft; g.font = "400 25px " + UI;
+  var by = o.by ? tf("Made by {name}", { name:o.by }) : t("Made by hand");
+  var when2 = new Date(piece.at).toLocaleDateString(LANG, { day:"numeric", month:"long", year:"numeric" });
+  g.fillText(by + "  ·  " + when2, W/2, y); y += 40;
+  g.fillStyle = "#9A90A8"; g.font = "500 20px " + UI; g.fillText("THREADWYN", W/2, y);
+  y += 56;
+
+  var out = document.createElement("canvas"); out.width = W; out.height = y;
+  var og = out.getContext("2d"); og.drawImage(tall, 0, 0, W, y, 0, 0, W, y);
+  og.strokeStyle = "#E4DDEC"; og.lineWidth = 3; og.setLineDash([14, 10]);
+  og.strokeRect(22, 22, W - 44, y - 44); og.setLineDash([]);
+  return out;
+}
+function drawGiftPreview(piece, cells){
+  var o = { forWho:$("gift-for").value.trim(), by:$("gift-by").value.trim(),
+            note:$("gift-note").value.trim(), fibre:SET.fibre || "unsure" };
+  var big = giftCanvas(piece, cells, o), prev = $("gift-prev");
+  prev.width = 340 * 2; prev.height = Math.round(big.height * (340 * 2) / big.width);
+  prev.getContext("2d").drawImage(big, 0, 0, prev.width, prev.height);
+  return big;
+}
+function openGift(piece, cells){
+  S.giftPiece = { piece:piece, cells:cells };
+  $("gift-by").value = SET.maker || "";
+  $("gift-for").value = ""; $("gift-note").value = piece.note || "";
+  var seg = $("gift-fibre"); seg.innerHTML = "";
+  FIBRES.forEach(function(f){
+    var b = el("button", (SET.fibre || "unsure") === f.id ? "on" : "");
+    b.innerHTML = "<span>" + t(f.name) + "</span>";
+    b.onclick = function(){ SET.fibre = f.id; saveSettings(); openGiftRefresh(); };
+    seg.appendChild(b);
+  });
+  openGiftRefresh(); openSheet("sheet-gift");
+}
+function openGiftRefresh(){
+  var gp = S.giftPiece; if(!gp) return;
+  var seg = $("gift-fibre").children, i;
+  for(i = 0; i < seg.length; i++) seg[i].classList.toggle("on", FIBRES[i].id === (SET.fibre || "unsure"));
+  drawGiftPreview(gp.piece, gp.cells);
+}
+function shareGift(){
+  var gp = S.giftPiece; if(!gp) return;
+  SET.maker = $("gift-by").value.trim(); saveSettings();
+  var big = drawGiftPreview(gp.piece, gp.cells), name = safeName(gp.piece.name) + "-gift-tag.png";
+  big.toBlob(function(blob){
+    if(!blob){ toast(t("This browser could not make the tag.")); return; }
+    try{
+      var file = new File([blob], name, { type:"image/png" });
+      if(navigator.canShare && navigator.canShare({ files:[file] })){
+        SET.stats.gifted = true; saveSettings();
+        navigator.share({ files:[file], title:gp.piece.name }).catch(function(){});
+        return;
+      }
+    }catch(e){}
+    if(canSaveFiles() && saveFile(name, blob)){ SET.stats.gifted = true; saveSettings(); toast(t("Saved to Downloads.")); }
+    else toast(t("Press and hold the tag to save it."));
+  }, "image/png");
+}
 function pieceDataURL(piece, cells){
   var cell = Math.max(4, Math.min(14, Math.floor(760 / Math.max(piece.w, piece.h))));
   var big = document.createElement("canvas");
@@ -5351,6 +5621,7 @@ function renderPiece(){
     '<div><b class="num">'+piece.w+'×'+piece.h+'</b><span>Gauge</span></div>' +
     '<div><b>'+new Date(piece.at).toLocaleDateString()+'</b><span>Fastened off</span></div>' +
     (pat ? '<div style="grid-column:1/-1"><b>'+pat.t+'</b><span>From the pattern book</span></div>' : "");
+  $("piece-gift").onclick  = function(){ openGift(piece, cells); };
   $("piece-write").onclick = function(){ showWritten(piece.name, piece.w, piece.h, cells, "piece:" + piece.id); };
   $("piece-work").onclick  = function(){ startWork("piece:" + piece.id, piece.name, piece.w, piece.h, cells); };
   $("piece-fabric").onclick = function(){ showFabric(piece.name, piece.w, piece.h, cells); };
@@ -6537,13 +6808,34 @@ function drawStrays(ox, oy, v){
   }
   ctx.restore();
 }
+function fillHand(dot, label, run, W){
+  if(run && run.c){
+    dot.style.background = run.c; dot.style.borderStyle = "solid"; dot.style.color = symInk(run.c);
+    dot.textContent = W.label[run.c] || "";
+    label.textContent = t(nearestShade(run.c).name);
+  } else {
+    dot.style.background = "transparent"; dot.style.borderStyle = "dashed"; dot.style.color = "var(--ink-3)";
+    dot.textContent = "";
+    label.textContent = run ? tf("Skip {n}", { n:run.n }) : "\u2014";
+  }
+}
+function renderHand(W){
+  var row = W.rows[W.ri], runs = row.runs, run = runs[W.si], box = $("work-hand");
+  if(!run){ box.hidden = true; return; }
+  box.hidden = false;
+  fillHand($("hand-now"), $("hand-now-name"), run, W);
+  /* The last run of a row hands over to the first of the next: rows turn, so
+     it is the same side of the work, and the yarn is wanted straight away. */
+  var nxt = runs[W.si + 1], nextRow = W.rows[W.ri + 1];
+  if(!nxt && nextRow) nxt = nextRow.runs[0];
+  $("hand-next-box").hidden = $("hand-arrow").hidden = !nxt;
+  if(nxt) fillHand($("hand-next"), $("hand-next-name"), nxt, W);
+}
 function reachLine(W){
   var row = W.rows[W.ri], runs = row.runs, run = runs[W.si];
   if(!run || !run.c) return "";
   if(W.si >= runs.length - 1) return t("End of the row — turn and start the next.");
-  var nm = t(nearestShade(run.c).name), nxt = runs[W.si + 1], lines = [], gap = 0, back = -1, j;
-  lines.push(nxt.c ? tf("Next: {name}.", { name:t(nearestShade(nxt.c).name) })
-                   : tf("Next: leave {n} empty.", { n:nxt.n }));
+  var nm = t(nearestShade(run.c).name), lines = [], gap = 0, back = -1, j;
   for(j = W.si + 1; j < runs.length; j++){
     if(runs[j].c === run.c){ back = gap; break; }
     gap += runs[j].n;
@@ -6556,6 +6848,83 @@ function reachLine(W){
 function timeFor(stitches){
   if(!SET.pace || !stitches) return null;
   return fmtMinutes(Math.round(SET.pace * stitches / 60));
+}
+/* ---- where did it go wrong? ---------------------------------------------
+   The app cannot see your crochet, so it cannot compare it. What it can do is
+   ask the question a person actually has to answer, and ask it cleverly. If
+   the rows are fine up to some point and drifted after it, the first bad row
+   can be found by halving: look at the most recent row, then the middle, then
+   the middle of whichever half is left. A hundred rows takes seven answers,
+   where counting back takes up to a hundred. It is git bisect for a blanket. */
+function openBisect(){
+  var W = S.work; if(!W) return;
+  var done = W.ri;                       /* rows finished: the one in hand is not */
+  if(done < 1){ toast(t("Finish a row first, then I can help you look back.")); return; }
+  S.bisect = { n:done, lo:0, hi:done, ask:done, phase:"first", asked:1,
+               total:1 + Math.max(0, Math.ceil(Math.log(done) / Math.LN2)), result:null };
+  renderBisect(); openSheet("sheet-bisect");
+}
+function bisectAnswer(matches){
+  var b = S.bisect; if(!b || b.result) return;
+  if(b.phase === "first"){
+    if(matches){ b.result = { none:true }; renderBisect(); return; }
+    b.phase = "search"; b.hi = b.n;
+  } else if(matches) b.lo = b.ask;
+  else b.hi = b.ask;
+  if(b.hi - b.lo <= 1) b.result = { row:b.hi };
+  else { b.ask = Math.floor((b.lo + b.hi) / 2); b.asked++; }
+  renderBisect();
+}
+function drawBisectChart(W, r){
+  var cv2 = $("bisect-chart");
+  var cell = Math.max(2, Math.min(14, Math.floor(Math.min(380 / W.w, 210 / W.h))));
+  cv2.width = W.w * cell; cv2.height = W.h * cell;
+  var g = cv2.getContext("2d");
+  g.imageSmoothingEnabled = false;
+  /* the piece as it should look the moment row r is finished: everything
+     above it is still bare cloth */
+  var shown = W.cells.map(function(c, i){ return (W.h - Math.floor(i / W.w)) <= r ? c : null; });
+  g.drawImage(smallCanvas(W.w, W.h, shown, false, true), 0, 0, cv2.width, cv2.height);
+  var y = (W.h - r) * cell;
+  g.strokeStyle = "#ffffff"; g.lineWidth = 3; g.strokeRect(1, y - 1, cv2.width - 2, cell + 2);
+  g.strokeStyle = "rgba(20,15,28,.8)"; g.lineWidth = 1.2; g.strokeRect(1, y - 1, cv2.width - 2, cell + 2);
+}
+function renderBisect(){
+  var b = S.bisect, W = S.work;
+  if(!b || !W) return;
+  $("bisect-ask").hidden = !!b.result;
+  $("bisect-done").hidden = !b.result;
+  if(b.result){
+    if(b.result.none){
+      $("bisect-result").textContent = t("Every row you have finished matches.");
+      $("bisect-cost").textContent = t("If something looks off, it is in the row you are working on now.");
+      $("bisect-go").hidden = true;
+    } else {
+      var R = b.result.row, k = b.n - R + 1, st = k * W.w;
+      $("bisect-result").textContent = tf("The first row that differs is row {r}.", { r:R });
+      $("bisect-cost").textContent = k === 1
+        ? tf("Undo just that one row — about {s} stitches. Everything below it is fine.", { s:st })
+        : tf("To fix it you would undo {k} rows — about {s} stitches. Everything below row {r} is fine.", { k:k, s:st, r:R });
+      $("bisect-go").hidden = false;
+      $("bisect-go").textContent = tf("Take me back to row {r}", { r:R });
+    }
+    return;
+  }
+  var r = b.ask, row = W.rows[r - 1];
+  $("bisect-q").textContent = tf("Does row {r} of your piece match this?", { r:r });
+  $("bisect-steps").textContent = tf("Question {a} of about {b}.", { a:b.asked, b:b.total });
+  drawBisectChart(W, r);
+  $("bisect-dir").textContent = tf(row.rs ? "Row {r}: right side, worked right to left."
+                                           : "Row {r}: wrong side, worked left to right.", { r:r });
+  var box = $("bisect-runs"); box.innerHTML = "";
+  row.runs.forEach(function(run){
+    var sp = el("span"), dot = el("i");
+    dot.style.background = run.c || "transparent";
+    if(!run.c) dot.style.borderStyle = "dashed";
+    sp.appendChild(dot);
+    sp.appendChild(document.createTextNode(run.n + (run.c ? (" " + W.label[run.c]) : " skip")));
+    box.appendChild(sp);
+  });
 }
 function workStep(dir){
   var W = S.work; if(!W) return;
@@ -6603,9 +6972,9 @@ function renderWork(){
   applyHandsBusy();
   var row = W.rows[W.ri];
   $("work-name").textContent = W.name;
-  $("work-row").textContent = "Row " + row.r;
-  $("work-side").textContent = row.rs ? "RS" : "WS";
-  $("work-dir").textContent = "of " + W.rows.length + " · " + (row.rs ? "right to left" : "left to right");
+  $("work-row").textContent = tf("Row {r}", { r:row.r });
+  $("work-side").textContent = t(row.rs ? "RS" : "WS");
+  $("work-dir").textContent = tf(row.rs ? "of {n} · right to left" : "of {n} · left to right", { n:W.rows.length });
   var doneRows = W.ri / W.rows.length;
   $("work-fill").style.width = Math.round(doneRows * 100) + "%";
   var box = $("work-runs"); box.innerHTML = "";
@@ -6625,6 +6994,7 @@ function renderWork(){
              : tf(cur.n === 1 ? "Skip {n} square" : "Skip {n} squares", { n:cur.n }))
     : "—";
   $("work-reach").textContent = reachLine(W);
+  renderHand(W);
   drawWorkChart();
   keepAwake(true);
 }
@@ -7382,6 +7752,18 @@ function wire(){
   /* working mode */
   $("work-next").onclick = function(){ workStep(1); };
   $("work-prev").onclick = function(){ workStep(-1); };
+  ["gift-for","gift-by","gift-note"].forEach(function(id){ $(id).oninput = openGiftRefresh; });
+  $("gift-share").onclick = shareGift;
+  $("work-look").onclick = openBisect;
+  $("bisect-yes").onclick = function(){ bisectAnswer(true); };
+  $("bisect-no").onclick  = function(){ bisectAnswer(false); };
+  $("bisect-go").onclick  = function(){
+    var b = S.bisect, W = S.work;
+    if(!b || !b.result || !b.result.row || !W) return;
+    W.ri = b.result.row - 1; W.si = 0; saveWorkPos(); renderWork();
+    closeSheet("sheet-bisect");
+    toast(tf("Back at row {r}.", { r:b.result.row }));
+  };
   $("work-busy").onclick = function(){
     SET.handsBusy = !SET.handsBusy; saveSettings(); applyHandsBusy();
     toast(SET.handsBusy ? t("Tap anywhere on the panel to move on.") : t("Back to the buttons."));
@@ -7408,12 +7790,12 @@ function wire(){
   $("m-guide").onclick = function(){
     closeSheet("sheet-more");
     renderTemplates();
-    $("g-show-state").textContent = S.showGuide ? "showing" : "hidden";
+    $("g-show-state").textContent = t(S.showGuide ? "showing" : "hidden");
     openSheet("sheet-guide");
   };
   $("g-show").onclick = function(){
     S.showGuide = !S.showGuide;
-    $("g-show-state").textContent = S.showGuide ? "showing" : "hidden";
+    $("g-show-state").textContent = t(S.showGuide ? "showing" : "hidden");
     rebuildBuffer(); invalidate();
   };
   $("g-copy").onclick = function(){
@@ -7670,7 +8052,7 @@ function dataURLtoBlob(url){
   for(var i=0;i<len;i++) arr[i] = bin.charCodeAt(i);
   return new Blob([arr], { type: mime });
 }
-function safeName(s){ return String(s || "piece").replace(/[^A-Za-z0-9 _-]/g, "").trim().replace(/\s+/g, "-").slice(0,40) || "piece"; }
+function safeName(s){ return String(s || "piece").replace(/\u0153/g, "oe").replace(/\u0152/g, "Oe").replace(/\u00e6/g, "ae").replace(/\u00df/g, "ss").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9 _-]/g, "").trim().replace(/\s+/g, "-").slice(0,40) || "piece"; }
 function readBackupFile(file){
   if(!file) return;
   var fr = new FileReader();
